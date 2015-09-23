@@ -32,35 +32,41 @@
 // $Authors: Timo Sachsenberg $
 // --------------------------------------------------------------------------
 
-#ifndef OPENMS_ANALYSIS_RNPXL_RNPXLMODIFICATIONSGENERATOR_H
-#define OPENMS_ANALYSIS_RNPXL_RNPXLMODIFICATIONSGENERATOR_H
+#ifndef OPENMS_ANALYSIS_RNPXL_PSCORE
+#define OPENMS_ANALYSIS_RNPXL_PSCORE
 
-#include <vector>
-#include <map>
-#include <set>
 #include <OpenMS/KERNEL/StandardTypes.h>
 
 namespace OpenMS
-{  
-  struct OPENMS_DLLAPI RNPxlModificationMassesResult
-  {
-    std::map<String, double> mod_masses; // empirical formula -> mass
-    std::map<String, std::set<String> > mod_combinations; // empirical formula -> nucleotide formula(s) (formulas if modifications lead to ambiguities)
-    std::map<Size, String> mod_formula_idx;
-  };
+{
 
-  class OPENMS_DLLAPI RNPxlModificationsGenerator
-  {
-    public:
-      static RNPxlModificationMassesResult initModificationMassesRNA(StringList target_nucleotides, StringList mappings, StringList restrictions, StringList modifications, String sequence_restriction, bool cysteine_adduct, Int max_length = 4);
+struct OPENMS_DLLAPI PScore
+{
+  // calculates for each peak, how many neighboring peaks (in the given window) have higher intensity
+  // the result can be used to efficiently filter spectra for top 1..n peaks in mass windows
+  static std::vector<Size> calculateIntensityRankInMZWindow(const std::vector<double>& mz, const std::vector<double>& intensities, double mz_window);
 
-      // calculates the monoisotopic mass of the nucleotide sequence using the formulas provided in nucleotide_to_formula. For a sequence of n nucleotides, n-1 loss of water are considered.
-      double calculateNucleotideChainMass(const std::map<char, EmpiricalFormula>& monophosphate_to_formula, const String& sequence);
+  // used to precalculate peak ranks for a whole experiment using the calculateIntensityRankInMZWindow function
+  static std::vector<std::vector<Size> > calculateRankMap(const PeakMap& peak_map, double mz_window);
 
-    private:
-      static bool notInSeq(String res_seq, String query);
-      static void generateTargetSequences(const String& res_seq, Size param_pos, const std::map<char, std::vector<char> >& map_source2target, StringList& target_sequences);
-    };
+  // Calculates spectra for peak level between min_level to max_level and stores them in the map
+  // A spectrum of peak level n retains the top n intensity peaks in a sliding mz_window centered at each peak
+  // min and max level are taken from the Andromeda publication but are similar to the AScore publication
+  static std::map<Size, MSSpectrum<Peak1D> > calculatePeakLevelSpectra(const PeakSpectrum& spec, const std::vector<Size>& ranks, Size min_level, Size max_level);
+
+  // Similar to Andromeda, a vector of theoretical spectra can be provided that e.g. contain loss spectra or higher charge spectra depending on the sequence
+  // The best score obtained by scoring all those theoretical spectra against the experimental ones is returned.
+  static double computePScore(double fragment_mass_tolerance, bool fragment_mass_tolerance_unit_ppm, const std::map<Size, PeakSpectrum>& peak_level_spectra, const std::vector<RichPeakSpectrum>& theo_spectra, double mz_window);
+
+  // additive correction terms used by Andromeda (pscore + massC + cleaveC + modC - 100)
+  static double massCorrectionTerm(double mass);
+
+  static double cleavageCorrectionTerm(Size cleavages, bool consecutive_cleavage);
+
+  static double modificationCorrectionTerm(Size modifications);
+
+};
+
 }
+#endif
 
-#endif // OPENMS_ANALYSIS_RNPXL_RNPXLMODIFICATIONSGENERATOR_H

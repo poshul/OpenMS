@@ -72,7 +72,6 @@ public:
     /// Names of the Specificity
     static const std::string NamesOfSpecificity[SIZE_OF_SPECIFICITY];
 
-
     /// Default constructor
     EnzymaticDigestion();
 
@@ -81,7 +80,6 @@ public:
 
     /// Assignment operator
     EnzymaticDigestion& operator=(const EnzymaticDigestion& rhs);
-
 
     /// Returns the number of missed cleavages for the digestion
     SignedSize getMissedCleavages() const;

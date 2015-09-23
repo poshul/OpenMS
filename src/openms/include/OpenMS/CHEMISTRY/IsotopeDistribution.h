@@ -128,6 +128,22 @@ public:
     */
     void estimateFromPeptideWeight(double average_weight);
 
+    /**
+        @brief Estimate Nucleotide Isotopedistribution from weight and number of isotopes that should be reported
+    */
+    void estimateFromRNAWeight(double average_weight);
+
+    /**
+        @brief Estimate Nucleotide Isotopedistribution from weight and number of isotopes that should be reported
+    */
+    void estimateFromDNAWeight(double average_weight);
+
+    /**
+        @brief Estimate Isotopedistribution from weight, average composition, and number of isotopes that should be reported
+
+    */
+    void estimateFromWeightAndComp(double average_weight, double C, double H, double N, double O, double S, double P);
+
     /** @brief re-normalizes the sum of the probabilities of the isotopes to 1
 
             The re-normalisation is needed as in distributions with a lot of isotopes (and with high max isotope)

@@ -32,35 +32,57 @@
 // $Authors: Timo Sachsenberg $
 // --------------------------------------------------------------------------
 
-#ifndef OPENMS_ANALYSIS_RNPXL_RNPXLMODIFICATIONSGENERATOR_H
-#define OPENMS_ANALYSIS_RNPXL_RNPXLMODIFICATIONSGENERATOR_H
-
-#include <vector>
-#include <map>
-#include <set>
 #include <OpenMS/KERNEL/StandardTypes.h>
+#include <OpenMS/ANALYSIS/RNPXL/RNPxlReport.h>
 
 namespace OpenMS
-{  
-  struct OPENMS_DLLAPI RNPxlModificationMassesResult
+{
+  String RNPxlReportRow::getString(String separator) const
   {
-    std::map<String, double> mod_masses; // empirical formula -> mass
-    std::map<String, std::set<String> > mod_combinations; // empirical formula -> nucleotide formula(s) (formulas if modifications lead to ambiguities)
-    std::map<Size, String> mod_formula_idx;
-  };
+    StringList sl;
 
-  class OPENMS_DLLAPI RNPxlModificationsGenerator
-  {
-    public:
-      static RNPxlModificationMassesResult initModificationMassesRNA(StringList target_nucleotides, StringList mappings, StringList restrictions, StringList modifications, String sequence_restriction, bool cysteine_adduct, Int max_length = 4);
+    // rt mz
+    sl << String::number(rt, 0) << String::number(original_mz, 4);
 
-      // calculates the monoisotopic mass of the nucleotide sequence using the formulas provided in nucleotide_to_formula. For a sequence of n nucleotides, n-1 loss of water are considered.
-      double calculateNucleotideChainMass(const std::map<char, EmpiricalFormula>& monophosphate_to_formula, const String& sequence);
+    // id if available
+    if (no_id)
+    {
+      sl << "" << "" << "" << "" << "" << "" << "" << "";
+    }
+    else
+    {
+      sl << accessions << RNA << peptide << String(charge) << String(score)
+         << String::number(peptide_weight, 4) << String::number(RNA_weight, 4) << String::number(peptide_weight + RNA_weight, 4);
+    }
 
-    private:
-      static bool notInSeq(String res_seq, String query);
-      static void generateTargetSequences(const String& res_seq, Size param_pos, const std::map<char, std::vector<char> >& map_source2target, StringList& target_sequences);
-    };
+    // marker ions
+    for (RNPxlMarkerIonExtractor::MarkerIonsType::const_iterator it = marker_ions.begin(); it != marker_ions.end(); ++it)
+    {
+      for (Size i = 0; i != it->second.size(); ++i)
+      {
+        sl << String::number(it->second[i].second * 100.0, 2);
+      }
+    }
+
+    // id error and multiple charged mass
+    if (no_id)
+    {
+      sl << "" << ""
+         << "" << "" << "" << "";
+    }
+    else
+    {
+      // error
+      sl << String::number(abs_prec_error, 4)
+         << String::number(rel_prec_error, 1);
+
+      // weight
+      sl << String::number(m_H, 4)
+         << String::number(m_2H, 4)
+         << String::number(m_3H, 4)
+         << String::number(m_4H, 4);
+    }
+
+    return ListUtils::concatenate(sl, separator);
+  }
 }
-
-#endif // OPENMS_ANALYSIS_RNPXL_RNPXLMODIFICATIONSGENERATOR_H

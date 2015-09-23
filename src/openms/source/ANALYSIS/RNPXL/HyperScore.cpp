@@ -32,35 +32,72 @@
 // $Authors: Timo Sachsenberg $
 // --------------------------------------------------------------------------
 
-#ifndef OPENMS_ANALYSIS_RNPXL_RNPXLMODIFICATIONSGENERATOR_H
-#define OPENMS_ANALYSIS_RNPXL_RNPXLMODIFICATIONSGENERATOR_H
-
-#include <vector>
-#include <map>
-#include <set>
 #include <OpenMS/KERNEL/StandardTypes.h>
+#include <OpenMS/ANALYSIS/RNPXL/HyperScore.h>
 
 namespace OpenMS
-{  
-  struct OPENMS_DLLAPI RNPxlModificationMassesResult
+{
+  double HyperScore::logfactorial(UInt x)
   {
-    std::map<String, double> mod_masses; // empirical formula -> mass
-    std::map<String, std::set<String> > mod_combinations; // empirical formula -> nucleotide formula(s) (formulas if modifications lead to ambiguities)
-    std::map<Size, String> mod_formula_idx;
-  };
+    UInt y;
 
-  class OPENMS_DLLAPI RNPxlModificationsGenerator
+    if (x < 2)
+      return 1;
+    else
+    {
+      double z = 0;
+      for (y = 2; y <= x; y++)
+      {
+        z = log((double)y) + z;
+      }
+
+      return z;
+    }
+  }
+
+  double HyperScore::compute(double fragment_mass_tolerance, bool fragment_mass_tolerance_unit_ppm, const PeakSpectrum& exp_spectrum, const RichPeakSpectrum& theo_spectrum)
   {
-    public:
-      static RNPxlModificationMassesResult initModificationMassesRNA(StringList target_nucleotides, StringList mappings, StringList restrictions, StringList modifications, String sequence_restriction, bool cysteine_adduct, Int max_length = 4);
+    double dot_product = 0.0;
+    UInt y_ion_count = 0;
+    UInt b_ion_count = 0;
 
-      // calculates the monoisotopic mass of the nucleotide sequence using the formulas provided in nucleotide_to_formula. For a sequence of n nucleotides, n-1 loss of water are considered.
-      double calculateNucleotideChainMass(const std::map<char, EmpiricalFormula>& monophosphate_to_formula, const String& sequence);
+    for (MSSpectrum<RichPeak1D>::ConstIterator theo_peak_it = theo_spectrum.begin(); theo_peak_it != theo_spectrum.end(); ++theo_peak_it)
+    {
+      const double& theo_mz = theo_peak_it->getMZ();
 
-    private:
-      static bool notInSeq(String res_seq, String query);
-      static void generateTargetSequences(const String& res_seq, Size param_pos, const std::map<char, std::vector<char> >& map_source2target, StringList& target_sequences);
-    };
+      double max_dist_dalton = fragment_mass_tolerance_unit_ppm ? theo_mz * fragment_mass_tolerance * 1e-6 : fragment_mass_tolerance;
+
+      // iterate over peaks in experimental spectrum in given fragment tolerance around theoretical peak
+      Size index = exp_spectrum.findNearest(theo_mz);
+      double exp_mz = exp_spectrum[index].getMZ();
+
+      // found peak match
+      if (std::abs(theo_mz - exp_mz) < max_dist_dalton)
+      {
+        dot_product += exp_spectrum[index].getIntensity();
+        if (theo_peak_it->getMetaValue("IonName").toString()[0] == 'y')
+        {
+          ++y_ion_count;
+        }
+        else
+        {
+          ++b_ion_count;
+        }
+      }
+    }
+
+    // discard very low scoring hits (basically no matching peaks)
+    if (dot_product > 1e-1)
+    {
+      double yFact = logfactorial(y_ion_count);
+      double bFact = logfactorial(b_ion_count);
+      double hyperScore = log(dot_product) + yFact + bFact;
+      return hyperScore;
+    }
+    else
+    {
+      return 0;
+    }
+  }
 }
 
-#endif // OPENMS_ANALYSIS_RNPXL_RNPXLMODIFICATIONSGENERATOR_H

@@ -163,6 +163,8 @@ private:
   double averagine_similarity_;
   double averagine_similarity_scaling_;
   bool knock_out_;
+  String type_m_;
+  Int unit_charge_;
 
   // section "labels"
   map<String, double> label_massshift_;
@@ -226,6 +228,11 @@ public:
       defaults.setMinInt("missed_cleavages", 0);
       defaults.setValue("knock_out", "false", "Is it likely that knock-outs are present? (Supported for doublex, triplex and quadruplex experiments only.)", ListUtils::create<String>("advanced"));
       defaults.setValidStrings("knock_out", ListUtils::create<String>("true,false"));
+      defaults.setValue("type_m","peptide","The type of averagine to use, currently RNA, DNA or peptide");
+      defaults.setValidStrings("type_m", ListUtils::create<String>("RNA,peptide,DNA"));
+      defaults.setValue("unit_charge",1,"1 for positive -1 for negative");
+      defaults.setMinInt("unit_charge",-1);
+      defaults.setMaxInt("unit_charge",1);
     }
 
     if (section == "labels")
@@ -292,7 +299,7 @@ public:
     charge_max_ = charge_max_temp;
     if (charge_min_ > charge_max_)
     {
-      swap(charge_min_, charge_max_);
+      swap(charge_min_, charge_max_); //TODO warn the user about this
     }
 
     // get isotopes per peptide range
@@ -316,6 +323,8 @@ public:
     averagine_similarity_scaling_ = getParam_().getValue("algorithm:averagine_similarity_scaling");
     missed_cleavages_ = getParam_().getValue("algorithm:missed_cleavages");
     knock_out_ = (getParam_().getValue("algorithm:knock_out") == "true");
+    type_m_ = getParam_().getValue("algorithm:type_m");
+    unit_charge_ = getParam_().getValue("algorithm:unit_charge");
   }
 
   /**
@@ -913,7 +922,7 @@ public:
           feature_handle.setMZ(sum_intensity_mz[peptide] / sum_intensity[peptide]);
           feature_handle.setRT(sum_intensity_rt[peptide] / sum_intensity[peptide]);
           feature_handle.setIntensity(peptide_intensities[peptide]);
-          feature_handle.setCharge(patterns[pattern].getCharge());
+          feature_handle.setCharge(patterns[pattern].getCharge() * unit_charge_);
           feature_handle.setMapIndex(peptide);
           //feature_handle.setUniqueId(&UniqueIdInterface::setUniqueId);    // TODO: Do we need to set unique ID?
           consensus_map.getFileDescriptions()[peptide].size++;
@@ -923,7 +932,7 @@ public:
           feature.setMZ(sum_intensity_mz[peptide] / sum_intensity[peptide]);
           feature.setRT(sum_intensity_rt[peptide] / sum_intensity[peptide]);
           feature.setIntensity(peptide_intensities[peptide]);
-          feature.setCharge(patterns[pattern].getCharge());
+          feature.setCharge(patterns[pattern].getCharge() * unit_charge_);
           feature.setOverallQuality(1 - 1 / points.size());
           for (unsigned peak = 0; peak < isotopes_per_peptide_max_; ++peak)
           {
@@ -1253,14 +1262,14 @@ private:
     if (centroided)
     {
       // centroided data
-      MultiplexFilteringCentroided filtering(exp, patterns, isotopes_per_peptide_min_, isotopes_per_peptide_max_, missing_peaks_, intensity_cutoff_, mz_tolerance_, mz_unit_, peptide_similarity_, averagine_similarity_, averagine_similarity_scaling_);
+      MultiplexFilteringCentroided filtering(exp, patterns, isotopes_per_peptide_min_, isotopes_per_peptide_max_, missing_peaks_, intensity_cutoff_, mz_tolerance_, mz_unit_, peptide_similarity_, averagine_similarity_, averagine_similarity_scaling_, type_m_);
       filtering.setLogType(log_type_);
       filter_results = filtering.filter();
     }
     else
     {
       // profile data
-      MultiplexFilteringProfile filtering(exp, exp_picked, boundaries_exp_s, patterns, isotopes_per_peptide_min_, isotopes_per_peptide_max_, missing_peaks_, intensity_cutoff_, mz_tolerance_, mz_unit_, peptide_similarity_, averagine_similarity_, averagine_similarity_scaling_);
+      MultiplexFilteringProfile filtering(exp, exp_picked, boundaries_exp_s, patterns, isotopes_per_peptide_min_, isotopes_per_peptide_max_, missing_peaks_, intensity_cutoff_, mz_tolerance_, mz_unit_, peptide_similarity_, averagine_similarity_, averagine_similarity_scaling_, type_m_);
       filtering.setLogType(log_type_);
       filter_results = filtering.filter();
     }

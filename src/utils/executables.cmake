@@ -27,6 +27,9 @@ MetaboliteSpectralMatcher
 MetaProSIP
 MRMPairFinder
 MSSimulator
+NucleotideID
+NucleotideIDAMSDBCreator
+NucSpectrumGen
 OpenMSInfo
 PeakPickerIterative
 QCCalculator
@@ -48,8 +51,7 @@ SvmTheoreticalSpectrumGeneratorTrainer
 TransformationEvaluation
 TopPerc
 XMLValidator
-#SimpleSearchEngine
-#RNPxlSearch
+RNPxlSearch
 )
 
 if(NOT DISABLE_OPENSWATH)
