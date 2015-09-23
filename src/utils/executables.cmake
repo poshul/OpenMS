@@ -45,13 +45,13 @@ RTAnnotator
 RTEvaluation
 SemanticValidator
 SequenceCoverageCalculator
-SimpleSearchEngine
+#SimpleSearchEngine
 SpecLibCreator
 SvmTheoreticalSpectrumGeneratorTrainer
 TransformationEvaluation
 TopPerc
 XMLValidator
-RNPxlSearch
+#RNPxlSearch
 )
 
 if(NOT DISABLE_OPENSWATH)
