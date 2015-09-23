@@ -253,6 +253,7 @@ set(math_executables_list
   PosteriorErrorProbabilityModel_test
   #QuadraticRegression_test
   #RegressionUtils_test
+  RANSAC_test
   ROCCurve_test
   StatisticFunctions_test
   #Spline2d_test
@@ -266,6 +267,7 @@ set(filtering_executables_list
   ElutionPeakDetection_test
   FeatureFindingMetabo_test
   FilterFunctor_test
+  FastLowessSmoothing_test
   GaussFilter_test
   GaussFilterAlgorithm_test
   GoodDiffFilter_test
