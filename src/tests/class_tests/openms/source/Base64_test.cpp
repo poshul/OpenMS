@@ -67,6 +67,26 @@ START_SECTION((virtual ~Base64()))
   delete ptr;
 END_SECTION
 
+/*
+
+Python 
+
+# Little Endian floats
+>>> import base64
+>>> import struct
+>>> mynr = base64.standard_b64decode("pDiTRQ==")
+>>> [struct.unpack('<f', mynr[i:i+4]) for i in range(0, len(mynr), 4) ]
+[(4711.080078125,)]
+ 
+# Big Endian doubles
+>>> import base64
+>>> import struct
+>>> mynr = base64.standard_b64decode("QHLCZmZmZmZAcv/3ztkWh0BzCZmZmZma")
+>>> [struct.unpack('>d', mynr[i:i+8]) for i in range(0, len(mynr), 8) ]
+[(300.15,), (303.998,), (304.6,)]
+
+*/
+
 START_SECTION((template < typename FromType > void encode(std::vector< FromType > &in, ByteOrder to_byte_order, String &out, bool zlib_compression=false)))
   TOLERANCE_ABSOLUTE(0.001)
 {
@@ -472,6 +492,36 @@ START_SECTION((template <typename FromType> void encodeIntegers(std::vector<From
     TEST_EQUAL(vec32[i],vec32_out[i])
   }
 }
+END_SECTION
+
+ptr = new Base64;
+
+START_SECTION(inline UInt32 endianize32(const UInt32& n))
+  TEST_EQUAL(0, endianize32(0))  // swapping 0 should do nothing
+  TEST_EQUAL(std::numeric_limits<UInt32>::max(), endianize32(std::numeric_limits<UInt32>::max()))  // swapping MAX should do nothing
+  TEST_EQUAL(0x000000FF, endianize32(0xFF000000)) 
+  TEST_EQUAL(0x0000FF00, endianize32(0x00FF0000)) 
+  TEST_EQUAL(0x00FF0000, endianize32(0x0000FF00)) 
+  TEST_EQUAL(0xFF000000, endianize32(0x000000FF))
+  // random value should stay the same upon double call
+  UInt32 r = (UInt32)UniqueIdGenerator::getUniqueId();
+  TEST_EQUAL(r, endianize32(endianize32(r)))
+END_SECTION
+
+START_SECTION(inline UInt64 endianize64(const UInt64& n))
+  TEST_EQUAL(0, endianize64(0))  // swapping 0 should do nothing
+  TEST_EQUAL(std::numeric_limits<UInt64>::max(), endianize64(std::numeric_limits<UInt64>::max()))  // swapping MAX should do nothing
+  TEST_EQUAL(0x00000000000000FF, endianize64(0xFF00000000000000)) 
+  TEST_EQUAL(0x000000000000FF00, endianize64(0x00FF000000000000)) 
+  TEST_EQUAL(0x0000000000FF0000, endianize64(0x0000FF0000000000)) 
+  TEST_EQUAL(0x00000000FF000000, endianize64(0x000000FF00000000)) 
+  TEST_EQUAL(0x000000FF00000000, endianize64(0x00000000FF000000)) 
+  TEST_EQUAL(0x0000FF0000000000, endianize64(0x0000000000FF0000)) 
+  TEST_EQUAL(0x00FF000000000000, endianize64(0x000000000000FF00)) 
+  TEST_EQUAL(0xFF00000000000000, endianize64(0x00000000000000FF))
+  // random value should stay the same upon double call
+  UInt64 r = UniqueIdGenerator::getUniqueId();
+  TEST_EQUAL(r, endianize64(endianize64(r)))
 END_SECTION
 
 /////////////////////////////////////////////////////////////

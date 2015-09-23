@@ -59,7 +59,7 @@ namespace OpenMS
 
     private:
       static bool notInSeq(String res_seq, String query);
-      static void generateTargetSequences(const String& res_seq, Size pos, const std::map<char, std::vector<char> >& map_source2target, StringList& target_sequences);
+      static void generateTargetSequences(const String& res_seq, Size param_pos, const std::map<char, std::vector<char> >& map_source2target, StringList& target_sequences);
     };
 }
 

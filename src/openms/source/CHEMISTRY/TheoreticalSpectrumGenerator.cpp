@@ -311,7 +311,11 @@ void TheoreticalSpectrumGenerator::addPeaks(RichPeakSpectrum & spectrum, const A
         //sign = -1;
     }
 
-    // generate the ion peaks
+    // Generate the ion peaks:
+    // Does not generate peaks of full peptide (therefore "<").
+    // They are added via precursor mass (and neutral losses).
+    // Could be changed in the future.
+
     switch (res_type)
     {
     case Residue::AIon:

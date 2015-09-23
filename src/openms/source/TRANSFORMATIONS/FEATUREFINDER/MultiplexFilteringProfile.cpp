@@ -78,6 +78,9 @@ namespace OpenMS
       throw Exception::IllegalArgument(__FILE__, __LINE__, __PRETTY_FUNCTION__, stream.str());
     }
 
+    blacklist_.reserve(exp_picked_.getNrSpectra());
+    registry_.reserve(exp_picked_.getNrSpectra());
+
     // fill peak registry and initialise blacklist
     MSExperiment<Peak1D>::Iterator it_rt;
     for (it_rt = exp_picked_.begin(); it_rt < exp_picked_.end(); ++it_rt)
@@ -261,7 +264,7 @@ namespace OpenMS
             // add raw data point to list that passed all filters
             MultiplexFilterResultRaw result_raw(mz, mz_shifts_actual, intensities_actual);
             results_raw.push_back(result_raw);
-
+            
             // blacklist peaks in the current spectrum and the two neighbouring ones
             if (!blacklisted)
             {
