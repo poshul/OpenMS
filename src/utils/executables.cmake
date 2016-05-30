@@ -30,6 +30,7 @@ MSSimulator
 MzMLSplitter
 OpenMSInfo
 PeakPickerIterative
+PreprocessSpectra
 QCCalculator
 QCEmbedder
 QCExporter

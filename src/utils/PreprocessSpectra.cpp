@@ -116,23 +116,23 @@ class PreprocessSpectra :
       registerOutputFile_("out", "<file>", "", "output file ");
       setValidFormats_("out", ListUtils::create<String>("mzML"));
 
-      registerTOPPSubsection_("precursor", "Precursor (Parent Ion) Options");
-      registerDoubleOption_("precursor:mass_tolerance", "<tolerance>", 10.0, "Width of precursor mass tolerance window", false);
+//      registerTOPPSubsection_("precursor", "Precursor (Parent Ion) Options");
+//      registerDoubleOption_("precursor:mass_tolerance", "<tolerance>", 10.0, "Width of precursor mass tolerance window", false);
 
-      StringList precursor_mass_tolerance_unit_valid_strings;
-      precursor_mass_tolerance_unit_valid_strings.push_back("ppm");
-      precursor_mass_tolerance_unit_valid_strings.push_back("Da");
+//      StringList precursor_mass_tolerance_unit_valid_strings;
+//      precursor_mass_tolerance_unit_valid_strings.push_back("ppm");
+//      precursor_mass_tolerance_unit_valid_strings.push_back("Da");
 
-      registerStringOption_("precursor:mass_tolerance_unit", "<unit>", "ppm", "Unit of precursor mass tolerance.", false, false);
-      setValidStrings_("precursor:mass_tolerance_unit", precursor_mass_tolerance_unit_valid_strings);
+//      registerStringOption_("precursor:mass_tolerance_unit", "<unit>", "ppm", "Unit of precursor mass tolerance.", false, false);
+//      setValidStrings_("precursor:mass_tolerance_unit", precursor_mass_tolerance_unit_valid_strings);
 
-      registerIntOption_("precursor:min_charge", "<num>", 2, "Minimum precursor charge to be considered.", false, true);
-      registerIntOption_("precursor:max_charge", "<num>", 5, "Maximum precursor charge to be considered.", false, true);
+      registerIntOption_("min_charge", "<num>", 2, "Minimum precursor charge to be considered.", false, true);
+      registerIntOption_("max_charge", "<num>", 5, "Maximum precursor charge to be considered.", false, true);
 
       registerIntOption_("min_isopeaks", "<num>", 3, "Minimum number of isotopes to be considered.", false, true);
       registerIntOption_("max_isopeaks", "<num>", 10, "Maximum number of isotopes to be considered.", false, true);
 
-
+      //registerFlag_("make_single_charged", "This flag should be set to singly charge features");
       registerTOPPSubsection_("fragment", "Fragments (Product Ion) Options");
       registerDoubleOption_("fragment:mass_tolerance", "<tolerance>", 10.0, "Fragment mass tolerance", false);
 
@@ -192,18 +192,19 @@ class PreprocessSpectra :
               else
               {
                 // TODO: include proper averagine model filtering. for now start at the second peak to test hypothesis
-                Size n_extensions = extensions.size();
-                if (n_extensions != 0)
-                {
-                  if (old_spectrum[p].getIntensity() > old_spectrum[extensions[n_extensions - 1]].getIntensity())
-                  {
-                    if (i < min_isopeaks)
-                    {
-                      has_min_isopeaks = false;
-                    }
-                    break;
-                  }
-                }
+                  //Commented out 'cause this check in invariably failed for middle-down and top-down data.
+//                Size n_extensions = extensions.size();
+//                if (n_extensions != 0)
+//                {
+//                  if (old_spectrum[p].getIntensity() > old_spectrum[extensions[n_extensions - 1]].getIntensity()) //FIXME this isnt
+//                  {
+//                    if (i < min_isopeaks)
+//                    {
+//                      has_min_isopeaks = false;
+//                    }
+//                    break;
+//                  }
+//                }
 
                 // averagine check passed
                 extensions.push_back(p);
@@ -295,7 +296,7 @@ class PreprocessSpectra :
     }
 
 
-    void preprocessSpectra_(PeakMap& exp, double fragment_mass_tolerance, bool fragment_mass_tolerance_unit_ppm, Int min_charge = 1, Int max_charge = 3, Size min_isopeaks = 3, Size max_isopeaks = 10)
+    void preprocessSpectra_(PeakMap& exp, double fragment_mass_tolerance, bool fragment_mass_tolerance_unit_ppm, Int min_charge = 1, Int max_charge = 3, Size min_isopeaks = 3, Size max_isopeaks = 10, bool make_single_charged = true)
     {
       // filter MS2 map
       // remove 0 intensities
@@ -327,7 +328,7 @@ class PreprocessSpectra :
         exp[exp_index].sortByPosition();
 
         // deisotope
-        deisotopeAndSingleChargeMSSpectrum(exp[exp_index], min_charge, max_charge, fragment_mass_tolerance, fragment_mass_tolerance_unit_ppm, false, min_isopeaks, max_isopeaks, true);
+        deisotopeAndSingleChargeMSSpectrum(exp[exp_index], min_charge, max_charge, fragment_mass_tolerance, fragment_mass_tolerance_unit_ppm, false, min_isopeaks, max_isopeaks, make_single_charged);
 
         // remove noise
         window_mower_filter.filterPeakSpectrum(exp[exp_index]);
@@ -335,24 +336,32 @@ class PreprocessSpectra :
 
         // sort (nlargest changes order)
         exp[exp_index].sortByPosition();
+
+        // update parent m/z based on charge metadata //TODO: verify charge state in meta-data is correct
+        vector<Precursor> parents = exp[exp_index].getPrecursors();
+        parents[0].setMZ(parents[0].getMZ()*parents[0].getCharge());
+        parents[0].setCharge(1);
+        exp[exp_index].setPrecursors(parents);
+
       }
     }
 
 
     ExitCodes main_(int, const char**)
     {
+
       ProgressLogger progresslogger;
       progresslogger.setLogType(log_type_);
       String in_mzml = getStringOption_("in");
       String out_mzml = getStringOption_("out");
 
-      Int min_precursor_charge = getIntOption_("precursor:min_charge");
-      Int max_precursor_charge = getIntOption_("precursor:max_charge");
+      Int min_charge = getIntOption_("min_charge");
+      Int max_charge = getIntOption_("max_charge");
       Int min_isopeaks = getIntOption_("min_isopeaks");
       Int max_isopeaks = getIntOption_("max_isopeaks");
-      bool make_single_charged = (getParamAsBool_("make_single_charged"));
-      double precursor_mass_tolerance = getDoubleOption_("precursor:mass_tolerance");
-      bool precursor_mass_tolerance_unit_ppm = (getStringOption_("precursor:mass_tolerance_unit") == "ppm");
+      //bool make_single_charged = (getParamAsBool_("make_single_charged"));
+      //double precursor_mass_tolerance = getDoubleOption_("precursor:mass_tolerance");
+      //bool precursor_mass_tolerance_unit_ppm = (getStringOption_("precursor:mass_tolerance_unit") == "ppm");
 
       double fragment_mass_tolerance = getDoubleOption_("fragment:mass_tolerance");
       bool fragment_mass_tolerance_unit_ppm = (getStringOption_("fragment:mass_tolerance_unit") == "ppm");
@@ -368,13 +377,12 @@ class PreprocessSpectra :
       f.getOptions() = options;
       f.load(in_mzml, spectra);
       spectra.sortSpectra(true);
-
-      progresslogger.startProgress(0, 1, "Filtering spectra...");
-      preprocessSpectra_(spectra, fragment_mass_tolerance, fragment_mass_tolerance_unit_ppm, min_precursor_charge, max_precursor_charge, min_isopeaks, max_isopeaks);
+      //progresslogger.startProgress(0, 1, "Filtering spectra...");
+      preprocessSpectra_(spectra, fragment_mass_tolerance, fragment_mass_tolerance_unit_ppm, min_charge, max_charge, min_isopeaks, max_isopeaks);
       progresslogger.endProgress();
 
       //output mzML
-      IdXMLFile().store(out_mzml, protein_ids, peptide_ids); //FIXME
+      MzMLFile().store(out_mzml, spectra); //FIXME
 
       return EXECUTION_OK;
     }

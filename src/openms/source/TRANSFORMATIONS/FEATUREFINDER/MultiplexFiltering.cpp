@@ -417,6 +417,10 @@ namespace OpenMS
     {
         distribution.estimateFromDNAWeight(m);
     }
+    else if (averagine_type_ == "histone")
+    {
+        distribution.estimateFromWeightAndComp(m,4.85865,8.19809,1.53892,1.35749,0.02192,0);
+    }
     else
     {
         throw Exception::InvalidParameter(__FILE__, __LINE__, __PRETTY_FUNCTION__,
