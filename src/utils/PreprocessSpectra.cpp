@@ -339,7 +339,7 @@ class PreprocessSpectra :
 
         // update parent m/z based on charge metadata //TODO: verify charge state in meta-data is correct
         vector<Precursor> parents = exp[exp_index].getPrecursors();
-        parents[0].setMZ(parents[0].getMZ()*parents[0].getCharge());
+        parents[0].setMZ(parents[0].getMZ() * parents[0].getCharge() - (parents[0].getCharge() - 1) * Constants::PROTON_MASS_U);
         parents[0].setCharge(1);
         exp[exp_index].setPrecursors(parents);
 
