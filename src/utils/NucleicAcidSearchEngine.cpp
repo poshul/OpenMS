@@ -894,25 +894,6 @@ protected:
 
     PeakFileOptions options;
     options.clearMSLevels();
-
-    /* If filter averagine is active
-     * PeakMap unfiltered_spectra;
-     * options.addMSLevel(1);
-     * options.addMSLevel(2);
-     * load file
-     * PeakMap::ConstIterator last_one;
-     * for each spectrum
-     *   if mslevel==1
-     *     last_one=this_ptr
-     *   else if mslevel==2 and precursor mass is known
-     *     multiplexFilteringProfile(last_one,....)
-     *     if this_ptr->precursormass still in last_one
-     *       while this_ptr->precursormass-(1/precursor_charge) exists
-     *         this_ptr->precursormass-=1/precursor_charge
-     *       copy this_ptr* to spectra
-     *
-     */
-
     options.addMSLevel(2);
     f.getOptions() = options;
     f.load(in_mzml, spectra);
