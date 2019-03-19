@@ -130,7 +130,7 @@ private:
   String out_;
 
 public:
-  TOPPFeatureFinderMultiplex() :
+  AveragineFilter() :
     TOPPBase("AveragineFilter", "Filter DDA data to discard MS2's with parents that don't have the expected isotopic distribution", true)
   {
   }
@@ -175,7 +175,7 @@ public:
      */
     getParameters_in_out_();
 
-    if ((out_.empty()) && (out_multiplets_.empty()))
+    if (out_.empty())
     {
       throw Exception::IllegalArgument(__FILE__, __LINE__, OPENMS_PRETTY_FUNCTION, "Strings for all output files are empty. Please specify at least one output file.");
     }
@@ -203,7 +203,7 @@ public:
      * load input
      */
     MzMLFile file;
-    MSExperiment exp;
+    MSExperiment exp , filtered_exp;
     
     // only read MS1 and MS2 spectra
     std::vector<int> levels;
@@ -214,37 +214,44 @@ public:
     LOG_DEBUG << "Loading input..." << endl;
     file.setLogType(log_type_);
     file.load(in_, exp);
+    bool centroided_;
+    double precursorMass;
+    PeakMap::ConstIterator last_parent;
+    // LOG_DEBUG << "Input file MS1 are centroided: "<< centroided_ << endl;
 
-    FeatureFinderMultiplexAlgorithm algorithm;
-    // pass only relevant parameters to the algorithm and set the log type
-    Param params = getParam_();
-    params.remove("in");
-    params.remove("out");
-    params.remove("out_multiplets");
-    params.remove("out_blacklist");
-    params.remove("log");
-    params.remove("debug");
-    params.remove("threads");
-    params.remove("no_progress");
-    params.remove("force");
-    params.remove("test");
-    algorithm.setParameters(params);
-    algorithm.setLogType(this->log_type_);
-    // run feature detection algorithm
-    algorithm.run(exp, true);
+    for (PeakMap::ConstIterator s_it = exp.begin(); s_it != exp.end();
+         ++s_it)
+    {
+      if (s_it->getMSLevel() == 1 )
+      {
+        last_parent = s_it;
+      }
+      if (s_it->getMSLevel() == 2 )
+      {
+        centroided_ = last_parent->getType(true);
+        precursorMass = s_it->getPrecursors()[0].getMZ();
+
+        if (centroided_)
+        {
+          MultiplexFilteringCentroided filtering(exp_centroid_, patterns, isotopes_per_peptide_min_, isotopes_per_peptide_max_, param_.getValue("algorithm:intensity_cutoff"), param_.getValue("algorithm:rt_band"), param_.getValue("algorithm:mz_tolerance"), (param_.getValue("algorithm:mz_unit") == "ppm"), param_.getValue("algorithm:peptide_similarity"), param_.getValue("algorithm:averagine_similarity"), averagine_similarity_scaling, param_.getValue("algorithm:averagine_type"));
+          filtering.setLogType(getLogType());
+          std::vector<MultiplexFilteredMSExperiment> filter_results = filtering.filter();
+          // DO SOMETHING THERE
+
+        }
+        else
+        {
+          MultiplexFilteringProfile filtering(exp_profile_, exp_centroid_, boundaries_exp_s, patterns, isotopes_per_peptide_min_, isotopes_per_peptide_max_, param_.getValue("algorithm:intensity_cutoff"), param_.getValue("algorithm:rt_band"), param_.getValue("algorithm:mz_tolerance"), (param_.getValue("algorithm:mz_unit") == "ppm"), param_.getValue("algorithm:peptide_similarity"), param_.getValue("algorithm:averagine_similarity"), averagine_similarity_scaling, param_.getValue("algorithm:averagine_type"));
+          filtering.setLogType(getLogType());
+          std::vector<MultiplexFilteredMSExperiment> filter_results = filtering.filter();
+        }
+      }
+    }
 
     // write feature map, consensus maps and blacklist
     if (!(out_.empty()))
     {
-      writeFeatureMap_(out_, algorithm.getFeatureMap());
-    }
-    if (!(out_multiplets_.empty()))
-    {
-      writeConsensusMap_(out_multiplets_, algorithm.getConsensusMap());
-    }
-    if (!(out_blacklist_.empty()))
-    {
-      writeBlacklist_(out_blacklist_, algorithm.getBlacklist());
+      writeFilteredMap_(out_, filtered_exp);
     }
     
     return EXECUTION_OK;
@@ -254,7 +261,7 @@ public:
 
 int main(int argc, const char** argv)
 {
-  TOPPFeatureFinderMultiplex tool;
+  AveragineFilter tool;
   return tool.main(argc, argv);
 }
 
