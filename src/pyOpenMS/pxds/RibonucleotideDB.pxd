@@ -8,6 +8,7 @@ cdef extern from "<OpenMS/CHEMISTRY/RibonucleotideDB.h>" namespace "OpenMS":
         # wrap-manual-memory:
         #   cdef AutowrapPtrHolder[_RibonucleotideDB] inst
 
+        #RibonucleotideDB() nogil except +
         RibonucleotideDB(RibonucleotideDB) nogil except + #wrap-ignore
 
 # COMMENT: wrap static methods
