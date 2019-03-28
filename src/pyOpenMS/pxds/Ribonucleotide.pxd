@@ -101,3 +101,6 @@ cdef extern from "<OpenMS/CHEMISTRY/Ribonucleotide.h>" namespace "OpenMS":
 
         # true if the ribonucleotide is a modified one
         bool isModified() nogil except +
+
+        # true if the ribonucleotide is an ambiguous modification
+        bool isAmbiguous() nogil except +

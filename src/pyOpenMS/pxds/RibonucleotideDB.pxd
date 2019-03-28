@@ -15,3 +15,4 @@ cdef extern from "<OpenMS/CHEMISTRY/RibonucleotideDB.h>" namespace "OpenMS::Ribo
     
     RibonucleotideDB* getInstance() nogil except + # wrap-ignore
 
+    #libcpp_pair[ const Ribonucleotide *, const Ribonucleotide * ] getRibonucleotideAlternatives(libcpp_string & code) nogil except +
