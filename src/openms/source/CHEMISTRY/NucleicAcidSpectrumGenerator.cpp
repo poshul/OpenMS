@@ -32,7 +32,7 @@
 // $Authors: Hendrik Weisser $
 // --------------------------------------------------------------------------
 
-#include <OpenMS/CHEMISTRY/TheoreticalSpectrumGeneratorNA.h>
+#include <OpenMS/CHEMISTRY/NucleicAcidSpectrumGenerator.h>
 
 #include <OpenMS/CONCEPT/Constants.h>
 #include <OpenMS/CONCEPT/LogStream.h>
@@ -42,8 +42,8 @@ using namespace std;
 namespace OpenMS
 {
 
-  TheoreticalSpectrumGeneratorNA::TheoreticalSpectrumGeneratorNA() :
-    DefaultParamHandler("TheoreticalSpectrumGeneratorNA")
+  NucleicAcidSpectrumGenerator::NucleicAcidSpectrumGenerator() :
+    DefaultParamHandler("NucleicAcidSpectrumGenerator")
   {
     defaults_.setValue("add_metainfo", "false", "Adds the type of peaks as meta information to the peaks, e.g. c1, y2, a3-B");
     defaults_.setValidStrings("add_metainfo", ListUtils::create<String>("true,false"));
@@ -102,25 +102,25 @@ namespace OpenMS
   }
 
 
-  TheoreticalSpectrumGeneratorNA::TheoreticalSpectrumGeneratorNA(const TheoreticalSpectrumGeneratorNA& source) :
+  NucleicAcidSpectrumGenerator::NucleicAcidSpectrumGenerator(const NucleicAcidSpectrumGenerator& source) :
     DefaultParamHandler(source)
   {
   }
 
 
-  TheoreticalSpectrumGeneratorNA& TheoreticalSpectrumGeneratorNA::operator=(const TheoreticalSpectrumGeneratorNA& source)
+  NucleicAcidSpectrumGenerator& NucleicAcidSpectrumGenerator::operator=(const NucleicAcidSpectrumGenerator& source)
   {
     DefaultParamHandler::operator=(source);
     return *this;
   }
 
 
-  TheoreticalSpectrumGeneratorNA::~TheoreticalSpectrumGeneratorNA()
+  NucleicAcidSpectrumGenerator::~NucleicAcidSpectrumGenerator()
   {
   }
 
 
-  void TheoreticalSpectrumGeneratorNA::addFragmentPeaks_(
+  void NucleicAcidSpectrumGenerator::addFragmentPeaks_(
     MSSpectrum& spectrum, const vector<double>& fragment_masses,
     const String& ion_type, double offset, double intensity, Size start) const
   {
@@ -140,7 +140,7 @@ namespace OpenMS
   }
 
 
-  void TheoreticalSpectrumGeneratorNA::addAMinusBPeaks_(
+  void NucleicAcidSpectrumGenerator::addAMinusBPeaks_(
     MSSpectrum& spectrum, const vector<double>& fragment_masses,
     const NASequence& oligo, Size start) const
   {
@@ -192,7 +192,7 @@ namespace OpenMS
   }
 
 
-  MSSpectrum TheoreticalSpectrumGeneratorNA::getUnchargedSpectrum_(
+  MSSpectrum NucleicAcidSpectrumGenerator::getUnchargedSpectrum_(
     const NASequence& oligo) const
   {
     static const double H_mass = EmpiricalFormula("H").getMonoWeight();
@@ -338,7 +338,7 @@ namespace OpenMS
   }
 
 
-  void TheoreticalSpectrumGeneratorNA::addChargedSpectrum_(
+  void NucleicAcidSpectrumGenerator::addChargedSpectrum_(
     MSSpectrum& spectrum, const MSSpectrum& uncharged_spectrum, Int charge,
     bool add_precursor) const
   {
@@ -354,8 +354,7 @@ namespace OpenMS
     for (Size i = 0; i < size; ++i)
     {
       spectrum.push_back(uncharged_spectrum[i]);
-      double mass = spectrum.back().getMZ() + charge * H_mass;
-      spectrum.back().setMZ(abs(mass / charge));
+      spectrum.back().setMZ(abs(spectrum.back().getMZ() / charge + H_mass));
     }
     if (add_metainfo_)
     {
@@ -368,7 +367,7 @@ namespace OpenMS
   }
 
 
-  void TheoreticalSpectrumGeneratorNA::getSpectrum(MSSpectrum& spectrum, const NASequence& oligo, Int min_charge, Int max_charge) const
+  void NucleicAcidSpectrumGenerator::getSpectrum(MSSpectrum& spectrum, const NASequence& oligo, Int min_charge, Int max_charge) const
   {
     Int sign = 1;
     if (max_charge < 0 && min_charge < 0) // negative mode
@@ -415,7 +414,7 @@ namespace OpenMS
   }
 
 
-  void TheoreticalSpectrumGeneratorNA::getMultipleSpectra(map<Int, MSSpectrum>& spectra, const NASequence& oligo, const set<Int>& charges, Int base_charge) const
+  void NucleicAcidSpectrumGenerator::getMultipleSpectra(map<Int, MSSpectrum>& spectra, const NASequence& oligo, const set<Int>& charges, Int base_charge) const
   {
     spectra.clear();
     if (charges.empty()) return;
@@ -469,9 +468,8 @@ namespace OpenMS
         if (add_final_precursor)
         {
           spectrum.push_back(uncharged_spectrum.back());
-          double mass = spectrum.back().getMZ() + charge *
-            Constants::PROTON_MASS_U;
-          spectrum.back().setMZ(abs(mass / charge));
+          spectrum.back().setMZ(abs(spectrum.back().getMZ() / charge +
+                                    Constants::PROTON_MASS_U));
           if (add_metainfo_)
           {
             spectrum.getStringDataArrays()[0].push_back("M");
@@ -509,9 +507,8 @@ namespace OpenMS
         if (add_final_precursor)
         {
           spectrum.push_back(uncharged_spectrum.back());
-          double mass = spectrum.back().getMZ() + charge *
-            Constants::PROTON_MASS_U;
-          spectrum.back().setMZ(mass / charge);
+          spectrum.back().setMZ(spectrum.back().getMZ() / charge +
+                                Constants::PROTON_MASS_U);
           if (add_metainfo_)
           {
             spectrum.getStringDataArrays()[0].push_back("M");
@@ -524,7 +521,7 @@ namespace OpenMS
   }
 
 
-  void TheoreticalSpectrumGeneratorNA::updateMembers_()
+  void NucleicAcidSpectrumGenerator::updateMembers_()
   {
     add_a_ions_ = param_.getValue("add_a_ions").toBool();
     add_b_ions_ = param_.getValue("add_b_ions").toBool();
