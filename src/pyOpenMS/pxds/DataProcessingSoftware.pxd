@@ -2,6 +2,7 @@ from Types cimport *
 from libcpp.vector cimport vector as libcpp_vector
 from Software cimport *
 from ScoreType cimport *
+from IdentificationData cimport *
 
 cdef extern from "<OpenMS/METADATA/ID/DataProcessingSoftware.h>" namespace "OpenMS::IdentificationDataInternal":
 

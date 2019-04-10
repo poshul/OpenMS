@@ -1,6 +1,7 @@
 from Types cimport *
 from libcpp cimport bool
 from MetaData cimport *
+from MetaInfoInterface cimport *
 
 cdef extern from "<OpenMS/METADATA/ID/DataQuery.h>" namespace "OpenMS::IdentificationDataInternal":
 

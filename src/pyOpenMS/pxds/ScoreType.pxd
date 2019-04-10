@@ -1,6 +1,8 @@
 from Types cimport *
 from libcpp cimport bool
 from MetaData cimport *
+from MetaInfoInterface cimport *
+from CVTerm cimport *
 
 cdef extern from "<OpenMS/METADATA/ID/ScoreType.h>" namespace "OpenMS::IdentificationDataInternal":
 

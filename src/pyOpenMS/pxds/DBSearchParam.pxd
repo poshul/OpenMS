@@ -2,6 +2,7 @@ from Types cimport *
 from libcpp cimport bool
 from DigestionEnzyme cimport *
 from MetaData cimport *
+from MetaInfoInterface cimport *
 
 cdef extern from "<OpenMS/METADATA/ID/DBSearchParam.h>" namespace "OpenMS::IdentificationDataInternal":
 
@@ -14,8 +15,8 @@ cdef extern from "<OpenMS/METADATA/ID/DBSearchParam.h>" namespace "OpenMS::Ident
         #  MetaInfoInterface
         DBSearchParam() nogil except +
         DBSearchParam(DBSearchParam) nogil except +
-        enum MoleculeType molecule_type
-        enum MassType mass_type
+        MoleculeType molecule_type
+        MassType mass_type
         String database
         String database_version
         String taxonomy
