@@ -152,10 +152,12 @@ def doCythonCodeGeneration(modname, allDecl_mapping, instance_map, converters):
     m_filename = "pyopenms/%s.pyx" % modname
     cimports, manual_code = autowrap.Main.collect_manual_code(allDecl_mapping[modname]["addons"])
     autowrap.Main.register_converters(converters)
+    add_rel = False
+    if sys.version_info >= (3, 0): add_rel = True
     autowrap_include_dirs = autowrap.generate_code(allDecl_mapping[modname]["decls"], instance_map,
                                                         target=m_filename, debug=False, manual_code=manual_code,
                                                         extra_cimports=cimports,
-                                                        include_boost=False, include_numpy=True, allDecl=allDecl_mapping)
+                                                        include_boost=False, include_numpy=True, allDecl=allDecl_mapping, add_relative=add_rel)
     allDecl_mapping[modname]["inc_dirs"] = autowrap_include_dirs
     return autowrap_include_dirs
 
