@@ -37,8 +37,11 @@
 #include <OpenMS/FILTERING/ID/IDFilter.h>
 #include <OpenMS/KERNEL/StandardTypes.h>
 #include <OpenMS/FORMAT/IdXMLFile.h>
+#include <OpenMS/FORMAT/OMSFile.h>
 #include <OpenMS/FORMAT/FileTypes.h>
 #include <OpenMS/FORMAT/FileHandler.h>
+#include <OpenMS/METADATA/ID/IdentificationDataConverter.h>
+
 
 using namespace OpenMS;
 using namespace std;
@@ -109,9 +112,9 @@ protected:
   void registerOptionsAndFlags_() override
   {
     registerInputFile_("in", "<file>", "", "Identifications from searching a target-decoy database.");
-    setValidFormats_("in", ListUtils::create<String>("idXML"));
+    setValidFormats_("in", ListUtils::create<String>("idXML,oms"));
     registerOutputFile_("out", "<file>", "", "Identifications with annotated FDR");
-    setValidFormats_("out", ListUtils::create<String>("idXML"));
+    setValidFormats_("out", ListUtils::create<String>("idXML,oms"));
     registerStringOption_("PSM", "<FDR level>", "true", "Perform FDR calculation on PSM level", false);
     setValidStrings_("PSM", ListUtils::create<String>("true,false"));
     registerStringOption_("protein", "<FDR level>", "true", "Perform FDR calculation on protein level", false);
@@ -166,7 +169,17 @@ protected:
     vector<PeptideIdentification> pep_ids;
     vector<ProteinIdentification> prot_ids;
 
-    IdXMLFile().load(in, prot_ids, pep_ids);
+    // Handle conversion from OMS to old ID format TODO add nucleic acid support
+    if (FileHandler::getType(in) == FileTypes::OMS)
+    {
+      IdentificationData temp_data;
+      OMSFile().load(in, temp_data);
+      IdentificationDataConverter::exportIDs(temp_data, prot_ids, pep_ids, false); // Export_oligonucleotides is to be implemented
+    }
+    else
+    {
+      IdXMLFile().load(in, prot_ids, pep_ids);
+    }
 
     Size n_prot_ids = prot_ids.size();
     Size n_prot_hits = IDFilter::countHits(prot_ids);
@@ -283,7 +296,18 @@ protected:
              << IDFilter::countHits(pep_ids) << " pep_ids hit(s)." << endl;
 
     OPENMS_LOG_INFO << "Writing filtered output..." << endl;
-    IdXMLFile().store(out, prot_ids, pep_ids);
+
+    if (FileHandler::getType(out) == FileTypes::OMS)
+    {
+      IdentificationData temp_data;
+      IdentificationDataConverter::importIDs(temp_data, prot_ids, pep_ids);
+      OMSFile().store(out, temp_data);
+    }
+    else
+    {
+      IdXMLFile().store(out, prot_ids, pep_ids);
+    }
+
     return EXECUTION_OK;
   }
 
