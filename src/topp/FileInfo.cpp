@@ -730,6 +730,13 @@ protected:
       }
       std::cout << "\n\n" << mu.delta("loading idXML") << std::endl;
 
+      // Handle the case where id_data has no proteins
+      if (id_data.proteins.size() == 0)
+      {
+        os_tsv << "File has no proteins, exiting" << "\n";
+        return INCOMPATIBLE_INPUT_DATA;
+      }
+      
       // export metadata to second output stream
       os_tsv << "general: database"
              << "\t" << id_data.proteins[0].getSearchParameters().db << "\n"
