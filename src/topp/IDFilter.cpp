@@ -40,8 +40,10 @@
 #include <OpenMS/FORMAT/FASTAFile.h>
 #include <OpenMS/FORMAT/FileHandler.h>
 #include <OpenMS/FORMAT/IdXMLFile.h>
+#include <OpenMS/FORMAT/OMSFile.h>
 #include <OpenMS/FILTERING/ID/IDFilter.h>
 #include <OpenMS/METADATA/PeptideIdentification.h>
+#include <OpenMS/METADATA/ID/IdentificationDataConverter.h>
 #include <OpenMS/SYSTEM/File.h>
 
 #include <limits>
@@ -142,9 +144,9 @@ protected:
     specificity.assign(EnzymaticDigestion::NamesOfSpecificity, EnzymaticDigestion::NamesOfSpecificity + EnzymaticDigestion::SIZE_OF_SPECIFICITY);
 
     registerInputFile_("in", "<file>", "", "input file ");
-    setValidFormats_("in", ListUtils::create<String>("idXML"));
+    setValidFormats_("in", ListUtils::create<String>("idXML,oms"));
     registerOutputFile_("out", "<file>", "", "output file ");
-    setValidFormats_("out", ListUtils::create<String>("idXML"));
+    setValidFormats_("out", ListUtils::create<String>("idXML,oms"));
 
     registerTOPPSubsection_("precursor", "Filtering by precursor attributes (RT, m/z, charge, length)");
     registerStringOption_("precursor:rt", "[min]:[max]", ":", "Retention time range to extract.", false);
@@ -163,7 +165,7 @@ protected:
     setValidFormats_("whitelist:proteins", ListUtils::create<String>("fasta"));
     registerStringList_("whitelist:protein_accessions", "<accessions>", vector<String>(), "All peptides that do not reference at least one of the provided protein accession are removed.\nOnly proteins of the provided list are retained.", false);
     registerInputFile_("whitelist:peptides", "<file>", "", "Only peptides with the same sequence and modification assignment as any peptide in this file are kept. Use with 'whitelist:ignore_modifications' to only compare by sequence.\n", false);
-    setValidFormats_("whitelist:peptides", ListUtils::create<String>("idXML"));
+    setValidFormats_("whitelist:peptides", ListUtils::create<String>("idXML,oms"));
     registerFlag_("whitelist:ignore_modifications", "Compare whitelisted peptides by sequence only.", true);
     registerStringList_("whitelist:modifications", "<selection>", vector<String>(), "Keep only peptides with sequences that contain (any of) the selected modification(s)", false, true);
     setValidStrings_("whitelist:modifications", all_mods);
@@ -175,7 +177,7 @@ protected:
     setValidFormats_("blacklist:proteins", ListUtils::create<String>("fasta"));
     registerStringList_("blacklist:protein_accessions", "<accessions>", vector<String>(), "All peptides that reference at least one of the provided protein accession are removed.\nOnly proteins not in the provided list are retained.", false);
     registerInputFile_("blacklist:peptides", "<file>", "", "Peptides with the same sequence and modification assignment as any peptide in this file are filtered out. Use with 'blacklist:ignore_modifications' to only compare by sequence.\n", false);
-    setValidFormats_("blacklist:peptides", ListUtils::create<String>("idXML"));
+    setValidFormats_("blacklist:peptides", ListUtils::create<String>("idXML,oms"));
     registerFlag_("blacklist:ignore_modifications", "Compare blacklisted peptides by sequence only.", true);
     registerStringList_("blacklist:modifications", "<selection>", vector<String>(), "Remove all peptides with sequences that contain (any of) the selected modification(s)", false, true);
     setValidStrings_("blacklist:modifications", all_mods);
@@ -241,9 +243,21 @@ protected:
     String inputfile_name = getStringOption_("in");
     String outputfile_name = getStringOption_("out");
 
+
     vector<ProteinIdentification> proteins;
     vector<PeptideIdentification> peptides;
-    IdXMLFile().load(inputfile_name, proteins, peptides);
+
+    // Handle conversion from OMS to old ID format TODO add nucleic acid support
+    if (FileHandler::getType(inputfile_name) == FileTypes::OMS)
+    {
+       IdentificationData temp_data;
+        OMSFile().load(inputfile_name, temp_data);
+        IdentificationDataConverter::exportIDs(temp_data, proteins, peptides, false); // Export_oligonucleotides is to be implemented
+    }
+    else
+    {
+      IdXMLFile().load(inputfile_name, proteins, peptides);
+    }
 
     Size n_prot_ids = proteins.size();
     Size n_prot_hits = IDFilter::countHits(proteins);
@@ -348,8 +362,17 @@ protected:
       OPENMS_LOG_INFO << "Filtering by inclusion peptide whitelisting..." << endl;
       vector<PeptideIdentification> inclusion_peptides;
       vector<ProteinIdentification> inclusion_proteins; // ignored
+    if (FileHandler::getType(whitelist_peptides) == FileTypes::OMS)
+    {
+       IdentificationData temp_data;
+        OMSFile().load(whitelist_peptides, temp_data);
+        IdentificationDataConverter::exportIDs(temp_data, proteins, peptides, false); // Export_oligonucleotides is to be implemented
+    }
+    else
+    {
       IdXMLFile().load(whitelist_peptides, inclusion_proteins,
                        inclusion_peptides);
+    }
       bool ignore_mods = getFlag_("whitelist:ignore_modifications");
       IDFilter::keepPeptidesWithMatchingSequences(peptides, inclusion_peptides,
                                                   ignore_mods);
@@ -399,8 +422,17 @@ protected:
       OPENMS_LOG_INFO << "Filtering by exclusion peptide blacklisting..." << endl;
       vector<PeptideIdentification> exclusion_peptides;
       vector<ProteinIdentification> exclusion_proteins; // ignored
+    if (FileHandler::getType(blacklist_peptides) == FileTypes::OMS)
+    {
+      IdentificationData temp_data;
+      OMSFile().load(blacklist_peptides, temp_data);
+      IdentificationDataConverter::exportIDs(temp_data, proteins, peptides, false); // Export_oligonucleotides is to be implemented
+    }
+    else
+    {
       IdXMLFile().load(blacklist_peptides, exclusion_proteins,
                        exclusion_peptides);
+    }
       bool ignore_mods = getFlag_("blacklist:ignore_modifications");
       IDFilter::removePeptidesWithMatchingSequences(
         peptides, exclusion_peptides, ignore_mods);
@@ -705,7 +737,16 @@ protected:
              << peptides.size() << " spectra identified with "
              << IDFilter::countHits(peptides) << " spectrum matches." << endl;
 
-    IdXMLFile().store(outputfile_name, proteins, peptides);
+    if (FileHandler::getType(outputfile_name) == FileTypes::OMS)
+    {
+      IdentificationData temp_data;
+      IdentificationDataConverter::importIDs(temp_data, proteins, peptides);
+      OMSFile().store(outputfile_name, temp_data);
+    }
+    else
+    {
+      IdXMLFile().store(outputfile_name, proteins, peptides);
+    }
 
     return EXECUTION_OK;
   }
