@@ -113,8 +113,12 @@ protected:
   {
     registerInputFile_("in", "<file>", "", "Identifications from searching a target-decoy database.");
     setValidFormats_("in", ListUtils::create<String>("idXML,oms"));
+    String formats("oms,idXML");
     registerOutputFile_("out", "<file>", "", "Identifications with annotated FDR");
-    setValidFormats_("out", ListUtils::create<String>("idXML,oms"));
+    setValidFormats_("out", ListUtils::create<String>(formats));
+    registerStringOption_("out_type", "<type>", "", "Output file type (default: determined from file extension)", false);
+    setValidStrings_("out_type", ListUtils::create<String>(formats));
+
     registerStringOption_("PSM", "<FDR level>", "true", "Perform FDR calculation on PSM level", false);
     setValidStrings_("PSM", ListUtils::create<String>("true,false"));
     registerStringOption_("protein", "<FDR level>", "true", "Perform FDR calculation on protein level", false);
@@ -159,6 +163,7 @@ protected:
     // input/output files
     String in = getStringOption_("in");
     String out = getStringOption_("out");
+    FileTypes::Type out_type = FileTypes::nameToType(getStringOption_("out_type"));
     const double protein_fdr = getDoubleOption_("FDR:protein");
     const double psm_fdr = getDoubleOption_("FDR:PSM");
 
@@ -297,7 +302,7 @@ protected:
 
     OPENMS_LOG_INFO << "Writing filtered output..." << endl;
 
-    if (FileHandler::getType(out) == FileTypes::OMS)
+    if (FileHandler::getType(out) == FileTypes::OMS || out_type == FileTypes::OMS)
     {
       IdentificationData temp_data;
       IdentificationDataConverter::importIDs(temp_data, prot_ids, pep_ids);
