@@ -145,8 +145,12 @@ protected:
 
     registerInputFile_("in", "<file>", "", "input file ");
     setValidFormats_("in", ListUtils::create<String>("idXML,oms"));
+    String formats("oms,idXML");
     registerOutputFile_("out", "<file>", "", "output file ");
-    setValidFormats_("out", ListUtils::create<String>("idXML,oms"));
+    setValidFormats_("out", ListUtils::create<String>(formats));
+    registerStringOption_("out_type", "<type>", "", "Output file type (default: determined from file extension)", false);
+    setValidStrings_("out_type", ListUtils::create<String>(formats));
+
 
     registerTOPPSubsection_("precursor", "Filtering by precursor attributes (RT, m/z, charge, length)");
     registerStringOption_("precursor:rt", "[min]:[max]", ":", "Retention time range to extract.", false);
@@ -242,6 +246,7 @@ protected:
   {
     String inputfile_name = getStringOption_("in");
     String outputfile_name = getStringOption_("out");
+    FileTypes::Type out_type = FileTypes::nameToType(getStringOption_("out_type"));
 
 
     vector<ProteinIdentification> proteins;
@@ -737,7 +742,7 @@ protected:
              << peptides.size() << " spectra identified with "
              << IDFilter::countHits(peptides) << " spectrum matches." << endl;
 
-    if (FileHandler::getType(outputfile_name) == FileTypes::OMS)
+    if (FileHandler::getType(outputfile_name) == FileTypes::OMS || out_type == FileTypes::OMS)
     {
       IdentificationData temp_data;
       IdentificationDataConverter::importIDs(temp_data, proteins, peptides);
