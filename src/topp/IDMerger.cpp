@@ -33,9 +33,14 @@
 // --------------------------------------------------------------------------
 
 #include <OpenMS/FORMAT/IdXMLFile.h>
+#include <OpenMS/FORMAT/OMSFile.h>
+#include <OpenMS/FORMAT/FileTypes.h>
+#include <OpenMS/FORMAT/FileHandler.h>
 #include <OpenMS/APPLICATIONS/TOPPBase.h>
 #include <OpenMS/SYSTEM/File.h>
 #include <OpenMS/ANALYSIS/ID/IDMergerAlgorithm.h>
+#include <OpenMS/METADATA/ID/IdentificationDataConverter.h>
+
 
 using namespace OpenMS;
 using namespace std;
@@ -98,7 +103,16 @@ protected:
                            proteins, vector<PeptideIdentification>& peptides)
   {
     IdXMLFile idxml;
-    idxml.load(filenames[0], proteins, peptides);
+    if (FileHandler::getType(filenames[0]) == FileTypes::OMS)
+    {
+      IdentificationData temp_data;
+      OMSFile().load(filenames[0], temp_data);
+      IdentificationDataConverter::exportIDs(temp_data, proteins, peptides, false); // Export_oligonucleotides is to be implemented
+    }
+    else
+    {
+      idxml.load(filenames[0], proteins, peptides);
+    }
     vector<ProteinIdentification> pepxml_proteins, protxml_proteins;
     vector<PeptideIdentification> pepxml_peptides, protxml_peptides;
 
@@ -106,7 +120,17 @@ protected:
     {
       proteins.swap(pepxml_proteins);
       peptides.swap(pepxml_peptides);
-      idxml.load(filenames[1], protxml_proteins, protxml_peptides);
+      if (FileHandler::getType(filenames[1]) == FileTypes::OMS)
+      {
+        IdentificationData temp_data;
+        OMSFile().load(filenames[1], temp_data);
+        IdentificationDataConverter::exportIDs(temp_data, protxml_proteins, protxml_peptides, false); // Export_oligonucleotides is to be implemented
+      }
+      else
+      {
+        idxml.load(filenames[1], protxml_proteins, protxml_peptides);
+      }
+
       if (protxml_proteins[0].getProteinGroups().empty())
       {
         throw Exception::InvalidParameter(__FILE__, __LINE__, OPENMS_PRETTY_FUNCTION, "None of the input files seems to be derived from a protXML file (information about protein groups is missing).");
@@ -116,7 +140,16 @@ protected:
     {
       proteins.swap(protxml_proteins);
       peptides.swap(protxml_peptides);
-      idxml.load(filenames[1], pepxml_proteins, pepxml_peptides);
+      if (FileHandler::getType(filenames[1]) == FileTypes::OMS)
+        {
+          IdentificationData temp_data;
+          OMSFile().load(filenames[1], temp_data);
+          IdentificationDataConverter::exportIDs(temp_data, pepxml_proteins, pepxml_peptides, false); // Export_oligonucleotides is to be implemented
+        }
+      else
+        {
+          idxml.load(filenames[1], pepxml_proteins, pepxml_peptides);
+        }
     }
 
     if ((protxml_peptides.size() > 1) || (protxml_proteins.size() > 1))
@@ -191,9 +224,12 @@ protected:
   void registerOptionsAndFlags_() override
   {
     registerInputFileList_("in", "<files>", StringList(), "Input files separated by blanks");
-    setValidFormats_("in", ListUtils::create<String>("idXML"));
+    setValidFormats_("in", ListUtils::create<String>("idXML,oms"));
+    String formats("oms,idXML");
     registerOutputFile_("out", "<file>", "", "Output file");
-    setValidFormats_("out", ListUtils::create<String>("idXML"));
+    setValidFormats_("out", ListUtils::create<String>(formats));
+    registerStringOption_("out_type", "<type>", "", "Output file type (default: determined from file extension)", false);
+    setValidStrings_("out_type", ListUtils::create<String>(formats));
     registerInputFile_("add_to", "<file>", "", "Optional input file. IDs from 'in' are added to this file, but only if the (modified) peptide sequences are not present yet (considering only best hits per spectrum).", false);
     setValidFormats_("add_to", ListUtils::create<String>("idXML"));
     registerFlag_("annotate_file_origin", "Store the original filename in each protein/peptide identification (meta value: file_origin).");
@@ -208,6 +244,7 @@ protected:
     //-------------------------------------------------------------
     StringList file_names = getStringList_("in");
     String out = getStringOption_("out");
+    FileTypes::Type out_type = FileTypes::nameToType(getStringOption_("out_type"));
     String add_to = getStringOption_("add_to");
     bool annotate_file_origin = getFlag_("annotate_file_origin");
 
@@ -268,7 +305,16 @@ protected:
       {
         vector<ProteinIdentification> prots;
         vector<PeptideIdentification> peps;
-        idXMLf.load(file,prots,peps);
+        if (FileHandler::getType(file) == FileTypes::OMS)
+        {
+          IdentificationData temp_data;
+          OMSFile().load(file, temp_data);
+          IdentificationDataConverter::exportIDs(temp_data, prots, peps, false); // Export_oligonucleotides is to be implemented
+        }
+        else
+        {
+          idXMLf.load(file, prots, peps);
+        }
         merger.insertRuns(prots, peps);
       }
       merger.returnResultsAndClear(proteins[0], peptides);
@@ -283,7 +329,16 @@ protected:
     //-------------------------------------------------------------
     OPENMS_LOG_DEBUG << "protein IDs: " << proteins.size() << endl
               << "peptide IDs: " << peptides.size() << endl;
-    IdXMLFile().store(out, proteins, peptides);
+    if (FileHandler::getType(out) == FileTypes::OMS || out_type == FileTypes::OMS)
+    {
+      IdentificationData temp_data;
+      IdentificationDataConverter::importIDs(temp_data, proteins, peptides);
+      OMSFile().store(out, temp_data);
+    }
+    else
+    {
+      IdXMLFile().store(out, proteins, peptides);
+    }
 
     return EXECUTION_OK;
   }
@@ -309,8 +364,16 @@ protected:
     {
       const String& file_name = file_names[i];
       vector<ProteinIdentification> additional_proteins;
-      IdXMLFile().load(file_name, additional_proteins, peptides_by_file[i]);
-
+      if (FileHandler::getType(file_name) == FileTypes::OMS)
+        {
+          IdentificationData temp_data;
+          OMSFile().load(file_name, temp_data);
+          IdentificationDataConverter::exportIDs(temp_data, additional_proteins, peptides_by_file[i], false); // Export_oligonucleotides is to be implemented
+        }
+      else
+        {
+          IdXMLFile().load(file_name, additional_proteins, peptides_by_file[i]);
+        }
       if (annotate_file_origin) // set MetaValue "file_origin" if flag is set
       {
         annotateFileOrigin_(additional_proteins, peptides_by_file[i],
