@@ -168,11 +168,13 @@ protected:
     registerOutputFile_("out", "<file>", "", "Output file: mzTab");
     setValidFormats_("out", ListUtils::create<String>("mzTab"));
 
-    registerOutputFile_("id_out", "<file>", "", "Output file: idXML (for visualization in TOPPView)", false);
-    setValidFormats_("id_out", ListUtils::create<String>("idXML"));
+    String formats("oms,idXML");
 
-    registerOutputFile_("oms_out", "<file>", "", "Output file: OMS (for visualization in TOPPView)", false);
-    setValidFormats_("oms_out", ListUtils::create<String>("oms"));
+    registerOutputFile_("id_out", "<file>", "", "Output file: (for visualization in TOPPView)", false);
+    setValidFormats_("id_out", ListUtils::create<String>(formats));
+
+    registerStringOption_("id_out_type", "<type>", "", "Output file type (default: determined from file extension)", false);
+    setValidStrings_("id_out_type", ListUtils::create<String>(formats));
 
     registerOutputFile_("lfq_out", "<file>", "", "Output file: Targets for label-free quantification using FeatureFinderMetaboIdent ('id' input)", false);
     setValidFormats_("lfq_out", vector<String>(1, "tsv"));
@@ -932,7 +934,7 @@ protected:
     String in_db = getStringOption_("database");
     String out = getStringOption_("out");
     String id_out = getStringOption_("id_out");
-    String oms_out = getStringOption_("oms_out");
+    FileTypes::Type id_out_type = FileTypes::nameToType(getStringOption_("id_out_type"));
     String lfq_out = getStringOption_("lfq_out");
     String theo_ms2_out = getStringOption_("theo_ms2_out");
     String exp_ms2_out = getStringOption_("exp_ms2_out");
@@ -1363,17 +1365,19 @@ protected:
     // dummy "peptide" results:
     if (!id_out.empty())
     {
-      vector<ProteinIdentification> proteins;
-      vector<PeptideIdentification> peptides;
-      IdentificationDataConverter::exportIDs(id_data, proteins, peptides, true);
-      // proteins[0].setDateTime(DateTime::now());
-      // proteins[0].setSearchEngine(toolName_());
-      IdXMLFile().store(id_out, proteins, peptides);
-    }
-
-    if (!oms_out.empty())
-    {
-      OMSFile().store(oms_out,id_data);
+      if (id_out_type!=FileTypes::OMS)
+      {
+        vector<ProteinIdentification> proteins;
+        vector<PeptideIdentification> peptides;
+        IdentificationDataConverter::exportIDs(id_data, proteins, peptides, true);
+        // proteins[0].setDateTime(DateTime::now());
+        // proteins[0].setSearchEngine(toolName_());
+        IdXMLFile().store(id_out, proteins, peptides);
+      }
+      else
+      {   
+        OMSFile().store(id_out,id_data);
+      }
     }
 
     if (!lfq_out.empty())
