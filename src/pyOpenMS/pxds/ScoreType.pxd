@@ -21,4 +21,4 @@ cdef extern from "<OpenMS/METADATA/ID/ScoreType.h>" namespace "OpenMS::Identific
         bool operator==(ScoreType & other) nogil except +
     
     ctypedef libcpp_set[ScoreType] ScoreTypes
-    ctypedef IteratorWrapper[ScoreTypes].Iterator ScoreTypeRef
+    ctypedef IteratorWrapper[ScoreTypes.iterator] ScoreTypeRef

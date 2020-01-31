@@ -16,4 +16,4 @@ cdef extern from "<OpenMS/METADATA/ID/DataProcessingSoftware.h>" namespace "Open
         DataProcessingSoftware(const String & name, const String & version, libcpp_vector[ ScoreTypeRef ] assigned_scores) nogil except +
 
     ctypedef libcpp_set[ DataProcessingSoftware ] DataProcessingSoftwares
-    ctypedef IteratorWrapper[ DataProcessingSoftwares].Iterator ProcessingSoftwareRef
+    ctypedef IteratorWrapper[ DataProcessingSoftwares.iterator] ProcessingSoftwareRef
