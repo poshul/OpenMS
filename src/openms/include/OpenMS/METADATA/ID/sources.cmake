@@ -10,6 +10,7 @@ DataProcessingStep.h
 DataQuery.h
 IdentificationData.h
 IdentificationDataConverter.h
+IdentificationDataWrapper.h
 IdentifiedCompound.h
 IdentifiedSequence.h
 MetaData.h

@@ -36,6 +36,7 @@
 
 #include <OpenMS/METADATA/Software.h>
 #include <OpenMS/METADATA/ID/ScoreType.h>
+#define PYOPENMS
 
 namespace OpenMS
 {
@@ -63,6 +64,20 @@ namespace OpenMS
         Software(name, version), assigned_scores(assigned_scores)
       {
       }
+      /*#ifdef PYOPENMS
+      explicit DataProcessingSoftware(
+        const String& name = "", const String& version = "",
+        std::vector<int> assigned_scores =
+        std::vector<int>(), IdentificationData::IdentificationData& env): Software(name, version)
+      {
+        for (int i=0;i<assigned_scores.size(); i++)
+        {
+          assigned_scores= env.STRefManager_;
+        }
+
+      }
+      #endif
+      */
     };
 
     typedef std::set<DataProcessingSoftware> DataProcessingSoftwares;

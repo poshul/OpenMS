@@ -101,6 +101,20 @@ namespace OpenMS
         }
         return result;
       }
+
+      /** @brief Return dereffed scores in order of priority
+       * This is a helper function for wrapping in python, it should not be used otherwise
+       */
+      std::vector<std::pair<ScoreType, double>> pyGetScoresInOrder() const
+      {
+        std::vector<std::pair<ScoreTypeRef, double>> reffedScores = getScoresInOrder();
+        std::vector<std::pair<ScoreType, double>> dereffedScores;
+        for (std::vector<std::pair<ScoreTypeRef, double>>::iterator it = reffedScores.begin(); it != reffedScores.end(); ++it)
+        {
+          dereffedScores.push_back(std::pair<ScoreType, double>(*(it->first),it->second) );
+        }
+        return dereffedScores;
+      }
     };
 
     // we want to keep track of the processing steps in sequence (order of

@@ -35,6 +35,7 @@
 #include <OpenMS/METADATA/ID/IdentificationData.h>
 #include <OpenMS/CHEMISTRY/ProteaseDB.h>
 #include <numeric>
+#define PYOPENMS //TODO get this from cmake
 
 using namespace std;
 
@@ -214,7 +215,7 @@ namespace OpenMS
     return ref;
   }
 
-
+ 
   IdentificationData::IdentifiedPeptideRef
   IdentificationData::registerIdentifiedPeptide(const IdentifiedPeptide&
                                                 peptide)
