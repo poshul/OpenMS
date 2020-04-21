@@ -40,9 +40,9 @@ using namespace std;
 namespace OpenMS
 {
   
-  int IdentificationData::pythonRegisterInputFile(const String& file)
+  int IdentificationDataWrapper::pythonRegisterInputFile(const String& file)
   {
-    auto result = input_files_.insert(file) ;
+    auto result = IdentificationData::input_files_.insert(file) ;
     if (result.second) // If the insert added a new element
     {
       IFRefManager_.push_back(result.first);
@@ -55,7 +55,7 @@ namespace OpenMS
     }
   }
 
-  int IdentificationData::pythonRegisterDataProcessingSoftware(
+  int IdentificationDataWrapper::pythonRegisterDataProcessingSoftware(
     const IdentificationData::DataProcessingSoftware& software)
   {
     for (ScoreTypeRef score_ref : software.assigned_scores)
@@ -80,7 +80,7 @@ namespace OpenMS
     }
   }
 
-  int IdentificationData::pythonRegisterDBSearchParam(const IdentificationData::DBSearchParam& param)
+  int IdentificationDataWrapper::pythonRegisterDBSearchParam(const IdentificationData::DBSearchParam& param)
   {
     auto result = db_search_params_.insert(param);
     if (result.second) // If the insert added a new element
@@ -96,13 +96,13 @@ namespace OpenMS
   
   }
 
-  int IdentificationData::pythonRegisterDataProcessingStep(
+  int IdentificationDataWrapper::pythonRegisterDataProcessingStep(
     const DataProcessingStep& step)
   {
     return pythonRegisterDataProcessingStep(step, -1); //TODO Check that using -1 as an equivalent to set::end doesn't break anything.
   }
  
-  int IdentificationData::pythonRegisterDataProcessingStep( const IdentificationData::DataProcessingStep& step, int search_ref)
+  int IdentificationDataWrapper::pythonRegisterDataProcessingStep( const IdentificationData::DataProcessingStep& step, int search_ref)
   {
     // valid reference to software is required:
     if (!isValidReference_(step.software_ref, processing_softwares_))
@@ -150,7 +150,7 @@ namespace OpenMS
     return step_ref;
   }
   
-int IdentificationData::pythonRegisterScoreType(const ScoreType& score)
+int IdentificationDataWrapper::pythonRegisterScoreType(const ScoreType& score)
   {
     if (score.cv_term.getAccession().empty() && score.cv_term.getName().empty())
     {
@@ -181,7 +181,7 @@ int IdentificationData::pythonRegisterScoreType(const ScoreType& score)
     }
   }
 
-  int IdentificationData::pythonRegisterDataQuery(const DataQuery& query)
+  int IdentificationDataWrapper::pythonRegisterDataQuery(const DataQuery& query)
   {
     // reference to spectrum or feature is required:
     if (query.data_id.empty())
@@ -214,7 +214,7 @@ int IdentificationData::pythonRegisterScoreType(const ScoreType& score)
     }
   }
 
-  int IdentificationData::pythonRegisterIdentifiedPeptide(const IdentifiedPeptide&
+  int IdentificationDataWrapper::pythonRegisterIdentifiedPeptide(const IdentifiedPeptide&
                                                           peptide)
   {
     auto result = IdentificationData::registerIdentifiedPeptide(peptide);
@@ -230,7 +230,7 @@ int IdentificationData::pythonRegisterScoreType(const ScoreType& score)
     }
   }
 
-  int IdentificationData::pythonRegisterIdentifiedCompound(const IdentifiedCompound&
+  int IdentificationDataWrapper::pythonRegisterIdentifiedCompound(const IdentifiedCompound&
                                                           compound)
   {
     auto result = IdentificationData::registerIdentifiedCompound(compound);
@@ -246,7 +246,7 @@ int IdentificationData::pythonRegisterScoreType(const ScoreType& score)
     }
   }
 
-  int IdentificationData::pythonRegisterIdentifiedOligo(const IdentifiedOligo&
+  int IdentificationDataWrapper::pythonRegisterIdentifiedOligo(const IdentifiedOligo&
                                                         oligo)
   {
     auto result = IdentificationData::registerIdentifiedOligo(oligo);
@@ -262,7 +262,7 @@ int IdentificationData::pythonRegisterScoreType(const ScoreType& score)
     }
   }
  
-  int IdentificationData::pythonRegisterParentMolecule(const ParentMolecule& parent)
+  int IdentificationDataWrapper::pythonRegisterParentMolecule(const ParentMolecule& parent)
   {
     auto result = IdentificationData::registerParentMolecule(parent);
     auto it = std::find(PMRefManager_.begin(), PMRefManager_.end(), result);
@@ -276,9 +276,9 @@ int IdentificationData::pythonRegisterScoreType(const ScoreType& score)
       return std::distance(PMRefManager_.begin(), it);
 
     }
+  }
  
-  int IdentificationData::pythonRegisterMoleculeQueryMatch(const MoleculeQueryMatch&
-                                                 match)
+  int IdentificationDataWrapper::pythonRegisterMoleculeQueryMatch(const MoleculeQueryMatch& match)
   {
     auto result = registerMoleculeQueryMatch(match);
     auto it = std::find(QMRefManager_.begin(), QMRefManager_.end(), result);
@@ -293,7 +293,7 @@ int IdentificationData::pythonRegisterScoreType(const ScoreType& score)
     }
   }
 
- int IdentificationData::pythonRegisterQueryMatchGroup(const QueryMatchGroup& group)
+ int IdentificationDataWrapper::pythonRegisterQueryMatchGroup(const QueryMatchGroup& group)
  {
     auto result = registerQueryMatchGroup(group);
     auto it = std::find(MGRefManager_.begin(), MGRefManager_.end(), result);
