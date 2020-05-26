@@ -164,6 +164,7 @@ protected:
     setMinFloat_("extract:mz_window", 0.0);
     registerIntOption_("extract:n_isotopes", "<number>", 2, "Number of isotopes to include in each assay.", false);
     setMinInt_("extract:n_isotopes", 2);
+    registerFlag_("extract:sum_isotope_intensities", "If true and chrom_out is specified, produce a single trace of all isotopes", false);
     registerDoubleOption_("extract:isotope_pmin", "<value>", 0.0, "Minimum probability for an isotope to be included in the assay for a compound. If set, this parameter takes precedence over 'extract:n_isotopes'.", false, true);
     setMinFloat_("extract:isotope_pmin", 0.0);
     setMaxFloat_("extract:isotope_pmin", 1.0);
@@ -238,6 +239,7 @@ protected:
   bool mz_window_ppm_; ///< m/z window width is given in PPM (not Da)?
   double isotope_pmin_; ///< min. isotope probability for MS1 assay
   Size n_isotopes_; ///< number of isotopes for MS1 assay
+  bool sum_isotope_intensities_; ///< whether to output a sum of all the isotope intensities for XICs
   CoarseIsotopePatternGenerator iso_gen_; ///< isotope pattern generator
   map<String, double> isotope_probs_; ///< isotope probabilities of transitions
   map<String, double> target_rts_; ///< RTs of targets (assays)
@@ -895,6 +897,7 @@ protected:
     isotope_pmin_ = getDoubleOption_("extract:isotope_pmin");
     n_isotopes_ = ((isotope_pmin_ > 0.0) ?
                    10 : getIntOption_("extract:n_isotopes"));
+    sum_isotope_intensities_ = getFlag_("extract:sum_isotope_intensities");
     iso_gen_.setMaxIsotope(n_isotopes_);
     double peak_width = getDoubleOption_("detect:peak_width");
     double min_peak_width = getDoubleOption_("detect:min_peak_width");
@@ -989,6 +992,24 @@ protected:
     {
       addDataProcessing_(chrom_data_,
                          getProcessingInfo_(DataProcessing::FILTERING));
+      if (sum_isotope_intensities_)
+      {
+        std::vector<OpenMS::MSChromatogram> chroms = chrom_data_.getChromatograms();
+        std::vector<OpenMS::MSChromatogram> outputs;
+        for (auto it = chroms.begin(); it != chroms.end();)
+        {
+          size_t n = 1;
+          while ( (it + n) != chroms.end() && it->getPrecursor() == (it + n )->getPrecursor())
+          {
+            it->mergePeaks(*(it+n));
+            ++n;
+          }
+          outputs.push_back(*it);
+          it += n;
+        }
+        chrom_data_.setChromatograms(outputs);
+
+      }
       MzMLFile().store(chrom_out, chrom_data_);
       chrom_data_.clear(true);
     }
