@@ -36,16 +36,30 @@
 
 #include <OpenMS/METADATA/ID/IdentificationData.h>
 
+#include <OpenMS/METADATA/ID/DataProcessingSoftware.h>
+#include <OpenMS/METADATA/ID/ScoreType.h>
+#include <OpenMS/METADATA/Software.h>
+
+
 #define PYOPENMS //TODO get this from cmake
 
 namespace OpenMS
 {
+    struct DataProcessingSoftwareWrapper;
   /*!
       @brief wrappers for the IdentificationData class to allow pyopenms to work
     */
     class OPENMS_DLLAPI IdentificationDataWrapper: public IdentificationData
     {
      public:
+
+      /*!
+        @brief Internal Use only
+        */
+      IdentificationDataWrapper()
+      {
+      }
+
       /*!
         @brief Internal use only
         @return the position of the inputfileref on the IFRefmanager_ vector so it can be wrapped in Cython
@@ -56,7 +70,7 @@ namespace OpenMS
         @brief Internal use only
         @return the position of the processingsoftwareref in the PSoftRefmanager_ vector so it can be wrapped in python
       */
-      int pythonRegisterDataProcessingSoftware(const DataProcessingSoftware& software);
+      int pythonRegisterDataProcessingSoftware(const DataProcessingSoftwareWrapper& software);
 
       /*!
         @brief Internal use only
@@ -125,7 +139,38 @@ namespace OpenMS
         @return the position of the MatchGroupRef in the MGRefmanager_ vector so it can be wrapped in python
       */
       int pythonRegisterQueryMatchGroup(const QueryMatchGroup& group);
-    
+
+      /*!
+        @brief Internal use only
+        @return void
+      */
+     void pythonAddScore(int match_ref, int score_ref, double value);
+
+      /*!
+        @brief Internal use only
+        @return void
+      */
+     void pythonSetCurrentProcessingStep(const int step_ref);
+
+      /*!
+        @brief Internal use only
+        @return the position of the current processing step in PStepRefManager_ or -1 is unset
+      */
+     int pythonGetCurrentProcessingStep();
+
+      /*!
+      @brief Internal use only
+      @return vector of integer locations identifying querymatches
+      */
+     std::vector<int> pythonGetBestMatchPerQuery(int score_ref) const;
+
+      /*!
+      @brief Internal use only
+      @return a pair with the position of the scoretype, and a boolean indicating success or failure
+      */
+     std::pair<int, bool> pythonFindScoreType(const String& score_name) const;
+     
+
     protected:
       // SPW: Vector to store all the IteratorWrappers for use with pyOpenMS code
       std::vector<InputFileRef> IFRefManager_;
@@ -141,5 +186,43 @@ namespace OpenMS
       std::vector<IdentifiedMoleculeRef> IDMRefManager_;
       std::vector<QueryMatchRef> QMRefManager_;
       std::vector<MatchGroupRef> MGRefManager_;
+
+      friend class DataProcessingSoftwareWrapper;
   };
+
+    /*!
+      @brief wrapper for DataProcessingSoftware class to allow pyopenMS to work
+    */
+    struct DataProcessingSoftwareWrapper: IdentificationDataInternal::DataProcessingSoftware
+        {
+      // Construct a new DataProcessingSoftware based on scores and a name and version in the context of an IdentificationDataWrapper
+       DataProcessingSoftwareWrapper(
+        IdentificationDataWrapper& env, const String& name = "", const String& version = "",
+        std::vector<int> int_assigned_scores =
+        std::vector<int>())
+      {
+        std::vector<IdentificationDataInternal::ScoreTypeRef> ass_scores;
+        for (size_t i=0;i<int_assigned_scores.size(); i++)
+        {
+          ass_scores.push_back(env.STRefManager_[int_assigned_scores[i]]);
+        }
+        Software(name, version);
+        assigned_scores= ass_scores;
+      }
+    };
+
+    struct DataProcessingStepWrapper: IdentificationDataInternal::DataProcessingStep
+    {
+      DataProcessingStepWrapper(
+        IdentificationDataWrapper env,
+        int software_ref,
+        const std::vector<int>& input_file_refs = std::vector<int>(),
+        const std::vector<String>& primary_files = std::vector<String>(),
+        const DateTime& date_time = DateTime::now(),
+        std::set<DataProcessing::ProcessingAction> actions =
+        std::set<DataProcessing::ProcessingAction>()){
+          //TODO POPULATE
+        };
+    };
+ 
 } // namespace OpenMS
