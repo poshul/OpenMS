@@ -150,7 +150,7 @@ namespace OpenMS
     return step_ref;
   }
   
-int IdentificationDataWrapper::pythonRegisterScoreType(const ScoreType& score)
+  int IdentificationDataWrapper::pythonRegisterScoreType(const ScoreType& score)
   {
     if (score.cv_term.getAccession().empty() && score.cv_term.getName().empty())
     {

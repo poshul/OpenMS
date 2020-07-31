@@ -70,7 +70,7 @@ namespace OpenMS
         @brief Internal use only
         @return the position of the processingsoftwareref in the PSoftRefmanager_ vector so it can be wrapped in python
       */
-      int pythonRegisterDataProcessingSoftware(const DataProcessingSoftwareWrapper& software);
+      int pythonRegisterDataProcessingSoftware(const DataProcessingSoftware& software);
 
       /*!
         @brief Internal use only
@@ -220,9 +220,7 @@ namespace OpenMS
         const std::vector<String>& primary_files = std::vector<String>(),
         const DateTime& date_time = DateTime::now(),
         std::set<DataProcessing::ProcessingAction> actions =
-        std::set<DataProcessing::ProcessingAction>()){
-          //TODO POPULATE
-        };
+        std::set<DataProcessing::ProcessingAction>());
     };
  
 } // namespace OpenMS
