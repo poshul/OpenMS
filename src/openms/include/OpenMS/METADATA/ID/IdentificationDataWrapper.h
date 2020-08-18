@@ -180,8 +180,50 @@ namespace OpenMS
      DataProcessingSoftware& pythonNewDataProcessingSoftware(const String& name, const String& version, std::vector<int> assigned_scores);
 
      // DBSearchParam& pythonNewDBSearchParam(); constructor doesnt need any refs.
+    
+     DataProcessingStep& pythonNewDataProcessingStep(int software_ref,
+                                                      const std::vector<int>& input_file_refs,
+                                                      const std::vector<String>& primary_files,
+                                                      const DateTime& date_time,
+                                                      std::set<DataProcessing::ProcessingAction> actions);
 
      
+     // ScoreType& pythonNewScoreType(); constructor doesnt need any refs
+
+     DataQuery& pythonNewDataQuery(const String& data_id,
+                                    int input_file_opt,
+                                    double rt,
+                                    double mz);
+
+     ParentMolecule& pythonNewParentMolecule(const String& accession,
+                                              MoleculeType molecule_type,
+                                              String& sequence,
+                                              String& description,
+                                              double coverage,
+                                              bool is_decoy);//,
+                                             // AppliedProcessingSteps& steps_and_scores); //SPW this is tricky, TODO implement it
+                                            
+
+     IdentifiedSequence& pythonNewIdentifiedSequence(const SeqType& sequence);//,
+                                                      //const ParentMatches& parent_matches,  //FIXME!!!
+                                                      //const AppliedProcessingSteps& steps_and_scores); //FIXME!!
+
+     //TODO add specific functions for the different types?
+
+     IdentifiedCompount& pythonNewIdentifiedCompound(const String& identifier,
+                                                      const EmpiricalFormula& formula = EmpiricalFormula(),
+                                                      const String& name = "", const String& smile = "",
+                                                      const String& inchi = "");// const AppliedProcessingSteps& steps_and_scores = AppliedProcessingSteps()); //TODO Implement this
+
+     MoleculeQueryMatch& pythonNewMolecularQueryMatch(int identified_molecule_ref,
+                                                        int data_query_ref);//,
+                                                        //const AppliedProcessingSteps& steps_and_scores, //TODO implement these
+                                                        //const PeakAnnotationSteps& peak_annotations);
+
+     QueryMatchGroup& pythonNewQueryMatchGroup(std::set<int> query_match_refs)
+
+
+     )
 
     protected:
       // SPW: Vector to store all the IteratorWrappers for use with pyOpenMS code
