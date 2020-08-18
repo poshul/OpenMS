@@ -308,6 +308,19 @@ namespace OpenMS
     }
  }
 
+ IdentificationDataInternal::DataProcessingSoftware& IdentificationDataWrapper::pythonNewDataProcessingSoftware(const String& name = "", const String& version = "", std::vector<int> assigned_scores = std::vector<int>())
+  {
+    std::vector<IdentificationData::ScoreTypeRef> reffedscores = std::vector<IdentificationData::ScoreTypeRef>();
+    for (int i=0; i<assigned_scores.size(); i++)
+    {
+      reffedscores.push_back(STRefManager_[assigned_scores[i]]);
+    }
+    auto dps = DataProcessingSoftware(name, version, reffedscores);
+    return dps;
+  }
+
+
+
 /*
   IdentificationData::ProcessingStepRef
   IdentificationData::getCurrentProcessingStep()

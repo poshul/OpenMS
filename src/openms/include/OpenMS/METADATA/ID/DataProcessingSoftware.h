@@ -64,15 +64,15 @@ namespace OpenMS
         Software(name, version), assigned_scores(assigned_scores)
       {
       }
-      /*#ifdef PYOPENMS
+     /* #ifdef PYOPENMS
       explicit DataProcessingSoftware(
         const String& name = "", const String& version = "",
         std::vector<int> assigned_scores =
-        std::vector<int>(), IdentificationData::IdentificationData& env): Software(name, version)
+        std::vector<int>(), OpenMS::IdentificationData& env): Software(name, version)
       {
         for (int i=0;i<assigned_scores.size(); i++)
         {
-          assigned_scores= env.STRefManager_;
+          assigned_scores += env.STRefManager_[assigned_scores[i]];
         }
 
       }

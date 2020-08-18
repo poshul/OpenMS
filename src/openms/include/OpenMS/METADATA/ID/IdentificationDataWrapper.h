@@ -169,6 +169,18 @@ namespace OpenMS
       @return a pair with the position of the scoretype, and a boolean indicating success or failure
       */
      std::pair<int, bool> pythonFindScoreType(const String& score_name) const;
+
+     //SPW: Functions that wrap constructors
+
+      /*!
+      @brief Internal use only
+      @return the new DataProcessingSoftware
+      */
+
+     DataProcessingSoftware& pythonNewDataProcessingSoftware(const String& name, const String& version, std::vector<int> assigned_scores);
+
+     // DBSearchParam& pythonNewDBSearchParam(); constructor doesnt need any refs.
+
      
 
     protected:
@@ -223,4 +235,4 @@ namespace OpenMS
         std::set<DataProcessing::ProcessingAction>());
     };
  
-} // namespace OpenMS
+} // namespace OpenMS`  
