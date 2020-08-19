@@ -210,13 +210,14 @@ namespace OpenMS
 
      //TODO add specific functions for the different types?
 
-     IdentifiedCompount& pythonNewIdentifiedCompound(const String& identifier,
+     IdentifiedCompound& pythonNewIdentifiedCompound(const String& identifier,
                                                       const EmpiricalFormula& formula = EmpiricalFormula(),
                                                       const String& name = "", const String& smile = "",
                                                       const String& inchi = "");// const AppliedProcessingSteps& steps_and_scores = AppliedProcessingSteps()); //TODO Implement this
 
      MoleculeQueryMatch& pythonNewMolecularQueryMatch(int identified_molecule_ref,
-                                                        int data_query_ref);//,
+                                                        int data_query_ref,
+                                                        int m_charge);//,
                                                         //const AppliedProcessingSteps& steps_and_scores, //TODO implement these
                                                         //const PeakAnnotationSteps& peak_annotations);
 
@@ -227,6 +228,7 @@ namespace OpenMS
 
     protected:
       // SPW: Vector to store all the IteratorWrappers for use with pyOpenMS code
+      std::vector<ProcessingSoftwareRef> otter;
       std::vector<InputFileRef> IFRefManager_;
       std::vector<ProcessingSoftwareRef> PSoftRefManager_;
       std::vector<ProcessingStepRef> PStepRefManager_;

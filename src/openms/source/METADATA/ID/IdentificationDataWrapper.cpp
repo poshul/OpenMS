@@ -315,9 +315,92 @@ namespace OpenMS
     {
       reffedscores.push_back(STRefManager_[assigned_scores[i]]);
     }
-    auto dps = DataProcessingSoftware(name, version, reffedscores);
-    return dps;
+    auto result = DataProcessingSoftware(name, version, reffedscores);
+    return result;
   }
+
+IdentificationDataInternal::DataProcessingStep& IdentificationDataWrapper::pythonNewDataProcessingStep(int software_ref,
+                                                const std::vector<int>& input_file_refs = std::vector<int>(),
+                                                const std::vector<String>& primary_files = std::vector<string>(),
+                                                const DateTime& date_time = DateTime::now(),
+                                                std::set<DataProcessing::ProcessingAction> actions = std::set<DataProcessing::ProcessingAction())
+  {
+    ProcessingSoftwareRef pref = PSoftRefManager_[software_ref];
+    std::vector<InputFileRef>& ifref = std::vector<InputFileRef>();
+    for (size_t i = 0; i < input_file_refs.size(); ++i)
+    {
+      ifref.push_back(IFRefManager_[input_file_refs[i]]);
+    }
+    auto result = DataProcessingStep(pref, iref, primary_files, date_time, actions);
+    return result;
+  }
+
+
+// ScoreType& pythonNewScoreType(); constructor doesnt need any refs
+
+IdentificationDataInternal::DataQuery& IdentificationDataWrapper::pythonNewDataQuery(const String& data_id,
+                              int input_file_opt = -1, //We use -1 for not defined, ie boost::none
+                              double rt = std::numeric_limits<double>::quiet_NaN(),
+                              double mz = std::numeric_limits<double>::quiet_NaN())
+  {
+    boost::optional<InputFileRef> inputopt = boost::none;
+    if (input_file_opt != -1)
+      {
+        inputopt = IFRefManager_[input_file_opt];
+      }
+    auto result = DataQuery(data_id, inputopt, rt, mz);
+    return result;
+  }
+
+IdentificationDataInternal::ParentMolecule& IdentificationDataWrapper::pythonNewParentMolecule(const String& accession,
+                                        MoleculeType molecule_type = MoleculeType::PROTEIN,
+                                        String& sequence = "",
+                                        String& description = "",
+                                        double coverage = 0.0,
+                                        bool is_decoy = false)//,
+                                        // AppliedProcessingSteps& steps_and_scores); //SPW this is tricky, TODO implement it
+  {
+    auto result ParentMolecule(molecule_type, sequence, description, coverage, is_decoy);
+  }
+
+IdentificationDataInternal::IdentifiedSequence& IdentificationDataWrapper::pythonNewIdentifiedSequence(const SeqType& sequence)//,
+                                                //const ParentMatches& parent_matches,  //TODO
+                                                //const AppliedProcessingSteps& steps_and_scores);
+  {
+    auto result = IdentifiedSequence(sequence);
+    return result;
+  }
+
+//TODO add specific functions for the different types?
+
+IdentificationDataInternal::IdentifiedCompound& IdentificationDataWrapper::pythonNewIdentifiedCompound(const String& identifier,
+                                                const EmpiricalFormula& formula = EmpiricalFormula(),
+                                                const String& name = "", const String& smile = "",
+                                                const String& inchi = "")// const AppliedProcessingSteps& steps_and_scores = AppliedProcessingSteps()); //TODO Implement this
+  {
+    auto result = IdentifiedCompound(identifier, formula, name, smile, inchi);
+    return result;
+  }
+
+IdentificationDataInternal::MoleculeQueryMatch& IdentificationDataWrapper::pythonNewMolecularQueryMatch(int identified_molecule_ref,
+                                                  int data_query_ref, int m_charge = 0)//,
+                                                  //const AppliedProcessingSteps& steps_and_scores, //TODO implement these
+                                                  //const PeakAnnotationSteps& peak_annotations);
+  {
+    auto result = MolecularQueryMatch(IDMRefManager_[identified_molecule_ref], DQRefManager_[data_query_ref], m_charge);
+    return result;
+  }
+
+IdentificationDataInternal::QueryMatchGroup& IdentificationDataWrapper::pythonNewQueryMatchGroup(std::set<int> query_match_refs)
+  {
+    QueryMatchGroup result = QueryMatchGroup();
+    for (int i = 0; i<query_match_refs.size(); ++i)
+    {
+      result.insert(QMRefManager_[query_match_refs[i]]);
+    }
+    return result;
+  }
+
 
 
 
