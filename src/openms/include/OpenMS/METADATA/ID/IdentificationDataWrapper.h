@@ -177,11 +177,11 @@ namespace OpenMS
       @return the new DataProcessingSoftware
       */
 
-     DataProcessingSoftware& pythonNewDataProcessingSoftware(const String& name, const String& version, std::vector<int> assigned_scores);
+     DataProcessingSoftware pythonNewDataProcessingSoftware(const String& name, const String& version, std::vector<int> assigned_scores);
 
      // DBSearchParam& pythonNewDBSearchParam(); constructor doesnt need any refs.
     
-     DataProcessingStep& pythonNewDataProcessingStep(int software_ref,
+     DataProcessingStep pythonNewDataProcessingStep(int software_ref,
                                                       const std::vector<int>& input_file_refs,
                                                       const std::vector<String>& primary_files,
                                                       const DateTime& date_time,
@@ -190,45 +190,46 @@ namespace OpenMS
      
      // ScoreType& pythonNewScoreType(); constructor doesnt need any refs
 
-     DataQuery& pythonNewDataQuery(const String& data_id,
+     DataQuery pythonNewDataQuery(const String& data_id,
                                     int input_file_opt,
                                     double rt,
                                     double mz);
 
-     ParentMolecule& pythonNewParentMolecule(const String& accession,
+     ParentMolecule pythonNewParentMolecule(const String& accession,
                                               MoleculeType molecule_type,
-                                              String& sequence,
-                                              String& description,
+                                              const String& sequence,
+                                              const String& description,
                                               double coverage,
                                               bool is_decoy);//,
                                              // AppliedProcessingSteps& steps_and_scores); //SPW this is tricky, TODO implement it
                                             
 
-     IdentifiedSequence& pythonNewIdentifiedSequence(const SeqType& sequence);//,
+     IdentifiedPeptide pythonNewIdentifiedPeptide(AASequence seq);//,
+                                                      //const ParentMatches& parent_matches,  //FIXME!!!
+                                                      //const AppliedProcessingSteps& steps_and_scores); //FIXME!!
+     IdentifiedOligo pythonNewIdentifiedOligo(NASequence seq);//,
                                                       //const ParentMatches& parent_matches,  //FIXME!!!
                                                       //const AppliedProcessingSteps& steps_and_scores); //FIXME!!
 
-     //TODO add specific functions for the different types?
+     IdentifiedCompound pythonNewIdentifiedCompound(const String& identifier,
+                                                      const EmpiricalFormula& formula,
+                                                      const String&, const String& smile,
+                                                      const String& inchi);// const AppliedProcessingSteps& steps_and_scores = AppliedProcessingSteps()); //TODO Implement this
 
-     IdentifiedCompound& pythonNewIdentifiedCompound(const String& identifier,
-                                                      const EmpiricalFormula& formula = EmpiricalFormula(),
-                                                      const String& name = "", const String& smile = "",
-                                                      const String& inchi = "");// const AppliedProcessingSteps& steps_and_scores = AppliedProcessingSteps()); //TODO Implement this
-
-     MoleculeQueryMatch& pythonNewMolecularQueryMatch(int identified_molecule_ref,
+     MoleculeQueryMatch pythonNewMolecularQueryMatch(int identified_molecule_ref,
                                                         int data_query_ref,
                                                         int m_charge);//,
                                                         //const AppliedProcessingSteps& steps_and_scores, //TODO implement these
                                                         //const PeakAnnotationSteps& peak_annotations);
 
-     QueryMatchGroup& pythonNewQueryMatchGroup(std::set<int> query_match_refs)
+     QueryMatchGroup pythonNewQueryMatchGroup(std::vector<int> qmr);
 
 
-     )
+     
 
     protected:
       // SPW: Vector to store all the IteratorWrappers for use with pyOpenMS code
-      std::vector<ProcessingSoftwareRef> otter;
+      std::vector<ProcessingSoftwareRef> otter; //FIXME
       std::vector<InputFileRef> IFRefManager_;
       std::vector<ProcessingSoftwareRef> PSoftRefManager_;
       std::vector<ProcessingStepRef> PStepRefManager_;

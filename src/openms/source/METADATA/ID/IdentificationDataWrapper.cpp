@@ -308,10 +308,10 @@ namespace OpenMS
     }
  }
 
- IdentificationDataInternal::DataProcessingSoftware& IdentificationDataWrapper::pythonNewDataProcessingSoftware(const String& name = "", const String& version = "", std::vector<int> assigned_scores = std::vector<int>())
+ IdentificationDataInternal::DataProcessingSoftware IdentificationDataWrapper::pythonNewDataProcessingSoftware(const String& name = "", const String& version = "", std::vector<int> assigned_scores = std::vector<int>())
   {
     std::vector<IdentificationData::ScoreTypeRef> reffedscores = std::vector<IdentificationData::ScoreTypeRef>();
-    for (int i=0; i<assigned_scores.size(); i++)
+    for (size_t i=0; i<assigned_scores.size(); i++)
     {
       reffedscores.push_back(STRefManager_[assigned_scores[i]]);
     }
@@ -319,26 +319,26 @@ namespace OpenMS
     return result;
   }
 
-IdentificationDataInternal::DataProcessingStep& IdentificationDataWrapper::pythonNewDataProcessingStep(int software_ref,
+IdentificationDataInternal::DataProcessingStep IdentificationDataWrapper::pythonNewDataProcessingStep(int software_ref,
                                                 const std::vector<int>& input_file_refs = std::vector<int>(),
-                                                const std::vector<String>& primary_files = std::vector<string>(),
+                                                const std::vector<String>& primary_files = std::vector<String>(),
                                                 const DateTime& date_time = DateTime::now(),
-                                                std::set<DataProcessing::ProcessingAction> actions = std::set<DataProcessing::ProcessingAction())
+                                                std::set<DataProcessing::ProcessingAction> actions = std::set<DataProcessing::ProcessingAction>())
   {
     ProcessingSoftwareRef pref = PSoftRefManager_[software_ref];
-    std::vector<InputFileRef>& ifref = std::vector<InputFileRef>();
+    std::vector<InputFileRef> ifref = std::vector<InputFileRef>();
     for (size_t i = 0; i < input_file_refs.size(); ++i)
     {
       ifref.push_back(IFRefManager_[input_file_refs[i]]);
     }
-    auto result = DataProcessingStep(pref, iref, primary_files, date_time, actions);
+    auto result = DataProcessingStep(pref, ifref, primary_files, date_time, actions);
     return result;
   }
 
 
 // ScoreType& pythonNewScoreType(); constructor doesnt need any refs
 
-IdentificationDataInternal::DataQuery& IdentificationDataWrapper::pythonNewDataQuery(const String& data_id,
+IdentificationDataInternal::DataQuery IdentificationDataWrapper::pythonNewDataQuery(const String& data_id,
                               int input_file_opt = -1, //We use -1 for not defined, ie boost::none
                               double rt = std::numeric_limits<double>::quiet_NaN(),
                               double mz = std::numeric_limits<double>::quiet_NaN())
@@ -352,28 +352,37 @@ IdentificationDataInternal::DataQuery& IdentificationDataWrapper::pythonNewDataQ
     return result;
   }
 
-IdentificationDataInternal::ParentMolecule& IdentificationDataWrapper::pythonNewParentMolecule(const String& accession,
+IdentificationDataInternal::ParentMolecule IdentificationDataWrapper::pythonNewParentMolecule(const String& accession,
                                         MoleculeType molecule_type = MoleculeType::PROTEIN,
-                                        String& sequence = "",
-                                        String& description = "",
+                                        const String& sequence = "",
+                                        const String& description = "",
                                         double coverage = 0.0,
                                         bool is_decoy = false)//,
                                         // AppliedProcessingSteps& steps_and_scores); //SPW this is tricky, TODO implement it
   {
-    auto result ParentMolecule(molecule_type, sequence, description, coverage, is_decoy);
+    auto result = ParentMolecule(accession, molecule_type, sequence, description, coverage, is_decoy);
+    return result;
   }
 
-IdentificationDataInternal::IdentifiedSequence& IdentificationDataWrapper::pythonNewIdentifiedSequence(const SeqType& sequence)//,
+IdentificationDataInternal::IdentifiedPeptide IdentificationDataWrapper::pythonNewIdentifiedPeptide(AASequence seq)//,
                                                 //const ParentMatches& parent_matches,  //TODO
                                                 //const AppliedProcessingSteps& steps_and_scores);
   {
-    auto result = IdentifiedSequence(sequence);
+    auto result = IdentificationDataInternal::IdentifiedSequence<AASequence>(seq);
+    return result;
+  }
+
+IdentificationDataInternal::IdentifiedOligo IdentificationDataWrapper::pythonNewIdentifiedOligo(NASequence seq)//,
+                                                //const ParentMatches& parent_matches,  //TODO
+                                                //const AppliedProcessingSteps& steps_and_scores);
+  {
+    auto result = IdentificationDataInternal::IdentifiedSequence<NASequence>(seq);
     return result;
   }
 
 //TODO add specific functions for the different types?
 
-IdentificationDataInternal::IdentifiedCompound& IdentificationDataWrapper::pythonNewIdentifiedCompound(const String& identifier,
+IdentificationDataInternal::IdentifiedCompound IdentificationDataWrapper::pythonNewIdentifiedCompound(const String& identifier,
                                                 const EmpiricalFormula& formula = EmpiricalFormula(),
                                                 const String& name = "", const String& smile = "",
                                                 const String& inchi = "")// const AppliedProcessingSteps& steps_and_scores = AppliedProcessingSteps()); //TODO Implement this
@@ -382,21 +391,21 @@ IdentificationDataInternal::IdentifiedCompound& IdentificationDataWrapper::pytho
     return result;
   }
 
-IdentificationDataInternal::MoleculeQueryMatch& IdentificationDataWrapper::pythonNewMolecularQueryMatch(int identified_molecule_ref,
+IdentificationDataInternal::MoleculeQueryMatch IdentificationDataWrapper::pythonNewMolecularQueryMatch(int identified_molecule_ref,
                                                   int data_query_ref, int m_charge = 0)//,
                                                   //const AppliedProcessingSteps& steps_and_scores, //TODO implement these
                                                   //const PeakAnnotationSteps& peak_annotations);
   {
-    auto result = MolecularQueryMatch(IDMRefManager_[identified_molecule_ref], DQRefManager_[data_query_ref], m_charge);
+    auto result = MoleculeQueryMatch(IDMRefManager_[identified_molecule_ref], DQRefManager_[data_query_ref], m_charge);
     return result;
   }
 
-IdentificationDataInternal::QueryMatchGroup& IdentificationDataWrapper::pythonNewQueryMatchGroup(std::set<int> query_match_refs)
+IdentificationDataInternal::QueryMatchGroup IdentificationDataWrapper::pythonNewQueryMatchGroup(std::vector<int> qmr)
   {
     QueryMatchGroup result = QueryMatchGroup();
-    for (int i = 0; i<query_match_refs.size(); ++i)
+    for (size_t i = 0; i < qmr.size(); ++i)
     {
-      result.insert(QMRefManager_[query_match_refs[i]]);
+      result.query_match_refs.insert(QMRefManager_[qmr[i]]);
     }
     return result;
   }
