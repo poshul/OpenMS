@@ -37,6 +37,7 @@
 #include <OpenMS/CHEMISTRY/DigestionEnzyme.h>
 #include <OpenMS/CHEMISTRY/EnzymaticDigestion.h>
 #include <OpenMS/METADATA/ID/MetaData.h>
+#include <OpenMS/METADATA/ID/DataProcessingStep.h>
 
 namespace OpenMS
 {
