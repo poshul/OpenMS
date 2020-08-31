@@ -5,82 +5,87 @@ from libcpp.vector cimport vector as libcpp_vector
 from libcpp.set cimport set as libcpp_set
 from MetaInfoInterface cimport *
 from Software cimport *
-from AASequence cimport AASequence as AAS
+from AASequence cimport *
 from NASequence cimport *
+from DataProcessing cimport *
+from DateTime cimport *
 
 cdef extern from "<OpenMS/METADATA/ID/MetaData.h>" namespace "OpenMS::IdentificationDataInternal":
     ctypedef libcpp_set[String] InputFiles
+    cdef enum MoleculeType "OpenMS::IdentificationDataInternal::MoleculeType":
+        PROTEIN
+        COMPOUND
+        RNA
+        SIZE_OF_MOLECULETYPE
 
 cdef extern from "<OpenMS/METADATA/ID/DataProcessingSoftware.h>" namespace "OpenMS::IdentificationDataInternal":
     cdef cppclass DataProcessingSoftware(Software) :
       # wrap-inherits:
       #  Software
-      DataProcessingSoftware() nogil except +
+      DataProcessingSoftware(DataProcessingSoftware&) nogil except + #wrap-ignore
 
 cdef extern from "<OpenMS/METADATA/ID/DBSearchParam.h>" namespace "OpenMS::IdentificationDataInternal":
     cdef cppclass DBSearchParam(MetaInfoInterface) :
       # wrap-inherits:
       #  MetaInfoInterface
-      DBSearchParam() nogil except +
+      DBSearchParam(DBSearchParam&) nogil except + #wrap-ignore
 
 cdef extern from "<OpenMS/METADATA/ID/DataProcessingStep.h>" namespace "OpenMS::IdentificationDataInternal":
     cdef cppclass DataProcessingStep(MetaInfoInterface) :
       # wrap-inherits:
       #  MetaInfoInterface
-      DataProcessingStep() nogil except +
+      DataProcessingStep(DataProcessingStep&) nogil except + #wrap-ignore
 
 cdef extern from "<OpenMS/METADATA/ID/ScoreType.h>" namespace "OpenMS::IdentificationDataInternal":
     cdef cppclass ScoreType(MetaInfoInterface) :
       # wrap-inherits:
       #  MetaInfoInterface
-      ScoreType() nogil except +
+      ScoreType(ScoreType&) nogil except + #wrap-ignore
 
 cdef extern from "<OpenMS/METADATA/ID/DataQuery.h>" namespace "OpenMS::IdentificationDataInternal":
     cdef cppclass DataQuery(MetaInfoInterface) :
       # wrap-inherits:
       #  MetaInfoInterface
-      DataQuery()
+      DataQuery(DataQuery&) nogil except +  #wrap-ignore
 
 cdef extern from "<OpenMS/METADATA/ID/ScoredProcessingResult.h>" namespace "OpenMS::IdentificationDataInternal":
     cdef cppclass ScoredProcessingResult(MetaInfoInterface) :
       # wrap-inherits:
       #  MetaInfoInterface
-      ScoredProcessingResult() nogil except + 
+      ScoredProcessingResult(ScoredProcessingResult&) nogil except +  #wrap-ignore
 
 cdef extern from "<OpenMS/METADATA/ID/ParentMolecule.h>" namespace "OpenMS::IdentificationDataInternal":
     cdef cppclass ParentMolecule(ScoredProcessingResult) :
       # wrap-inherits:
       #  ScoredProcessingResult
-      ParentMolecule() nogil except +
+      ParentMolecule(ParentMolecule&) nogil except +  #wrap-ignore
 
 cdef extern from "<OpenMS/METADATA/ID/IdentifiedSequence.h>" namespace "OpenMS::IdentificationDataInternal":
-    cdef cppclass IdentifiedSequence(ScoredProcessingResult) :
+    cdef cppclass IdentifiedSequence[T](ScoredProcessingResult) :
       # wrap-inherits:
       #  ScoredProcessingResult
-      IdentifiedSequence() nogil except +
+      IdentifiedSequence(IdentifiedSequence&) nogil except + #wrap-ignore
 
-    # Cython lacks the ability to understand these?
-    #ctypedef IdentifiedSequence[AAS] IdentifiedPeptide
-    #ctypedef IdentifiedSequence[NASequence] IdentifiedOligo
+ctypedef IdentifiedSequence[ AASequence ] IdentifiedPeptide
+ctypedef IdentifiedSequence[ NASequence ] IdentifiedOligo
 
 cdef extern from "<OpenMS/METADATA/ID/IdentifiedCompound.h>" namespace "OpenMS::IdentificationDataInternal":
     cdef cppclass IdentifiedCompound(ScoredProcessingResult) :
       # wrap-inherits:
       #  ScoredProcessingResult
-      IdentifiedCompound() nogil except +
+      IdentifiedCompound(IdentifiedCompound&) nogil except + #wrap-ignore
 
 cdef extern from "<OpenMS/METADATA/ID/MoleculeQueryMatch.h>" namespace "OpenMS::IdentificationDataInternal":
     cdef cppclass MoleculeQueryMatch(ScoredProcessingResult) :
      # wrap-inherits:
      #  ScoredProcessingResult
-     MoleculeQueryMatch() nogil except +
+     MoleculeQueryMatch(MoleculeQueryMatch&) nogil except + #wrap-ignore
 
 cdef extern from "<OpenMS/METADATA/ID/QueryMatchGroup.h>" namespace "OpenMS::IdentificationDataInternal":
     cdef cppclass QueryMatchGroup(ScoredProcessingResult) :
      # wrap-inherits:
      #  ScoredProcessingResult
-     QueryMatchGroup() nogil except +
-
+     QueryMatchGroup(QueryMatchGroup&) nogil except + #wrap-ignore
 
 
 cdef extern from "<OpenMS/METADATA/ID/IdentificationData.h>" namespace "OpenMS":
@@ -89,8 +94,8 @@ cdef extern from "<OpenMS/METADATA/ID/IdentificationData.h>" namespace "OpenMS":
     cdef cppclass IdentificationData(MetaInfoInterface) :
         # wrap-inherits:
         #  MetaInfoInterface
+        IdentificationData(IdentificationData&) nogil except + #wrap-ignore
 
-        IdentificationData() nogil except +
 cdef extern from "<OpenMS/METADATA/ID/IdentificationDataWrapper.h>" namespace "OpenMS":
     cdef cppclass IdentificationDataWrapper(IdentificationData) :
         # wrap-inherits:
@@ -104,9 +109,9 @@ cdef extern from "<OpenMS/METADATA/ID/IdentificationDataWrapper.h>" namespace "O
         int pythonRegisterScoreType(ScoreType& score) nogil except +
         int pythonRegisterDataQuery(DataQuery& query) nogil except +
         int pythonRegisterParentMolecule(ParentMolecule& parent) nogil except +
-        #int pythonRegisterIdentifiedPeptide(IdentifiedPeptide& peptide) nogil except +
+        #int pythonRegisterIdentifiedPeptide(IdentifiedSequence[ AASequence ]& peptide) nogil except +
         int pythonRegisterIdentifiedCompound(IdentifiedCompound& compound) nogil except +
-        #int pythonRegisterIdentifiedOligo(IdentifiedOligo& oligo) nogil except +
+        #int pythonRegisterIdentifiedOligo(IdentifiedSequence[ NASequence ]& oligo) nogil except +
         int pythonRegisterMoleculeQueryMatch(MoleculeQueryMatch& match) nogil except +
         int pythonRegisterQueryMatchGroup(QueryMatchGroup& group) nogil except +
         void pythonAddScore(int match_ref, int score_ref, double value) nogil except +
@@ -114,3 +119,12 @@ cdef extern from "<OpenMS/METADATA/ID/IdentificationDataWrapper.h>" namespace "O
         int pythonGetCurrentProcessingStep() nogil except +
         libcpp_vector[int] pythonGetBestMatchPerQuery(int score_ref) nogil except + #do I add const here?
         libcpp_pair[int,bool] pythonFindScoreType(String& score_name) nogil except + #const?
+        DataProcessingSoftware pythonNewDataProcessingSoftware(String& name, String& version, libcpp_vector[int] assigned_scores) nogil except +
+        DataProcessingStep pythonNewDataProcessingStep(int software_ref, libcpp_vector[int]& input_file_refs, libcpp_vector[String]& primary_files, DateTime& date_time, libcpp_set[ProcessingAction] actions) nogil except +
+        DataQuery pythonNewDataQuery(String& data_id, int input_file_opt, double rt, double mz) nogil except +
+        ParentMolecule pythonNewParentMolecule(String& accession, MoleculeType molecule_type, String& sequence, String& description, double coverage, bool is_decoy) nogil except +
+        #IdentifiedPeptide pythonNewIdentifiedPeptide(AASequence seq) nogil except +
+        #IdentifiedOligo pythonNewIdentifiedOligo(NASequence seq) nogil except +
+        IdentifiedCompound pythonNewIdentifiedCompound(String& identifier, EmpiricalFormula& formula, String& name, String& smile, String& inchi) nogil except +
+        MoleculeQueryMatch pythonNewMoleculeQueryMatch(int identified_molecule_ref, int data_query_ref, int m_charge) nogil except +
+        QueryMatchGroup pythonNewQueryMatchGroup(libcpp_vector[int] qmr) nogil except +

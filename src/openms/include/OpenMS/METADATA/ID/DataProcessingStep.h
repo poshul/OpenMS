@@ -69,6 +69,9 @@ namespace OpenMS
       }
 
       DataProcessingStep(const DataProcessingStep& other) = default;
+      DataProcessingStep() //nullary constructor for python
+      {
+      }
 
       // don't compare meta data (?):
       bool operator<(const DataProcessingStep& other) const

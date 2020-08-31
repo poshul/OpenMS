@@ -213,7 +213,7 @@ namespace OpenMS
 
      IdentifiedCompound pythonNewIdentifiedCompound(const String& identifier,
                                                       const EmpiricalFormula& formula,
-                                                      const String&, const String& smile,
+                                                      const String& name, const String& smile,
                                                       const String& inchi);// const AppliedProcessingSteps& steps_and_scores = AppliedProcessingSteps()); //TODO Implement this
 
      MoleculeQueryMatch pythonNewMolecularQueryMatch(int identified_molecule_ref,
