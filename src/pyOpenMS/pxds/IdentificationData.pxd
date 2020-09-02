@@ -34,6 +34,7 @@ cdef extern from "<OpenMS/METADATA/ID/DataProcessingStep.h>" namespace "OpenMS::
     cdef cppclass DataProcessingStep(MetaInfoInterface) :
       # wrap-inherits:
       #  MetaInfoInterface
+      DataProcessingStep() nogil except + #wrap-pass_constructor
       DataProcessingStep(DataProcessingStep&) nogil except + #wrap-ignore
 
 cdef extern from "<OpenMS/METADATA/ID/ScoreType.h>" namespace "OpenMS::IdentificationDataInternal":
@@ -41,6 +42,7 @@ cdef extern from "<OpenMS/METADATA/ID/ScoreType.h>" namespace "OpenMS::Identific
       # wrap-inherits:
       #  MetaInfoInterface
       ScoreType(ScoreType&) nogil except + #wrap-ignore
+      
 
 cdef extern from "<OpenMS/METADATA/ID/DataQuery.h>" namespace "OpenMS::IdentificationDataInternal":
     cdef cppclass DataQuery(MetaInfoInterface) :
