@@ -34,7 +34,7 @@ cdef extern from "<OpenMS/METADATA/ID/DataProcessingStep.h>" namespace "OpenMS::
     cdef cppclass DataProcessingStep(MetaInfoInterface) :
       # wrap-inherits:
       #  MetaInfoInterface
-      DataProcessingStep() nogil except + #wrap-pass_constructor
+      #DataProcessingStep() nogil except + #wrap-pass_constructor
       DataProcessingStep(DataProcessingStep&) nogil except + #wrap-ignore
 
 cdef extern from "<OpenMS/METADATA/ID/ScoreType.h>" namespace "OpenMS::IdentificationDataInternal":
@@ -66,6 +66,9 @@ cdef extern from "<OpenMS/METADATA/ID/IdentifiedSequence.h>" namespace "OpenMS::
     cdef cppclass IdentifiedSequence[T](ScoredProcessingResult) :
       # wrap-inherits:
       #  ScoredProcessingResult
+      # wrap-instances:
+      #   IdentifiedPeptide := IdentifiedSequence[ AASequence ]
+      #   IdentifiedOligo   := IdentifiedSequence[ NASequence ]
       IdentifiedSequence(IdentifiedSequence&) nogil except + #wrap-ignore
 
 ctypedef IdentifiedSequence[ AASequence ] IdentifiedPeptide
@@ -111,9 +114,9 @@ cdef extern from "<OpenMS/METADATA/ID/IdentificationDataWrapper.h>" namespace "O
         int pythonRegisterScoreType(ScoreType& score) nogil except +
         int pythonRegisterDataQuery(DataQuery& query) nogil except +
         int pythonRegisterParentMolecule(ParentMolecule& parent) nogil except +
-        #int pythonRegisterIdentifiedPeptide(IdentifiedSequence[ AASequence ]& peptide) nogil except +
         int pythonRegisterIdentifiedCompound(IdentifiedCompound& compound) nogil except +
-        #int pythonRegisterIdentifiedOligo(IdentifiedSequence[ NASequence ]& oligo) nogil except +
+        #int pythonRegisterIdentifiedPeptide(IdentifiedPeptide& peptide) nogil except +
+        #int pythonRegisterIdentifiedOligo(IdentifiedOligo& oligo) nogil except +
         int pythonRegisterMoleculeQueryMatch(MoleculeQueryMatch& match) nogil except +
         int pythonRegisterQueryMatchGroup(QueryMatchGroup& group) nogil except +
         void pythonAddScore(int match_ref, int score_ref, double value) nogil except +
