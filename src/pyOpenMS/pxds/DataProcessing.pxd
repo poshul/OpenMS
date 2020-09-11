@@ -5,6 +5,11 @@ from Software cimport *
 from DateTime cimport *
 from MetaInfoInterface cimport *
 
+cdef extern from "<OpenMS/METADATA/ID/MetaData.h>" namespace "OpenMS::IdentificationDataInternal":
+    cdef cppclass IteratorWrapper[T]:
+        # wrap-ignore
+        IteratorWrapper() #wrap-ignore
+
 cdef extern from "<OpenMS/METADATA/DataProcessing.h>" namespace "OpenMS":
 
     cdef cppclass DataProcessing(MetaInfoInterface):
