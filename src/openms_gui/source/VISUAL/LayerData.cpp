@@ -2,7 +2,7 @@
 //                   OpenMS -- Open-Source Mass Spectrometry
 // --------------------------------------------------------------------------
 // Copyright The OpenMS Team -- Eberhard Karls University Tuebingen,
-// ETH Zurich, and Freie Universitaet Berlin 2002-2018.
+// ETH Zurich, and Freie Universitaet Berlin 2002-2020.
 //
 // This software is released under a three-clause BSD license:
 //  * Redistributions of source code must retain the above copyright
@@ -47,7 +47,7 @@ namespace OpenMS
   std::ostream & operator<<(std::ostream & os, const LayerData & rhs)
   {
     os << "--LayerData BEGIN--" << std::endl;
-    os << "name: " << rhs.name << std::endl;
+    os << "name: " << rhs.getName() << std::endl;
     os << "visible: " << rhs.visible << std::endl;
     os << "number of peaks: " << rhs.getPeakData()->getSize() << std::endl;
     os << "--LayerData END--" << std::endl;
@@ -67,6 +67,59 @@ namespace OpenMS
     // on_disc_peaks->updateRanges(); // note: this is not going to work since its on disk! We currently don't have a good way to access these ranges
     chromatograms->updateRanges();
     cached_spectrum_.updateRanges();
+  }
+
+  /// Returns the minimum intensity of the internal data, depending on type
+
+  float LayerData::getMinIntensity() const
+  {
+    if (type == LayerData::DT_PEAK || type == LayerData::DT_CHROMATOGRAM)
+    {
+      return getPeakData()->getMinInt();
+    }
+    else if (type == LayerData::DT_FEATURE)
+    {
+      return getFeatureMap()->getMinInt();
+    }
+    else
+    {
+      return getConsensusMap()->getMinInt();
+    }
+  }
+
+  /// Returns the maximum intensity of the internal data, depending on type
+
+  float LayerData::getMaxIntensity() const
+  {
+    if (type == LayerData::DT_PEAK || type == LayerData::DT_CHROMATOGRAM)
+    {
+      return getPeakData()->getMaxInt();
+    }
+    else if (type == LayerData::DT_FEATURE)
+    {
+      return getFeatureMap()->getMaxInt();
+    }
+    else
+    {
+      return getConsensusMap()->getMaxInt();
+    }
+  }
+
+
+  /// get name augmented with attributes, e.g. [flipped], or '*' if modified
+
+   String LayerData::getDecoratedName() const
+   {
+    String n = name_;
+    if (flipped)
+    {
+      n += " [flipped]";
+    }
+    if (modified)
+    {
+      n += '*';
+    }
+    return n;
   }
 
   void LayerData::updateCache_()
@@ -126,7 +179,7 @@ namespace OpenMS
       else // PeptideIdentifications are empty, create new PepIDs and PeptideHits to store the PeakAnnotations
       {
         // copy user annotations to fragment annotation vector
-        Annotations1DContainer & las = getAnnotations(current_spectrum_);
+        const Annotations1DContainer & las = getAnnotations(current_spectrum_);
 
         // no annotations so we don't need to synchronize
         bool has_peak_annotation(false);
@@ -170,7 +223,7 @@ namespace OpenMS
   void LayerData::updatePeptideHitAnnotations_(PeptideHit& hit)
   {
     // copy user annotations to fragment annotation vector
-    Annotations1DContainer & las = getCurrentAnnotations();
+    const Annotations1DContainer & las = getCurrentAnnotations();
 
     // initialize with an empty vector
     vector<PeptideHit::PeakAnnotation> fas;

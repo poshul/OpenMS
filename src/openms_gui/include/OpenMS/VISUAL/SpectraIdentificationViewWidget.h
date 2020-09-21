@@ -2,7 +2,7 @@
 //                   OpenMS -- Open-Source Mass Spectrometry
 // --------------------------------------------------------------------------
 // Copyright The OpenMS Team -- Eberhard Karls University Tuebingen,
-// ETH Zurich, and Freie Universitaet Berlin 2002-2018.
+// ETH Zurich, and Freie Universitaet Berlin 2002-2020.
 //
 // This software is released under a three-clause BSD license:
 //  * Redistributions of source code must retain the above copyright
@@ -71,6 +71,16 @@ public:
 
     /// Access the table widget
     QTableWidget* getTableWidget();
+
+    /// clears all visible data from table widget and void the layer
+    void clear();
+
+    /// do we have data to show?
+    bool hasData() const
+    {
+      return has_data_;
+    }
+
 protected slots:
     /// Rebuild table entries
     void updateEntries();
@@ -92,6 +102,8 @@ private:
     QTableWidget* table_widget_;
     bool is_ms1_shown_;
     QTableWidget* fragment_window_;
+    /// do we have data to show?
+    bool has_data_ = false;
 private slots:
     /// Emits spectrumSelected with the current spectrum index
     void spectrumSelectionChange_(QTableWidgetItem*, QTableWidgetItem*);

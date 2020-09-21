@@ -2,7 +2,7 @@
 //                   OpenMS -- Open-Source Mass Spectrometry
 // --------------------------------------------------------------------------
 // Copyright The OpenMS Team -- Eberhard Karls University Tuebingen,
-// ETH Zurich, and Freie Universitaet Berlin 2002-2018.
+// ETH Zurich, and Freie Universitaet Berlin 2002-2020.
 //
 // This software is released under a three-clause BSD license:
 //  * Redistributions of source code must retain the above copyright
@@ -126,7 +126,7 @@ protected:
     /// The canvas of the layer
     SpectrumCanvas * canvas_;
     /// The LayerData object we compute statistics about
-    LayerData layer_data_;
+    const LayerData& layer_data_;
     /// Minimum intensity value
     double min_intensity_;
     /// Maximum intensity value

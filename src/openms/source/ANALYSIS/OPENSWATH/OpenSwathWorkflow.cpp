@@ -2,7 +2,7 @@
 //                   OpenMS -- Open-Source Mass Spectrometry
 // --------------------------------------------------------------------------
 // Copyright The OpenMS Team -- Eberhard Karls University Tuebingen,
-// ETH Zurich, and Freie Universitaet Berlin 2002-2018.
+// ETH Zurich, and Freie Universitaet Berlin 2002-2020.
 //
 // This software is released under a three-clause BSD license:
 //  * Redistributions of source code must retain the above copyright
@@ -546,9 +546,14 @@ namespace OpenMS
     int total_nr_threads = omp_get_max_threads(); // store total number of threads we are allowed to use
     if (threads_outer_loop_ > -1)
     {
+      std::cout << "Setting up nested loop with " << std::min(threads_outer_loop_, omp_get_max_threads()) << " threads out of "<< omp_get_max_threads() << std::endl;
       omp_set_nested(1);
       omp_set_dynamic(0);
       omp_set_num_threads(std::min(threads_outer_loop_, omp_get_max_threads()) ); // use at most threads_outer_loop_ threads here
+    }
+    else
+    {
+      std::cout << "Use non-nested loop with " << total_nr_threads << " threads." << std::endl;
     }
 #endif
 #pragma omp parallel for schedule(dynamic,1)
@@ -829,15 +834,14 @@ namespace OpenMS
     // To ensure multi-threading safe access to the individual spectra, we
     // need to use a light clone of the spectrum access (if multiple threads
     // share a single filestream and call seek on it, chaos will ensue).
-    if (use_ms1_traces_)
+    if (use_ms1_traces_ && ms1_map_)
     {
-      if (ms1_map_ == nullptr) 
-      {
-        throw Exception::IllegalArgument(__FILE__, __LINE__, OPENMS_PRETTY_FUNCTION,
-            "Error, attempted to use MS1 traces, but no MS1 map was provided." );
-      }
       OpenSwath::SpectrumAccessPtr threadsafe_ms1 = ms1_map_->lightClone();
       featureFinder.setMS1Map( threadsafe_ms1 );
+    }
+    else if (use_ms1_traces_ && !ms1_map_)
+    {
+      OPENMS_LOG_WARN << "WARNING: Attempted to use MS1 traces but no MS1 map was provided: Will not use MS1 signal!" << std::endl;
     }
 
     // If use_total_mi_score is defined, we need to instruct MRMTransitionGroupPicker to compute the score

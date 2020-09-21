@@ -2,7 +2,7 @@
 //                   OpenMS -- Open-Source Mass Spectrometry
 // --------------------------------------------------------------------------
 // Copyright The OpenMS Team -- Eberhard Karls University Tuebingen,
-// ETH Zurich, and Freie Universitaet Berlin 2002-2018.
+// ETH Zurich, and Freie Universitaet Berlin 2002-2020.
 //
 // This software is released under a three-clause BSD license:
 //  * Redistributions of source code must retain the above copyright
@@ -82,7 +82,7 @@ namespace OpenMS
 
   @ingroup SpectrumWidgets
   */
-  class LayerData
+  class OPENMS_GUI_DLLAPI LayerData
   {
 public:
     /** @name Type definitions */
@@ -161,7 +161,7 @@ public:
       visible(true),
       flipped(false),
       type(DT_UNKNOWN),
-      name(),
+      name_(),
       filename(),
       peptides(),
       param(),
@@ -184,6 +184,17 @@ public:
     {
       annotations_1d.resize(1);
     }
+
+    /// no Copy-ctor (should not be needed)
+    LayerData(const LayerData& ld) = delete;
+    /// no assignment operator (should not be needed)
+    LayerData& operator=(const LayerData& ld) = delete;
+
+    /// move Ctor
+    LayerData(LayerData&& ld) = default;
+
+    /// move assignment
+    LayerData& operator=(LayerData&& ld) = default;
 
     /// Returns a const reference to the current feature data
     const FeatureMapSharedPtrType & getFeatureMap() const
@@ -216,7 +227,7 @@ public:
     spectra may have zero size and contain only meta data since peak data is
     cached on disk.
 
-    @note Do *not* use this function to access the current spectrum for the 1D view
+    @note Do *not* use this function to access the current spectrum for the 1D view, use getCurrentSpectrum() instead.
     */
     const ConstExperimentSharedPtrType getPeakData() const;
 
@@ -227,7 +238,7 @@ public:
     spectra may have zero size and contain only meta data since peak data is
     cached on disk.
 
-    @note Do *not* use this function to access the current spectrum for the 1D view
+    @note Do *not* use this function to access the current spectrum for the 1D view, use getCurrentSpectrum() instead.
     */
     const ExperimentSharedPtrType & getPeakDataMuteable() {return peaks;}
 
@@ -394,6 +405,12 @@ public:
     */
     void updateRanges();
 
+    /// Returns the minimum intensity of the internal data, depending on type
+    float getMinIntensity() const;
+
+    /// Returns the maximum intensity of the internal data, depending on type
+    float getMaxIntensity() const;
+
     /// updates the PeakAnnotations in the current PeptideHit with manually changed annotations
     /// if no PeptideIdentification or PeptideHit for the spectrum exist, it is generated
     void synchronizePeakAnnotations();
@@ -410,8 +427,19 @@ public:
     /// data type (peak or feature data)
     DataType type;
 
+    private:
     /// layer name
-    String name;
+    String name_;
+
+    public:
+      const String& getName() const
+      {
+        return name_;
+      }
+      void setName(const String& new_name)
+      {
+        name_ = new_name;
+      }
 
     /// file name of the file the data comes from (if available)
     String filename;
@@ -447,8 +475,10 @@ public:
     int peptide_id_index;
     int peptide_hit_index;
 
-private:
+    /// get name augmented with attributes, e.g. [flipped], or '*' if modified
+    String getDecoratedName() const;
 
+private:
     /// Update current cached spectrum for easy retrieval
     void updateCache_();
 
@@ -475,7 +505,6 @@ private:
 
     /// Current cached spectrum
     ExperimentType::SpectrumType cached_spectrum_;
-
   };
 
   /// Print the contents to a stream.

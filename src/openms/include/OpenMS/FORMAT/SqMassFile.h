@@ -2,7 +2,7 @@
 //                   OpenMS -- Open-Source Mass Spectrometry
 // --------------------------------------------------------------------------
 // Copyright The OpenMS Team -- Eberhard Karls University Tuebingen,
-// ETH Zurich, and Freie Universitaet Berlin 2002-2018.
+// ETH Zurich, and Freie Universitaet Berlin 2002-2020.
 //
 // This software is released under a three-clause BSD license:
 //  * Redistributions of source code must retain the above copyright
@@ -48,6 +48,10 @@ namespace OpenMS
     to disk using a SQLite database and store them in sqMass format. This
     allows users to access, select and filter spectra and chromatograms
     on-demand even in a large collection of data.
+
+    Spectra and chromatograms with precursor information will additionally load/store the metavalue
+    'peptide_sequence' from the first precursor (if any).
+
   */
   class OPENMS_DLLAPI SqMassFile
   {

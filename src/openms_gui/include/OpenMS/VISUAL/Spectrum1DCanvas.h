@@ -2,7 +2,7 @@
 //                   OpenMS -- Open-Source Mass Spectrometry
 // --------------------------------------------------------------------------
 // Copyright The OpenMS Team -- Eberhard Karls University Tuebingen,
-// ETH Zurich, and Freie Universitaet Berlin 2002-2018.
+// ETH Zurich, and Freie Universitaet Berlin 2002-2020.
 //
 // This software is released under a three-clause BSD license:
 //  * Redistributions of source code must retain the above copyright
@@ -87,6 +87,17 @@ public:
     /// Destructor
     ~Spectrum1DCanvas() override;
 
+    /// add a chromatogram layer
+    /// @note: this does NOT trigger layerActivated signal for efficiency-reasons. Do it manually afterwards!
+    bool addChromLayer(ExperimentSharedPtrType chrom_exp_sptr,
+                       ODExperimentSharedPtrType ondisc_sptr, 
+                       const String& filename, 
+                       const String& caption, 
+                       ExperimentSharedPtrType exp_sptr,
+                       const int index,
+                       const bool multiple_select);
+
+    
     ///Enumerate all available paint styles
     enum DrawModes
     {

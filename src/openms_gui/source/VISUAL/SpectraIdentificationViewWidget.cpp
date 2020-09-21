@@ -2,7 +2,7 @@
 //                   OpenMS -- Open-Source Mass Spectrometry
 // --------------------------------------------------------------------------
 // Copyright The OpenMS Team -- Eberhard Karls University Tuebingen,
-// ETH Zurich, and Freie Universitaet Berlin 2002-2018.
+// ETH Zurich, and Freie Universitaet Berlin 2002-2020.
 //
 // This software is released under a three-clause BSD license:
 //  * Redistributions of source code must retain the above copyright
@@ -142,7 +142,7 @@ namespace OpenMS
 
 
     QPushButton* save_IDs = new QPushButton("Save IDs", this);
-    connect(save_IDs, SIGNAL(clicked()), this, SLOT(saveIDs_()));
+    connect(save_IDs, &QPushButton::clicked, this, &SpectraIdentificationViewWidget::saveIDs_);
 
     QPushButton* export_table = new QPushButton("Export table", this);
 
@@ -165,18 +165,26 @@ namespace OpenMS
     // header context menu
     table_widget_->horizontalHeader()->setContextMenuPolicy(Qt::CustomContextMenu);
 
-    connect(table_widget_->horizontalHeader(), SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(headerContextMenu_(const QPoint &)));
-    connect(table_widget_, SIGNAL(cellClicked(int, int)), this, SLOT(cellClicked_(int, int)));
-    connect(table_widget_, SIGNAL(currentItemChanged(QTableWidgetItem*, QTableWidgetItem*)), this, SLOT(spectrumSelectionChange_(QTableWidgetItem*, QTableWidgetItem*)));
-    connect(table_widget_, SIGNAL(itemChanged(QTableWidgetItem*)), this, SLOT(updateData_(QTableWidgetItem*)));
-    connect(hide_no_identification_, SIGNAL(toggled(bool)), this, SLOT(updateEntries()));
-    connect(create_rows_for_commmon_metavalue_, SIGNAL(toggled(bool)), this, SLOT(updateEntries()));
-    connect(export_table, SIGNAL(clicked()), this, SLOT(exportEntries_()));
+    connect(table_widget_->horizontalHeader(), &QHeaderView::customContextMenuRequested, this, &SpectraIdentificationViewWidget::headerContextMenu_);
+    connect(table_widget_, &QTableWidget::cellClicked, this, &SpectraIdentificationViewWidget::cellClicked_);
+    connect(table_widget_, &QTableWidget::currentItemChanged, this, &SpectraIdentificationViewWidget::spectrumSelectionChange_);
+    connect(table_widget_, &QTableWidget::itemChanged, this, &SpectraIdentificationViewWidget::updateData_);
+    connect(hide_no_identification_, &QCheckBox::toggled, this, &SpectraIdentificationViewWidget::updateEntries);
+    connect(create_rows_for_commmon_metavalue_, &QCheckBox::toggled, this, &SpectraIdentificationViewWidget::updateEntries);
+    connect(export_table, &QPushButton::clicked, this, &SpectraIdentificationViewWidget::exportEntries_);
   }
 
   QTableWidget* SpectraIdentificationViewWidget::getTableWidget()
   {
     return table_widget_;
+  }
+
+  void SpectraIdentificationViewWidget::clear()
+  {
+    // remove all entries
+    setLayer(nullptr);
+    getTableWidget()->clear();
+    has_data_ = false;
   }
 
   void SpectraIdentificationViewWidget::cellClicked_(int row, int column)
@@ -347,6 +355,8 @@ namespace OpenMS
 
   void SpectraIdentificationViewWidget::setLayer(LayerData* cl)
   {
+    // do not try to be smart and check if layer_ == cl; to return early
+    // since the layer content might have changed, e.g. pepIDs were added
     layer_ = cl;
     updateEntries();
   }
@@ -358,6 +368,7 @@ namespace OpenMS
 
   void SpectraIdentificationViewWidget::updateEntries()
   {
+    has_data_ = false;
     // no valid peak layer attached
     if (layer_ == nullptr
     || layer_->getPeakData()->size() == 0
@@ -673,9 +684,13 @@ namespace OpenMS
               double ppm_error(0);
 
               // Protein:RNA cross-link, Protein-Protein cross-link, or other data with a precomputed precursor error
-              if (pi[pi_idx].getHits()[0].metaValueExists(Constants::UserParam::PRECURSOR_ERROR_PPM_USERPARAM))
+              if (ph.metaValueExists(Constants::UserParam::PRECURSOR_ERROR_PPM_USERPARAM))
               {
-                ppm_error = fabs((double)pi[pi_idx].getHits()[0].getMetaValue(Constants::UserParam::PRECURSOR_ERROR_PPM_USERPARAM));
+                ppm_error = fabs((double)ph.getMetaValue(Constants::UserParam::PRECURSOR_ERROR_PPM_USERPARAM));
+              }
+              else if (ph.metaValueExists("OMS:precursor_mz_error_ppm")) // for legacy reasons added in OpenMS 2.5
+              {
+                ppm_error = fabs((double)ph.getMetaValue("OMS:precursor_mz_error_ppm"));
               }
               else if (!ph.getSequence().empty()) // works for normal linear fragments with the correct modifications included in the AASequence
               {
@@ -807,6 +822,7 @@ namespace OpenMS
 
     table_widget_->blockSignals(false);
     table_widget_->setUpdatesEnabled(true);
+    has_data_ = true;
   }
 
   void SpectraIdentificationViewWidget::headerContextMenu_(const QPoint& pos)
