@@ -60,6 +60,7 @@ SimpleSearchEngine
 SiriusAdapter
 SpecLibCreator
 SpectraSTSearchAdapter
+StaticModification
 SvmTheoreticalSpectrumGeneratorTrainer
 TICCalculator
 TransformationEvaluation

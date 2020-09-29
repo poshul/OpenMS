@@ -136,8 +136,15 @@ for modname in mnames:
                 allDecl_mapping[modname]["addons"].append(a)
                 is_added[k] = True
 
+        # In the special case PY_NUM_MODULES==1 we need to mark ADD_TO_ALL_OTHER as is_added,
+        # so it doesn't get added to pyopenms_1.pxd
+        if PY_NUM_MODULES=='1':
+            if os.path.basename(a) == "ADD_TO_ALL_OTHER" + ".pyx":
+                is_added[k] = True
+                
         if is_added[k]:
             continue
+
 
         # Also match by class name (sometimes one pxd contains multiple classes
         # and the addon is named after one of them)
@@ -173,7 +180,8 @@ def doCythonCompile(arg):
     modname, autowrap_include_dirs = arg
     m_filename = "pyopenms/%s.pyx" % modname
     print ("Cython compile", m_filename)
-    autowrap.Main.run_cython(inc_dirs=autowrap_include_dirs, extra_opts={"compiler_directives": {"language_level": 2}}, out=m_filename)
+    # By omitting "compiler_directives": {"language_level": 3} as extra_opt, autowrap will choose the language_level of the used python executable
+    autowrap.Main.run_cython(inc_dirs=autowrap_include_dirs + ["./pyopenms/"], extra_opts={"compiler_directives": {"binding": True, "embedsignature": True}}, out=m_filename)
 
     if False:
         #
@@ -217,4 +225,3 @@ version = OPEN_MS_VERSION
 
 print("version=%r\n" % version, file=open("pyopenms/version.py", "w"))
 print("info=%r\n" % QT_QMAKE_VERSION_INFO, file=open("pyopenms/qt_version_info.py", "w"))
-
