@@ -308,6 +308,59 @@ namespace OpenMS
     }
  }
 
+ void IdentificationDataWrapper::pythonAddScore(int match_ref, int score_ref, double value)
+  {
+    addScore(QMRefManager_[match_ref], STRefManager_[score_ref], value);  
+  }
+
+ void IdentificationDataWrapper::pythonSetCurrentProcessingStep(const int step_ref)
+  {
+    setCurrentProcessingStep(PStepRefManager_[step_ref]);
+  }
+
+ int IdentificationDataWrapper::pythonGetCurrentProcessingStep()
+ {
+   for(size_t i=0; i<PStepRefManager_.size(); i++)
+    {
+     if (getCurrentProcessingStep() == PStepRefManager_[i])
+     {
+       return i;
+     }
+    }
+   return -1;
+ }
+
+ std::vector<int> IdentificationDataWrapper::pythonGetBestMatchPerQuery(int score_ref) const
+{
+  vector<IdentificationData::QueryMatchRef> match_refs = getBestMatchPerQuery(STRefManager_[score_ref]);
+  vector<int> return_vec;
+  for (size_t i = 0; i < match_refs.size(); i++)
+   {
+    for (size_t j = 0; j < QMRefManager_.size(); j++)
+     {
+      if (QMRefManager_[j] == match_refs[i])
+       {
+        return_vec.push_back(j);
+        continue;
+       }
+     }
+   }
+  return return_vec;
+}
+
+pair<int, bool> IdentificationDataWrapper::pythonFindScoreType(const String& score_name) const
+{
+  auto result = findScoreType(score_name);
+  for (size_t i = 0; i < STRefManager_.size(); i++)
+   {
+     if (result.first == STRefManager_[i])
+     {
+      return make_pair(i,result.second);
+     }
+     return make_pair(-1, false);
+   }
+}
+ 
  IdentificationDataInternal::DataProcessingSoftware IdentificationDataWrapper::pythonNewDataProcessingSoftware(const String& name = "", const String& version = "", std::vector<int> assigned_scores = std::vector<int>())
   {
     std::vector<IdentificationData::ScoreTypeRef> reffedscores = std::vector<IdentificationData::ScoreTypeRef>();
