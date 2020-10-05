@@ -75,6 +75,10 @@ namespace OpenMS
       {
       }
 
+      explicit ParentMolecule() //SPW HACKHACKHACK
+      {
+      }
+
       ParentMolecule(const ParentMolecule&) = default;
 
       ParentMolecule& operator+=(const ParentMolecule& other)

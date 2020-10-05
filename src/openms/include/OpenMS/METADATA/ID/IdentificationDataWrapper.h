@@ -216,7 +216,7 @@ namespace OpenMS
                                                       const String& name, const String& smile,
                                                       const String& inchi);// const AppliedProcessingSteps& steps_and_scores = AppliedProcessingSteps()); //TODO Implement this
 
-     MoleculeQueryMatch pythonNewMolecularQueryMatch(int identified_molecule_ref,
+     MoleculeQueryMatch pythonNewMoleculeQueryMatch(int identified_molecule_ref,
                                                         int data_query_ref,
                                                         int m_charge);//,
                                                         //const AppliedProcessingSteps& steps_and_scores, //TODO implement these

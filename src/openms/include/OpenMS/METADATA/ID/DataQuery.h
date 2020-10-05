@@ -65,6 +65,9 @@ namespace OpenMS
 
       DataQuery(const DataQuery& other) = default;
 
+      explicit DataQuery() //SPW HACKHACKHACK
+      {}
+
       // ignore RT and m/z for comparisons to avoid issues with rounding:
       bool operator<(const DataQuery& other) const
       {

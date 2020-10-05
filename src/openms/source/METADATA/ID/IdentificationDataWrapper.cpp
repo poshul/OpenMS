@@ -391,7 +391,7 @@ IdentificationDataInternal::IdentifiedCompound IdentificationDataWrapper::python
     return result;
   }
 
-IdentificationDataInternal::MoleculeQueryMatch IdentificationDataWrapper::pythonNewMolecularQueryMatch(int identified_molecule_ref,
+IdentificationDataInternal::MoleculeQueryMatch IdentificationDataWrapper::pythonNewMoleculeQueryMatch(int identified_molecule_ref,
                                                   int data_query_ref, int m_charge = 0)//,
                                                   //const AppliedProcessingSteps& steps_and_scores, //TODO implement these
                                                   //const PeakAnnotationSteps& peak_annotations);

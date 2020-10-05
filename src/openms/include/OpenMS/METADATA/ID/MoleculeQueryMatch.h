@@ -83,6 +83,10 @@ namespace OpenMS
       {
       }
 
+      explicit MoleculeQueryMatch()//SPW HACKHACKHACK
+      {}
+
+
       MoleculeQueryMatch(const MoleculeQueryMatch&) = default;
 
       MoleculeType getMoleculeType() const

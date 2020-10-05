@@ -68,6 +68,10 @@ namespace OpenMS
       {
       }
 
+      explicit DataProcessingStep() //SPW this is hack to get pyopenms to compile
+      {
+      }
+
       DataProcessingStep(const DataProcessingStep& other) = default;
 
 

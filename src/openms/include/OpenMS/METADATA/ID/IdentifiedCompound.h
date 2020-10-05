@@ -67,6 +67,10 @@ namespace OpenMS
       {
       }
 
+      explicit IdentifiedCompound() //SPW HACKHACKHACK
+      {
+      }
+
       IdentifiedCompound(const IdentifiedCompound& other) = default;
     };
 
