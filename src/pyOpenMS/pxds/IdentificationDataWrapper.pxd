@@ -27,7 +27,7 @@ cdef extern from "<OpenMS/METADATA/ID/IdentificationDataWrapper.h>" namespace "O
     cdef cppclass IdentificationDataWrapper(IdentificationData) :
         # wrap-inherits:
         #  MetaInfoInterface
-
+        IdentificationDataWrapper() nogil except +
         int pythonRegisterInputFile(String & file) nogil except +
         int pythonRegisterDataProcessingSoftware(DataProcessingSoftware& software) nogil except +
         int pythonRegisterDBSearchParam(DBSearchParam& param) nogil except +

@@ -357,8 +357,8 @@ pair<int, bool> IdentificationDataWrapper::pythonFindScoreType(const String& sco
      {
       return make_pair(i,result.second);
      }
-     return make_pair(-1, false);
    }
+   return make_pair(-1, false);
 }
  
  IdentificationDataInternal::DataProcessingSoftware IdentificationDataWrapper::pythonNewDataProcessingSoftware(const String& name = "", const String& version = "", std::vector<int> assigned_scores = std::vector<int>())
