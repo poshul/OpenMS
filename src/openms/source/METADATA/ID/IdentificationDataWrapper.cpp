@@ -46,7 +46,7 @@ namespace OpenMS
     if (result.second) // If the insert added a new element
     {
       IFRefManager_.push_back(result.first);
-      return IFRefManager_.size();
+      return IFRefManager_.size() - 1;
     }
     else // else the element already exists. Lets find it.
     {
@@ -71,7 +71,7 @@ namespace OpenMS
     if (result.second) // If the insert added a new element
     {
       PSoftRefManager_.push_back(result.first);
-      return PSoftRefManager_.size();
+      return PSoftRefManager_.size() - 1;
     }
     else // else the element already exists. Lets find it.
     {
@@ -86,7 +86,7 @@ namespace OpenMS
     if (result.second) // If the insert added a new element
     {
       DBSRefManager_.push_back(result.first);
-      return DBSRefManager_.size();
+      return DBSRefManager_.size() - 1;
     }
     else // else the element already exists. Lets find it.
     {
@@ -127,7 +127,7 @@ namespace OpenMS
     if (result.second) // If the insert added a new element
     {
       PStepRefManager_.push_back(result.first);
-      step_ref = PStepRefManager_.size();
+      step_ref = PStepRefManager_.size() - 1;
     }
     else // else the element already exists. Lets find it.
     {
@@ -177,7 +177,7 @@ namespace OpenMS
     else
     {
     STRefManager_.push_back(result.first);
-    return STRefManager_.size();
+    return STRefManager_.size() - 1;
     }
   }
 
@@ -205,7 +205,7 @@ namespace OpenMS
     if (result.second) // If the insert added a new element
     {
       DQRefManager_.push_back(result.first);
-      return DQRefManager_.size();
+      return DQRefManager_.size() - 1;
     }
     else // else the element already exists. Lets find it.
     {
@@ -222,7 +222,7 @@ namespace OpenMS
     if (it==IDPRefManager_.end())
     {
       IDPRefManager_.push_back(result);
-      return IDPRefManager_.size();
+      return IDPRefManager_.size() - 1;
     } 
     else
     {
@@ -238,7 +238,7 @@ namespace OpenMS
     if (it==IDCRefManager_.end())
     {
       IDCRefManager_.push_back(result);
-      return IDCRefManager_.size();
+      return IDCRefManager_.size() - 1;
     } 
     else
     {
@@ -254,7 +254,7 @@ namespace OpenMS
     if (it==IDORefManager_.end())
     {
       IDORefManager_.push_back(result);
-      return IDORefManager_.size();
+      return IDORefManager_.size() - 1;
     } 
     else
     {
@@ -269,7 +269,7 @@ namespace OpenMS
     if (it==PMRefManager_.end())
     {
       PMRefManager_.push_back(result);
-      return PMRefManager_.size();
+      return PMRefManager_.size() - 1;
     } 
     else
     {
@@ -285,7 +285,7 @@ namespace OpenMS
     if (it==QMRefManager_.end())
     {
       QMRefManager_.push_back(result);
-      return QMRefManager_.size();
+      return QMRefManager_.size() - 1;
     } 
     else
     {
@@ -300,7 +300,7 @@ namespace OpenMS
     if (it==MGRefManager_.end())
     {
       MGRefManager_.push_back(result);
-      return MGRefManager_.size();
+      return MGRefManager_.size() - 1;
     } 
     else
     {
