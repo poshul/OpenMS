@@ -32,3 +32,10 @@ ambiguous dimethylguanosine ("m2,2G" or "m_Gm")	mmG?		G	Ó	&Oacute;	C12O5N5H17	3
 ambiguous trimethylguanosine ("m2,2,7G" or "m2,7Gm")	mmmG?		G	Ô	&Ocirc;	C13O5N5H21	327.1543	327.3404	m2,2,7G m2,7Gm
 N4-acetylcytidine or 5-formyl-2'-O-methylcytidine	ac4C/f5Cm?		C	M	M	C11O6N3H15	285.0961	285.257	ac4C f5Cm
 3-(3-amino-3-carboxypropyl)uridine or 5-carboxymethylaminomethyl-2'-O-methyluridine	acp3U/cmnm5Um?		U	X	X	C13O8N3H19	345.1172	345.3096	acp3U cmnm5Um
+# Added basic deoxy nucleic acids so that we can work with unmodified DNA strands
+deoxyadenosine	dA	dA	A			C10O3N5H13	251.1018	251.2424
+deoxycytidine	dC	dC	C			C9O4N3H13	227.0906	227.2176
+deoxyguanosine	dG	dG	G			C10O4N5H13	267.0968	267.2418
+deoxyuridine	dU	dU	U			C9O5N2H12	228.0746	228.2024
+carboxyethyl deoxyguanosine	cedG	cedG	G	C13O6N5H17	339.1179	339.3046
+carboxyethyl guanosine	ceG	ceG	G	C13O7N5H17	355.1128	355.3040
