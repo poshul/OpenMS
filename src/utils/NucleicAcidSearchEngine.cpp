@@ -1293,17 +1293,17 @@ protected:
 
         // collect all relevant charge states for theoret. spectrum generation:
         set<Int> precursor_charges;
-//        if (single_charge_spectra && deisotope_spectra) // if we are looking at data that has been deisotoped and decharged all things should be charge +- 1
-//        {
-//          precursor_charges.insert(base_charge);
-//        }
-//        else
-//        {
+        if (single_charge_spectra && deisotope_spectra) // if we are looking at data that has been deisotoped and decharged all things should be charge +- 1
+        {
+          precursor_charges.insert(base_charge);
+        }
+        else
+        {
           for (auto prec_it = low_it; prec_it != up_it; ++prec_it) // OMS_CODING_TEST_EXCLUDE        
           {
             precursor_charges.insert(prec_it->second.charge * base_charge);
           }
-//       }
+       }
 
         for (const NASequence* seq_ptr : pair.second)
         {
