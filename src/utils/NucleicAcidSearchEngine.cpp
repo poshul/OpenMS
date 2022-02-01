@@ -418,7 +418,7 @@ protected:
           vector<Size> extensions;
           for (Size i = 0; i < max_isopeaks; ++i)
           {
-            double expected_mz = current_mz + i * Constants::C13C12_MASSDIFF_U / abs(q);
+            double expected_mz = current_mz + (i * Constants::C13C12_MASSDIFF_U) / abs(q);
             Size p = old_spectrum.findNearest(expected_mz);
             double tolerance_dalton = fragment_unit_ppm ? fragment_tolerance * old_spectrum[p].getPosition()[0] * 1e-6 : fragment_tolerance;
             if (fabs(old_spectrum[p].getPosition()[0] - expected_mz) > tolerance_dalton) // test for missing peak
@@ -431,8 +431,8 @@ protected:
             }
             else
             {
-/*
-              // TODO: include proper averagine model filtering. for now start at the second peak to test hypothesis
+
+              /*// TODO: include proper averagine model filtering. for now start at the second peak to test hypothesis
               Size n_extensions = extensions.size();
               if (n_extensions != 0)
               {
@@ -446,15 +446,14 @@ protected:
                 }
               }
 
-              // averagine check passed
-*/
+              // averagine check passed */
               extensions.push_back(p);
             }
           }
 
           if (has_min_isopeaks)
           {
-            //cout << "min peaks at " << current_mz << " " << " extensions: " << extensions.size() << endl;
+            cout << "min peaks at " << current_mz << " " << " extensions: " << extensions.size() << endl;
             mono_isotopic_peak[current_peak] = q;
             for (Size i = 0; i != extensions.size(); ++i)
             {
@@ -1294,10 +1293,17 @@ protected:
 
         // collect all relevant charge states for theoret. spectrum generation:
         set<Int> precursor_charges;
-        for (auto prec_it = low_it; prec_it != up_it; ++prec_it) // OMS_CODING_TEST_EXCLUDE
-        {
-          precursor_charges.insert(prec_it->second.charge * base_charge);
-        }
+//        if (single_charge_spectra && deisotope_spectra) // if we are looking at data that has been deisotoped and decharged all things should be charge +- 1
+//        {
+//          precursor_charges.insert(base_charge);
+//        }
+//        else
+//        {
+          for (auto prec_it = low_it; prec_it != up_it; ++prec_it) // OMS_CODING_TEST_EXCLUDE        
+          {
+            precursor_charges.insert(prec_it->second.charge * base_charge);
+          }
+//       }
 
         for (const NASequence* seq_ptr : pair.second)
         {
