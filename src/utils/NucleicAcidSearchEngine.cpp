@@ -1321,8 +1321,15 @@ protected:
           {
             OPENMS_LOG_DEBUG << "Matching precursor mass: "
                              << float(prec_it->first) << endl;
-
-            Size charge = prec_it->second.charge;
+            Size charge;
+            if (single_charge_spectra && deisotope_spectra) // we look at the single charged spectrum if we have already decharged and deisotoped
+            {
+              charge = 1;
+            }
+            else
+            {
+              charge = prec_it->second.charge;
+            }
             // look up theoretical spectrum for this charge:
             MSSpectrum& theo_spectrum =
               theo_spectra_by_charge[charge * base_charge];
