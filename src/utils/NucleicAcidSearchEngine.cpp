@@ -453,7 +453,7 @@ protected:
 
           if (has_min_isopeaks)
           {
-            cout << "min peaks at " << current_mz << " " << " extensions: " << extensions.size() << endl;
+            //cout << "min peaks at " << current_mz << " " << " extensions: " << extensions.size() << endl;
             mono_isotopic_peak[current_peak] = q;
             for (Size i = 0; i != extensions.size(); ++i)
             {
@@ -534,7 +534,7 @@ protected:
   }
 
 
-  void preprocessSpectra_(PeakMap& exp, double fragment_mass_tolerance, bool fragment_mass_tolerance_unit_ppm, bool single_charge_spectra, bool negative_mode, Int min_charge, Int max_charge, bool include_unknown_charge, Int frag_max_charge, Int frag_min_charge, bool deisotope_spectra)
+  void preprocessSpectra_(PeakMap& exp, double fragment_mass_tolerance, bool fragment_mass_tolerance_unit_ppm, bool single_charge_spectra, bool negative_mode, Int min_charge, Int max_charge, bool include_unknown_charge, Int frag_min_charge, Int frag_max_charge, bool deisotope_spectra)
   {
     // filter MS2 map
     // remove 0 intensities
