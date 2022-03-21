@@ -188,7 +188,7 @@ protected:
     registerOutputFile_("exp_ms2_out", "<file>", "", "Output file: experimental MS2 spectra for precursor mass matches", false, true);
     setValidFormats_("exp_ms2_out", ListUtils::create<String>("mzML"));
 
-    registerFlag_("decharge_ms2", "Decharge the MS2 spectra for scoring", true);
+    registerFlag_("decharge_ms2", "Decharge the MS2 spectra for scoring.", true);
 
     registerFlag_("deisotope_ms2", "Deisotope the MS2 spectra for scoring", true);
 
@@ -639,11 +639,14 @@ protected:
       }
  
       Int temp_frag_max_charge = (abs(frag_max_charge)>abs(precursor_charge)) ? precursor_charge * base_charge : frag_max_charge;
-      deisotopeAndSingleChargeMSSpectrum_(spec, frag_min_charge, temp_frag_max_charge, fragment_mass_tolerance, fragment_mass_tolerance_unit_ppm, deisotope_spectra, 3, 20, single_charge_spectra);
+      deisotopeAndSingleChargeMSSpectrum_(spec, frag_min_charge, temp_frag_max_charge, fragment_mass_tolerance, fragment_mass_tolerance_unit_ppm, deisotope_spectra, 3, 10, single_charge_spectra);
 
       // remove noise
-      window_mower_filter.filterPeakSpectrum(spec);
-      nlargest_filter.filterPeakSpectrum(spec);
+      if (!single_charge_spectra)  // Ignore filtering step if we've already de-charged
+      {
+        window_mower_filter.filterPeakSpectrum(spec);
+        nlargest_filter.filterPeakSpectrum(spec);
+      }
 
       // sort (nlargest changes order)
       spec.sortByPosition();
@@ -1293,7 +1296,7 @@ protected:
 
         // collect all relevant charge states for theoret. spectrum generation:
         set<Int> precursor_charges;
-        if (single_charge_spectra && deisotope_spectra) // if we are looking at data that has been deisotoped and decharged all things should be charge +- 1
+        if (single_charge_spectra) // if we are looking at data that has been decharged all things should be charge +- 1
         {
           precursor_charges.insert(base_charge);
         }
@@ -1322,9 +1325,9 @@ protected:
             OPENMS_LOG_DEBUG << "Matching precursor mass: "
                              << float(prec_it->first) << endl;
             Size charge;
-            if (single_charge_spectra && deisotope_spectra) // we look at the single charged spectrum if we have already decharged and deisotoped
+            if (single_charge_spectra) // we look at the single charged spectrum if we have already decharged
             {
-              charge = 1;
+              charge = 1; //always 1 since we multiply by base charge below
             }
             else
             {
