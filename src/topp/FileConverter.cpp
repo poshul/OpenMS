@@ -58,7 +58,6 @@
 #include <OpenMS/KERNEL/ChromatogramTools.h>
 #include <OpenMS/KERNEL/ConversionHelper.h>
 
-
 using namespace OpenMS;
 using namespace std;
 
@@ -193,7 +192,7 @@ protected:
     registerStringOption_("change_im_format", "<toggle>", "none", "[mzML output only] How to store ion mobility scans (none: no change in format; multiple_spectra: store each IM frame as multiple scans (one per drift time value); concatenated: store whole frame as single scan with IM values in a FloatDataArray", false, true);
     setValidStrings_("change_im_format", NamesOfIMFormat, (int)IMFormat::SIZE_OF_IMFORMAT);
 
-    registerStringOption_("write_scan_index", "<toogle>", "true", "Append an index when writing mzML or mzXML files. Some external tools might rely on it.", false, true);
+    registerStringOption_("write_scan_index", "<toggle>", "true", "Append an index when writing mzML or mzXML files. Some external tools might rely on it.", false, true);
     setValidStrings_("write_scan_index", ListUtils::create<String>("true,false"));
     registerFlag_("lossy_compression", "Use numpress compression to achieve optimally small file size using linear compression for m/z domain and slof for intensity and float data arrays (attention: may cause small loss of precision; only for mzML data).", true);
     registerDoubleOption_("lossy_mass_accuracy", "<error>", -1.0, "Desired (absolute) m/z accuracy for lossy compression (e.g. use 0.0001 for a mass accuracy of 0.2 ppm at 500 m/z, default uses -1.0 for maximal accuracy).", false, true);
@@ -267,12 +266,9 @@ protected:
     //-------------------------------------------------------------
     // reading input
     //-------------------------------------------------------------
-    typedef PeakMap MSExperimentType;
-    MSExperimentType exp;
 
-    typedef FeatureMap FeatureMapType;
-
-    FeatureMapType fm;
+    MSExperiment exp;
+    FeatureMap fm;
     ConsensusMap cm;
 
     writeDebug_(String("Loading input file"), 1);
@@ -538,7 +534,7 @@ protected:
                                                  CONVERSION_MZDATA));
       MzDataFile f;
       f.setLogType(log_type_);
-      ChromatogramTools().convertChromatogramsToSpectra<MSExperimentType>(exp);
+      ChromatogramTools().convertChromatogramsToSpectra<MSExperiment>(exp);
       f.store(out, exp);
     }
     else if (out_type == FileTypes::MZXML)
@@ -550,7 +546,7 @@ protected:
       f.setLogType(log_type_);
       f.getOptions().setForceMQCompatability(force_MaxQuant_compatibility);
       f.getOptions().setWriteIndex(write_scan_index);
-      //ChromatogramTools().convertChromatogramsToSpectra<MSExperimentType>(exp);
+      //ChromatogramTools().convertChromatogramsToSpectra<MSExperiment>(exp);
       f.store(out, exp);
     }
     else if (out_type == FileTypes::DTA2D)
@@ -560,7 +556,7 @@ protected:
                                                  FORMAT_CONVERSION));
       DTA2DFile f;
       f.setLogType(log_type_);
-      ChromatogramTools().convertChromatogramsToSpectra<MSExperimentType>(exp);
+      ChromatogramTools().convertChromatogramsToSpectra<MSExperiment>(exp);
       if (TIC_DTA2D)
       {
         // store the total ion chromatogram (TIC)

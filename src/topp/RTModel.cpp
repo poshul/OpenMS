@@ -49,6 +49,8 @@
 #include <map>
 #include <numeric>
 
+#include "svm.h"
+
 using namespace OpenMS;
 using namespace std;
 
@@ -1011,8 +1013,9 @@ protected:
       }
       ParamXMLFile paramFile;
       paramFile.store(param_outfile_name, additional_parameters);
-      LibSVMEncoder::destroyProblem(encoded_training_sample);
     }
+
+    LibSVMEncoder::destroyProblem(encoded_training_sample);
 
     return EXECUTION_OK;
   }
