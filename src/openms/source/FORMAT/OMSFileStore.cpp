@@ -48,7 +48,7 @@ using ID = OpenMS::IdentificationData;
 
 namespace OpenMS::Internal
 {
-  int version_number = 1;
+  int version_number = 2; // increase this whenever the DB schema changes!
 
   void raiseDBError_(const QSqlError& error, int line,
                      const char* function, const String& context)
@@ -318,7 +318,8 @@ namespace OpenMS::Internal
       "data_value_id INTEGER NOT NULL, "                        \
       "FOREIGN KEY (parent_id) REFERENCES " + parent_ref + ", " \
       "FOREIGN KEY (data_value_id) REFERENCES DataValue (id), " \
-      "UNIQUE (parent_id, name)");
+      "PRIMARY KEY (parent_id, name)");
+
     // prepare query for inserting data:
     QSqlQuery query(QSqlDatabase::database(db_name_));
     query.prepare("INSERT INTO " + table.toQString() + " VALUES ("  \
@@ -576,6 +577,7 @@ namespace OpenMS::Internal
       "precursor_tolerance_ppm NUMERIC NOT NULL CHECK (precursor_tolerance_ppm in (0, 1)) DEFAULT 0, " \
       "fragment_tolerance_ppm NUMERIC NOT NULL CHECK (fragment_tolerance_ppm in (0, 1)) DEFAULT 0, " \
       "digestion_enzyme TEXT, "                                         \
+      "enzyme_term_specificity TEXT, " // new in version 2!
       "missed_cleavages NUMERIC, "                                      \
       "min_length NUMERIC, "                                            \
       "max_length NUMERIC, "                                            \
@@ -597,6 +599,7 @@ namespace OpenMS::Internal
                   ":precursor_tolerance_ppm, "            \
                   ":fragment_tolerance_ppm, "             \
                   ":digestion_enzyme, "                   \
+                  ":enzyme_term_specificity, "            \
                   ":missed_cleavages, "                   \
                   ":min_length, "                         \
                   ":max_length)");
@@ -631,6 +634,8 @@ namespace OpenMS::Internal
       {
         query.bindValue(":digestion_enzyme", QVariant(QVariant::String));
       }
+      query.bindValue(":enzyme_term_specificity",
+                      QString::fromStdString(EnzymaticDigestion::NamesOfSpecificity[param.enzyme_term_specificity]));
       query.bindValue(":missed_cleavages", uint(param.missed_cleavages));
       query.bindValue(":min_length", uint(param.min_length));
       query.bindValue(":max_length", uint(param.max_length));
@@ -960,7 +965,7 @@ namespace OpenMS::Internal
 
     createTable_(
       "ID_IdentifiedCompound",
-      "molecule_id UNIQUE INTEGER NOT NULL, "                           \
+      "molecule_id INTEGER UNIQUE NOT NULL , "                          \
       "formula TEXT, "                                                  \
       "name TEXT, "                                                     \
       "smile TEXT, "                                                    \
@@ -1283,6 +1288,8 @@ namespace OpenMS::Internal
         }
       }
     }
+    // create index on parent_id column
+    query.exec("CREATE INDEX PeakAnnotation_parent_id ON ID_ObservationMatch_PeakAnnotation (parent_id)");
   }
 
 
@@ -1500,9 +1507,9 @@ namespace OpenMS::Internal
   void OMSFileStore::storeMapMetaData_(const FeatureMap& features)
   {
     createTable_("FEAT_MapMetaData",
-                 "unique_id INTEGER, "          \
-                 "identifier TEXT, "            \
-                 "file_path TEXT, "             \
+                 "unique_id INTEGER PRIMARY KEY, "  \
+                 "identifier TEXT, "                \
+                 "file_path TEXT, "                 \
                  "file_type TEXT");
     QSqlQuery query(QSqlDatabase::database(db_name_));
     // @TODO: worth using a prepared query for just one insert?
@@ -1516,6 +1523,7 @@ namespace OpenMS::Internal
     query.bindValue(":file_path", features.getLoadedFilePath().toQString());
     String file_type = FileTypes::typeToName(features.getLoadedFileType());
     query.bindValue(":file_type", file_type.toQString());
+
     if (!query.exec())
     {
       raiseDBError_(query.lastError(), __LINE__, OPENMS_PRETTY_FUNCTION,
