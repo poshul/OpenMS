@@ -1296,7 +1296,7 @@ protected:
 
         // collect all relevant charge states for theoret. spectrum generation:
         set<Int> precursor_charges;
-        if (single_charge_spectra) // if we are looking at data that has been decharged all things should be charge +- 1
+        if (single_charge_spectra && deisotope_spectra ) // if we are looking at data that has been decharged and discards all unidentified peaks all things should be charge +- 1
         {
           precursor_charges.insert(base_charge);
         }
@@ -1325,7 +1325,7 @@ protected:
             OPENMS_LOG_DEBUG << "Matching precursor mass: "
                              << float(prec_it->first) << endl;
             Size charge;
-            if (single_charge_spectra) // we look at the single charged spectrum if we have already decharged
+            if (single_charge_spectra && deisotope_spectra) // we look at the single charged spectrum if we have already decharged
             {
               charge = 1; //always 1 since we multiply by base charge below
             }
