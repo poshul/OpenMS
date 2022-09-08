@@ -195,15 +195,16 @@ namespace OpenMS
 
     // case FivePrime:
     //   return our_form - five_prime_to_full + OH_form + (H_form * charge) + local_three_prime;
+    // AminusB A and B  ions behave differently if we have thiols, since the sulfer is otherwise not considered
 
     case AminusB:
-      return our_form + (H_form * charge) + local_five_prime + aminusB_ion_to_full - seq_.back()->getFormula() + seq_.back()->getBaselossFormula();
+      return our_form + (H_form * charge) + local_five_prime + aminusB_ion_to_full - seq_.back()->getFormula() + seq_.back()->getBaselossFormula() - ((seq_.back()->getCode().back() == '*') ? EmpiricalFormula("SO-1") : EmpiricalFormula("") );
 
     case AIon:
-      return our_form + (H_form * charge) + local_five_prime + a_ion_to_full;
+      return our_form + (H_form * charge) + local_five_prime + a_ion_to_full - ((seq_.back()->getCode().back() == '*') ? EmpiricalFormula("SO-1") : EmpiricalFormula("") );
 
     case BIon:
-      return our_form + (H_form * charge) + local_five_prime + b_ion_to_full;
+      return our_form + (H_form * charge) + local_five_prime + b_ion_to_full - ((seq_.back()->getCode().back() == '*') ? EmpiricalFormula("SO-1") : EmpiricalFormula("") );
 
     case CIon:
       return our_form + (H_form * charge) + local_five_prime + c_ion_to_full;
@@ -212,10 +213,10 @@ namespace OpenMS
       return our_form + (H_form * charge) + local_five_prime + d_ion_to_full;
 
     case WIon:
-      return our_form + (H_form * charge) + local_three_prime + w_ion_to_full;
+      return our_form + (H_form * charge) + local_three_prime + w_ion_to_full; //FIXME doesn't work when there is a thiol 5' of our sequence
 
     case XIon:
-      return our_form + (H_form * charge) + local_three_prime + x_ion_to_full;
+      return our_form + (H_form * charge) + local_three_prime + x_ion_to_full; //FIXME doesn't work when there is a thiol 5' of our sequence
 
     case YIon:
       return our_form + (H_form * charge) + local_three_prime + y_ion_to_full;

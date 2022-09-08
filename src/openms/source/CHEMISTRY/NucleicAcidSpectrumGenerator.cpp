@@ -236,7 +236,7 @@ namespace OpenMS
       // * at the end means phosphorothioate
       if (ribo.getCode().back() == '*')
         {
-          thiols[index] = 15.97715654; //FIXME make this a constant
+          thiols[index] = EmpiricalFormula("SO-1").getMonoWeight();
         }
       ++index;
     }
