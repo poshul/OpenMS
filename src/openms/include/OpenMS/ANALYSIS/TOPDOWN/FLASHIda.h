@@ -169,7 +169,7 @@ namespace OpenMS
                                       const char *name);
 
     /// deconvolved spectrum that contains the peak group
-    DeconvolvedSpectrum deconvolved_spectrum_;
+    DeconvolvedSpectrum deconvolved_spectrum_ = DeconvolvedSpectrum(MSSpectrum(),-1); // Explicitly populate deconvolved_spectrum
     /// peakGroup charges to be triggered
     std::vector<int> trigger_charges;
     /// peakGroup isolation window ranges

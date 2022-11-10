@@ -58,7 +58,7 @@ namespace OpenMS
     typedef FLASHDeconvHelperStructs::LogMzPeak LogMzPeak;
 
     /// default constructor
-    DeconvolvedSpectrum() = default;
+    DeconvolvedSpectrum() = delete;
 
     /**
        @brief Constructor for DeconvolvedSpectrum. Takes the spectrum and scan number calculated from outside

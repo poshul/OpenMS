@@ -53,7 +53,7 @@ DeconvolvedSpectrum* ptr = 0;
 DeconvolvedSpectrum* null_ptr = 0;
 START_SECTION(DeconvolvedSpectrum())
 {
-  ptr = new DeconvolvedSpectrum();
+  ptr = new DeconvolvedSpectrum(MSSpectrum(),-1);
   TEST_NOT_EQUAL(ptr, null_ptr)
 }
 END_SECTION

@@ -47,6 +47,8 @@
 #include <QCoreApplication>
 #include <QDir>
 
+#include <thread>
+
 
 namespace OpenMS
 {

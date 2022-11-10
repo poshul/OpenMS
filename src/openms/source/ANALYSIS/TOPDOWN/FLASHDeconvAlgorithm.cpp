@@ -88,7 +88,6 @@ namespace OpenMS
     defaults_.setValue("min_intensity", 0.0, "Intensity threshold");
     //  defaults_.setValue("rt_window", 180.0, "RT window for MS1 deconvolution");
     defaultsToParam_();
-
    // torch::Tensor tensor = torch::rand({3,3});
    // std::cout << tensor << std::endl;
 
