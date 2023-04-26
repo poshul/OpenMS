@@ -146,7 +146,7 @@ protected:
     
     registerIntOption_("num_precursors", "<Int>", 1, "number of precursors to be selected", false);
     registerInputFile_("raw_data", "<file>", "", "Input profile data.", false);
-    setValidFormats_("raw_data", ListUtils::create<String>("mzML"));
+    setValidFormats_("raw_data", FileTypeList::typesWithProperties({FileTypes::READABLE,FileTypes::PROVIDES_MS2}).toValidFormats());
     registerFlag_("load_preprocessing", "The preprocessed db is loaded from file, not calculated.");
     registerFlag_("store_preprocessing", "The preprocessed db is stored.");
     registerFlag_("simulation", "Simulate the whole LC-MS/MS run.");
@@ -231,7 +231,7 @@ protected:
     PeakMap exp;
     if (!raw_data.empty())
     {
-      FileHandler().loadExperiment(raw_data, exp, {FileTypes::MZML});
+      FileHandler().loadExperiment(raw_data, exp, {FileHandler().getType(raw_data)});
     }
     //-------------------------------------------------------------
     // init pis

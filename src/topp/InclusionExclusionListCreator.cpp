@@ -135,7 +135,7 @@ protected:
     registerIntList_("exclusion_charges", "<charge>", IntList(), "List containing the charge states to be considered for the exclusion list compounds (for idXML and FASTA input), space separated.", false);
     setMinInt_("exclusion_charges", 1);
     registerInputFile_("raw_data", "<mzMLFile>", "", "File containing the raw data (only needed for FeatureBased_LP).", false);
-    setValidFormats_("raw_data", ListUtils::create<String>("mzML"));
+    setValidFormats_("raw_data", FileTypeList::typesWithProperties({FileTypes::READABLE,FileTypes::PROVIDES_MS2}).toValidFormats());
 
     //    setValidFormats_("out", ListUtils::create<String>("traML"));
 
@@ -240,7 +240,7 @@ protected:
 
           String raw_data_path = getStringOption_("raw_data");
           PeakMap exp, ms2;
-          FileHandler().loadExperiment(raw_data_path, exp, {FileTypes::MZML});
+          FileHandler().loadExperiment(raw_data_path, exp, {FileHandler().getType(raw_data_path)});
           FeatureMap out_map;
           out_map.setPrimaryMSRunPath({raw_data_path}, exp);
 
@@ -275,9 +275,9 @@ protected:
           ilp_wrapper.createAndSolveILPForKnownLCMSMapFeatureBased(map, exp, variable_indices, indices, charges_set, spot_cap, solution_indices);
 
           sort(variable_indices.begin(), variable_indices.end(), PSLPFormulation::IndexLess());
-#ifdef DEBUG_OPS
+          #ifdef DEBUG_OPS
           std::cout << "best_solution " << std::endl;
-#endif
+          #endif
           std::vector<Int> rt_sizes(exp.size(), 0);
           // print best solution
           // create inclusion list
@@ -289,12 +289,12 @@ protected:
             //            std::cout << map[feature_index].getMetaValue("msms_score") << std::endl;
             ++rt_sizes[scan];
           }
-#ifdef DEBUG_OPS
+          #ifdef DEBUG_OPS
           for (Size r = 0; r < rt_sizes.size(); ++r)
           {
             std::cout << r << "\t" << rt_sizes[r] << "\n";
           }
-#endif
+          #endif
           try
           {
             if (out.hasSuffix("featureXML"))

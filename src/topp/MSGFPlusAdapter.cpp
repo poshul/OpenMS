@@ -155,7 +155,7 @@ protected:
   void registerOptionsAndFlags_() override
   {
     registerInputFile_("in", "<file>", "", "Input file (MS-GF+ parameter '-s')");
-    setValidFormats_("in", {"mzML", "mzXML", "mgf", "ms2" });
+    setValidFormats_("in", FileTypeList::typesWithProperties({FileTypes::READABLE,FileTypes::PROVIDES_MS2}).toValidFormats()); // TODO readd mgf and ms2 support
     registerOutputFile_("out", "<file>", "", "Output file", false);
     setValidFormats_("out", ListUtils::create<String>("idXML"));
     registerOutputFile_("mzid_out", "<file>", "", "Alternative output file (MS-GF+ parameter '-o')\nEither 'out' or 'mzid_out' are required. They can be used together.", false);
@@ -328,10 +328,10 @@ protected:
     {
       PeakMap exp;
       // load only MS2 spectra:
-      FileHandler f;
-      f.getOptions().addMSLevel(2);
-      f.getOptions().setFillData(false);
-      f.loadExperiment(exp_name, exp, {FileTypes::MZML});
+      FileHandler fh;
+      fh.getOptions().addMSLevel(2);
+      fh.getOptions().setFillData(false);
+      fh.loadExperiment(exp_name, exp, {fh.getType(exp_name)});
       exp.getPrimaryMSRunPath(primary_ms_run_path_);
       // if no primary run is assigned, the mzML file is the (unprocessed) primary file
       if (primary_ms_run_path_.empty())

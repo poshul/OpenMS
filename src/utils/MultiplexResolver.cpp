@@ -130,7 +130,7 @@ private:
     registerInputFile_("in", "<file>", "", "Peptide multiplets with assigned sequence information");
     setValidFormats_("in", ListUtils::create<String>("consensusXML"));
     registerInputFile_("in_blacklist", "<file>", "", "Optional input containing spectral peaks blacklisted during feature detection. Needed for generation of dummy features.", false);
-    setValidFormats_("in_blacklist", ListUtils::create<String>("mzML"));
+    setValidFormats_("in_blacklist", FileTypeList::typesWithProperties({FileTypes::READABLE,FileTypes::PROVIDES_MS2}).toValidFormats());
     registerOutputFile_("out", "<file>", "", "Complete peptide multiplets.");
     setValidFormats_("out", ListUtils::create<String>("consensusXML"));
     registerOutputFile_("out_conflicts", "<file>", "", "Optional output containing peptide multiplets without ID annotation or with conflicting quant/ID information.", false);
@@ -605,7 +605,7 @@ public:
      */
     if (!(in_blacklist_.empty()))
     {
-      FileHandler().loadExperiment(in_blacklist_, exp_blacklist_, {FileTypes::MZML});
+      FileHandler().loadExperiment(in_blacklist_, exp_blacklist_, {FileHandler().getType(in_blacklist_)});
     }
 
     /**

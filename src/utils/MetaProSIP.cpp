@@ -3062,7 +3062,7 @@ protected:
       FileHandler mh;
       std::vector<Int> ms_level(1, 2);
       mh.getOptions().setMSLevels(ms_level);
-      mh.loadExperiment(in_mzml, peak_map, {FileTypes::MZML});
+      mh.loadExperiment(in_mzml, peak_map, {mh.getType(in_mzml)});
       peak_map.sortSpectra();
       peak_map.updateRanges();
 
@@ -3149,7 +3149,7 @@ protected:
     FileHandler mh;
     std::vector<Int> ms_level(1, 1);
     mh.getOptions().setMSLevels(ms_level);
-    mh.loadExperiment(in_mzml, peak_map, {FileTypes::MZML});
+    mh.loadExperiment(in_mzml, peak_map, {mh.getType(in_mzml)});
     peak_map.updateRanges();
     ThresholdMower tm;
     Param tm_parameters;

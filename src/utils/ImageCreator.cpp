@@ -214,7 +214,7 @@ protected:
   void registerOptionsAndFlags_() override
   {
     registerInputFile_("in", "<file>", "", "input file ");
-    setValidFormats_("in", {"mzML"});
+    setValidFormats_("in", {FileTypeList::typesWithProperties({FileTypes::READABLE,FileTypes::PROVIDES_MS2}).toValidFormats()});
     registerInputFile_("in_featureXML", "<file>", "", "input file ", false);
     setValidFormats_("in_featureXML", {"featureXML"});
 
@@ -282,11 +282,11 @@ protected:
     bool show_precursors = getFlag_("precursors");
 
     PeakMap exp;
-    FileHandler f;
-    if (filter_rt) f.getOptions().setRTRange(DRange<1>(rt_min, rt_max));
-    if (filter_mz) f.getOptions().setMZRange(DRange<1>(mz_min, mz_max));
-    if (!show_precursors) f.getOptions().setMSLevels({1});
-    f.loadExperiment(in, exp, {FileTypes::MZML}, log_type_);
+    FileHandler fh;
+    if (filter_rt) fh.getOptions().setRTRange(DRange<1>(rt_min, rt_max));
+    if (filter_mz) fh.getOptions().setMZRange(DRange<1>(mz_min, mz_max));
+    if (!show_precursors) fh.getOptions().setMSLevels({1});
+    fh.loadExperiment(in, exp, {fh.getType(in)}, log_type_);
     if (filter_mz && show_precursors)
     {
       // MS2 spectra were not filtered by precursor m/z, remove them now:

@@ -167,7 +167,7 @@ protected:
   {
     // data
     registerInputFile_("in", "<file>", "", "Input peak file");
-    setValidFormats_("in", {"mzML"});
+    setValidFormats_("in", FileTypeList::typesWithProperties({FileTypes::READABLE,FileTypes::PROVIDES_MS2}).toValidFormats());
     registerOutputFile_("out", "<file>", "", "Output file ");
     setValidFormats_("out", {"mzML"});
     registerInputFile_("rscript_executable", "<file>", "Rscript", "Path to the Rscript executable (default: 'Rscript').", false, false, {"is_executable"});
@@ -256,7 +256,7 @@ protected:
     // Raw data
     PeakMap exp;
     FileHandler mz_file;
-    mz_file.loadExperiment(in, exp, {FileTypes::MZML}, log_type_);
+    mz_file.loadExperiment(in, exp, {mz_file.getType(in)}, log_type_);
 
     InternalCalibration ic;
     ic.setLogType(log_type_);

@@ -235,7 +235,7 @@ protected:
       // no progress log on the console in parallel
       featureFinder.setLogType(log_type_);
 
-      FileHandler().loadExperiment(file_list[i], *swath_map.get(), {FileTypes::MZML}, log_type_);
+      FileHandler().loadExperiment(file_list[i], *swath_map.get(), {FileHandler().getType(file_list[i])}, log_type_);
 
       // Logging and output to the console
 #ifdef _OPENMP

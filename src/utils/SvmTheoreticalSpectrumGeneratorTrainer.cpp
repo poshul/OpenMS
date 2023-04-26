@@ -84,7 +84,7 @@ protected:
   {
     // I/O settings
     registerInputFile_("in_spectra", "<file>", "", "Input Training Spectra in mzML", true);
-    setValidFormats_("in_spectra",  ListUtils::create<String>("mzML"));
+    setValidFormats_("in_spectra",  FileTypeList::typesWithProperties({FileTypes::READABLE,FileTypes::PROVIDES_MS2}).toValidFormats());
     registerInputFile_("in_identifications", "<file>", "", "Input file with corresponding sequences in idXML", true);
     setValidFormats_("in_identifications",  ListUtils::create<String>("idXML"));
     registerOutputFile_("model_output_file", "<file>", "",
@@ -129,7 +129,7 @@ protected:
     // loading input
     //-------------------------------------------------------------
     PeakMap map;
-    FileHandler().loadExperiment(in_spectra, map, {FileTypes::MZML});
+    FileHandler().loadExperiment(in_spectra, map, {FileHandler().getType(in_spectra)});
 
     std::vector<PeptideIdentification> pep_ids;
     std::vector<ProteinIdentification> prot_ids;

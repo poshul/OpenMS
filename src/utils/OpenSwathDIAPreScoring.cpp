@@ -91,7 +91,7 @@ protected:
     registerInputFileList_("swath_files", "<files>", StringList(),
                            "Swath files that were used to extract the transitions. If present, SWATH specific scoring will be applied.",
                            true);
-    setValidFormats_("swath_files", ListUtils::create<String>("mzML"));
+    setValidFormats_("swath_files", FileTypeList::typesWithProperties({FileTypes::READABLE,FileTypes::PROVIDES_MS2}).toValidFormats());
     registerOutputFileList_("output_files", "<files>", StringList(),
                            "Output files. One per Swath input file.",
                            true);
@@ -140,7 +140,7 @@ protected:
       FeatureMap featureFile;
       std::cout << "Loading file " << file_list[i] << std::endl;
       String fname = outfile_list[i];
-      FileHandler().loadExperiment(file_list[i], *swath_map, {FileTypes::MZML}, log_type_);
+      FileHandler().loadExperiment(file_list[i], *swath_map, {FileHandler().getType(file_list[i])}, log_type_);
       if (swath_map->empty() || (*swath_map)[0].getPrecursors().empty())
       {
         std::cerr << "WARNING: File " << swath_map->getLoadedFilePath()

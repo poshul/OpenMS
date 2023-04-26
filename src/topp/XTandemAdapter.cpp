@@ -147,7 +147,7 @@ protected:
   {
 
     registerInputFile_("in", "<file>", "", "Input file containing MS2 spectra");
-    setValidFormats_("in", {"mzML"});
+    setValidFormats_("in", FileTypeList::typesWithProperties({FileTypes::READABLE,FileTypes::PROVIDES_MS2}).toValidFormats());
     registerOutputFile_("out", "<file>", "", "Output file containing search results", false);
     setValidFormats_("out", {"idXML"});
     registerOutputFile_("xml_out", "<file>", "", "Raw output file directly from X! Tandem. Either 'out' or 'xml_out' are required. They can be used together.", false);
@@ -245,7 +245,7 @@ protected:
     FileHandler mzml_file;
     mzml_file.getOptions().addMSLevel(2); // only load MS level 2
     mzml_file.getOptions().setFillData(false); // do not fill the actual spectra. We only need RT and mz info for mapping
-    mzml_file.loadExperiment(in, exp, {FileTypes::MZML});
+    mzml_file.loadExperiment(in, exp, {mzml_file.getType(in)});
 
     ofstream tax_out(tandem_taxonomy_filename.c_str());
     tax_out << "<?xml version=\"1.0\"?>" << "\n";

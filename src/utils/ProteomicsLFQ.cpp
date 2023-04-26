@@ -146,7 +146,7 @@ protected:
   void registerOptionsAndFlags_() override
   {
     registerInputFileList_("in", "<file list>", StringList(), "Input files");
-    setValidFormats_("in", FileTypeList::typesWithProperties({FileTypes::READABLE,FileTypes::PROVIDES_MS2}).toValidFormats());;
+    setValidFormats_("in", FileTypeList::typesWithProperties({FileTypes::READABLE,FileTypes::PROVIDES_MS2}).toValidFormats());
     registerInputFileList_("ids", "<file list>", StringList(), 
       "Identifications filtered at PSM level (e.g., q-value < 0.01)."
       "And annotated with PEP as main score.\n"

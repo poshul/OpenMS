@@ -149,12 +149,12 @@ protected:
 
     // load input
     std::vector<PeakMap > peak_maps(ins.size());
-    FileHandler f;
+    FileHandler fh;
     progresslogger.startProgress(0, ins.size(), "loading input files");
     for (Size i = 0; i < ins.size(); ++i)
     {
       progresslogger.setProgress(i);
-      f.loadExperiment(ins[i], peak_maps[i], {FileTypes::MZML}, log_type_);
+      fh.loadExperiment(ins[i], peak_maps[i], {fh.getType(ins[i])}, log_type_);
     }
     progresslogger.endProgress();
 
@@ -180,7 +180,7 @@ protected:
       addDataProcessing_(peak_maps[i], 
                          getProcessingInfo_(DataProcessing::ALIGNMENT));
 
-      f.storeExperiment(outs[i], peak_maps[i],{FileTypes::MZML}, log_type_);
+      fh.storeExperiment(outs[i], peak_maps[i],{FileTypes::MZML}, log_type_);
     }
     progresslogger.endProgress();
 

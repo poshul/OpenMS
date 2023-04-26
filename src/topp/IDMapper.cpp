@@ -174,7 +174,7 @@ protected:
 
     registerTOPPSubsection_("spectra", "Additional options for mzML input");
     registerInputFile_("spectra:in", "<file>", "", "MS run used to annotated unidentified spectra to features or consensus features.", false);
-    setValidFormats_("spectra:in", ListUtils::create<String>("mzML"));
+    setValidFormats_("spectra:in", FileTypeList::typesWithProperties({FileTypes::READABLE,FileTypes::PROVIDES_MS2}).toValidFormats());
   }
 
   ExitCodes main_(int, const char**) override
@@ -221,7 +221,7 @@ protected:
       PeakMap exp;
       if (!spectra.empty())
       {
-        FileHandler().loadExperiment(spectra, exp, {FileTypes::MZML});
+        FileHandler().loadExperiment(spectra, exp, {FileHandler().getType(spectra)});
       }
 
       bool measure_from_subelements = getFlag_("consensus:use_subelements");
@@ -252,7 +252,7 @@ protected:
 
       if (!spectra.empty())
       {
-        FileHandler().loadExperiment(spectra, exp, {FileTypes::MZML});
+        FileHandler().loadExperiment(spectra, exp, {FileHandler().getType(spectra)});
       }
 
       mapper.annotate(map, peptide_ids, protein_ids, (getStringOption_("feature:use_centroid_rt") == "true"), (getStringOption_("feature:use_centroid_mz") == "true"), exp);

@@ -174,7 +174,7 @@ protected:
   void registerOptionsAndFlags_() override
   {
     registerInputFile_("in", "<file>", "", "Input file: LC-MS raw data");
-    setValidFormats_("in", {"mzML"});
+    setValidFormats_("in", FileTypeList::typesWithProperties({FileTypes::READABLE,FileTypes::PROVIDES_MS2}).toValidFormats());
     registerInputFile_("id", "<file>", "", "Input file: Peptide identifications derived directly from 'in'");
     setValidFormats_("id", {"idXML"});
     registerInputFile_("id_ext", "<file>", "", "Input file: 'External' peptide identifications (e.g. from aligned runs)", false);
@@ -229,7 +229,7 @@ protected:
       OPENMS_LOG_INFO << "Loading input data..." << endl;
       FileHandler mzml;
       mzml.getOptions().addMSLevel(1);
-      mzml.loadExperiment(in, ffid_algo.getMSData(), {FileTypes::MZML}, log_type_);
+      mzml.loadExperiment(in, ffid_algo.getMSData(), {FileHandler().getType(in)}, log_type_);
 
       vector<PeptideIdentification> peptides, peptides_ext;
       vector<ProteinIdentification> proteins, proteins_ext;

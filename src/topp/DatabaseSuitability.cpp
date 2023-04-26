@@ -150,7 +150,7 @@ protected:
     registerInputFile_("in_id", "<file>", "", "Input idXML file from a peptide identification search with a combined database. PeptideIndexer is needed, FDR is forbidden.");
     setValidFormats_("in_id", { "idXML" });
     registerInputFile_("in_spec", "<file>", "", "Input MzML file used for the peptide identification");
-    setValidFormats_("in_spec", {"mzML"});
+    setValidFormats_("in_spec", FileTypeList::typesWithProperties({FileTypes::READABLE,FileTypes::PROVIDES_MS2}).toValidFormats());
     registerInputFile_("in_novo", "<file>", "", "Input idXML file containing de novo peptides (unfiltered)");
     setValidFormats_("in_novo", { "idXML" });
     registerInputFile_("database", "<file>", "", "Input FASTA file of the database in question");
@@ -189,7 +189,7 @@ protected:
     op.setMSLevels({2});// only ms2
     m.setOptions(op);
     PeakMap exp;
-    m.loadExperiment(in_spec, exp, {FileTypes::MZML});
+    m.loadExperiment(in_spec, exp, {m.getType(in_spec)});
 
     FileHandler x;
     vector<ProteinIdentification> prot_ids;

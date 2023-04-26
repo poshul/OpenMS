@@ -196,7 +196,7 @@ protected:
     setValidStrings_("type", valid_types);
 
     registerInputFile_("in", "<file>", "", "input raw/picked data file ");
-    setValidFormats_("in", {"mzML"});
+    setValidFormats_("in", FileTypeList::typesWithProperties({FileTypes::READABLE,FileTypes::PROVIDES_MS2}).toValidFormats());
     registerOutputFile_("out", "<file>", "", "output consensusXML file with quantitative information");
     setValidFormats_("out", {"consensusXML"});
 
@@ -243,7 +243,7 @@ protected:
     //-------------------------------------------------------------
 
     PeakMap exp;
-    FileHandler().loadExperiment(in, exp, {FileTypes::MZML}, log_type_);
+    FileHandler().loadExperiment(in, exp, {FileHandler().getType(in)}, log_type_);
 
     //-------------------------------------------------------------
     // init quant method
