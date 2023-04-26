@@ -94,7 +94,7 @@ protected:
   void registerOptionsAndFlags_() override
   {
     registerInputFile_("in", "<file>", "", "Input mzML file.");
-    setValidFormats_("in", ListUtils::create<String>("mzML"));
+    setValidFormats_("in", FileTypeList::typesWithProperties({FileTypes::READABLE,FileTypes::PROVIDES_MS2}).toValidFormats());;
     registerOutputFile_("out", "<file>", "", "Output mzML file with merged spectra.");
     setValidFormats_("out", ListUtils::create<String>("mzML"));
 
@@ -123,10 +123,8 @@ protected:
     //-------------------------------------------------------------
 
     FileHandler fh;
-    FileTypes::Type in_type = fh.getType(in);
-
     PeakMap exp;
-    fh.loadExperiment(in, exp, {in_type}, log_type_);
+    fh.loadExperiment(in, exp, {fh.getType(in)}, log_type_);
     exp.sortSpectra();
 
     auto levels = exp.getMSLevels();

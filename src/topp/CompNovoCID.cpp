@@ -108,7 +108,7 @@ protected:
   void registerOptionsAndFlags_() override
   {
     registerInputFile_("in", "<file>", "", "input file in mzML format", true);
-    setValidFormats_("in", ListUtils::create<String>("mzML"));
+    setValidFormats_("in", FileTypeList::typesWithProperties({FileTypes::READABLE,FileTypes::PROVIDES_MS2}).toValidFormats());;
 
     registerOutputFile_("out", "<file>", "", "output file in idXML format", true);
     setValidFormats_("out", ListUtils::create<String>("idXML"));
@@ -133,13 +133,13 @@ protected:
     //-------------------------------------------------------------
 
     PeakMap exp;
-    FileHandler f;
+    FileHandler fh;
 
     PeakFileOptions options;
     options.clearMSLevels();
     options.addMSLevel(2);
-    f.getOptions() = options;
-    f.loadExperiment(in, exp, {FileTypes::MZML}, log_type_);
+    fh.getOptions() = options;
+    fh.loadExperiment(in, exp, {fh.getType(in)}, log_type_);
 
     writeDebug_("Data set contains " + String(exp.size()) + " spectra", 1);
 

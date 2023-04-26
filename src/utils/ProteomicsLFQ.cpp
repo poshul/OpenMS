@@ -146,7 +146,7 @@ protected:
   void registerOptionsAndFlags_() override
   {
     registerInputFileList_("in", "<file list>", StringList(), "Input files");
-    setValidFormats_("in", ListUtils::create<String>("mzML"));
+    setValidFormats_("in", FileTypeList::typesWithProperties({FileTypes::READABLE,FileTypes::PROVIDES_MS2}).toValidFormats());;
     registerInputFileList_("ids", "<file list>", StringList(), 
       "Identifications filtered at PSM level (e.g., q-value < 0.01)."
       "And annotated with PEP as main score.\n"
@@ -347,7 +347,7 @@ protected:
     // load raw file
 
     PeakMap ms_raw;
-    FileHandler().loadExperiment(mz_file, ms_raw, {FileTypes::MZML});
+    FileHandler().loadExperiment(mz_file, ms_raw, {FileHandler().getType(mz_file)});
     ms_raw.clearMetaDataArrays();
 
     if (ms_raw.empty())

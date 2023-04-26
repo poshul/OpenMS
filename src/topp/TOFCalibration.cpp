@@ -98,7 +98,7 @@ protected:
   void registerOptionsAndFlags_() override
   {
     registerInputFile_("in", "<file>", "", "input peak or raw data file ");
-    setValidFormats_("in", ListUtils::create<String>("mzML"));
+    setValidFormats_("in", FileTypeList::typesWithProperties({FileTypes::READABLE,FileTypes::PROVIDES_MS2}).toValidFormats());;
     registerOutputFile_("out", "<file>", "", "output file ");
     setValidFormats_("out", ListUtils::create<String>("mzML"));
     addEmptyLine_();
@@ -151,8 +151,8 @@ protected:
     //-------------------------------------------------------------
     PeakMap ms_exp_calib, ms_exp_raw;
     FileHandler mz_data_file;
-    mz_data_file.loadExperiment(in_calib, ms_exp_calib, {FileTypes::MZML}, log_type_);
-    mz_data_file.loadExperiment(in, ms_exp_raw, {FileTypes::MZML}, log_type_);
+    mz_data_file.loadExperiment(in_calib, ms_exp_calib, {mz_data_file.getType(in_calib)}, log_type_);
+    mz_data_file.loadExperiment(in, ms_exp_raw, {mz_data_file.getType(in)}, log_type_);
 
     vector<double> ref_masses;
     TextFile ref_file;

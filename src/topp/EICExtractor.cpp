@@ -176,7 +176,7 @@ public:
   void registerOptionsAndFlags_() override
   {
     registerInputFileList_("in", "<file>", ListUtils::create<String>(""), "Input raw data file");
-    setValidFormats_("in", ListUtils::create<String>("mzML"));
+    setValidFormats_("in", FileTypeList::typesWithProperties({FileTypes::READABLE,FileTypes::PROVIDES_MS2}).toValidFormats());;
 
     registerInputFileList_("in_header", "<file>", ListUtils::create<String>(""), "[for Waters data only] Read additional information from _HEADER.TXT. Provide one for each raw input file.", false);
     setValidFormats_("in_header", ListUtils::create<String>("txt"));
@@ -271,7 +271,7 @@ public:
     for (Size fi = 0; fi < in.size(); ++fi)
     {
       // load raw data
-      mzml_file.loadExperiment(in[fi], exp, {FileTypes::MZML}, log_type_);
+      mzml_file.loadExperiment(in[fi], exp, {mzml_file.getType(in[fi])}, log_type_);
       exp.sortSpectra(true);
 
       if (exp.empty())

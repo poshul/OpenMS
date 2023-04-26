@@ -102,7 +102,7 @@ protected:
   void registerOptionsAndFlags_() override
   {
     registerInputFile_("in", "<file>", "", "input centroided mzML file");
-    setValidFormats_("in", ListUtils::create<String>("mzML"));
+    setValidFormats_("in", FileTypeList::typesWithProperties({FileTypes::READABLE,FileTypes::PROVIDES_MS2}).toValidFormats());;
     registerOutputFile_("out", "<file>", "", "output featureXML file with mass traces");
     setValidFormats_("out", ListUtils::create<String>("featureXML,consensusXML"));
     registerStringOption_("out_type", "<type>", "", "output file type -- default: determined from file extension or content", false);
@@ -164,7 +164,7 @@ protected:
     PeakMap ms_peakmap;
     std::vector<Int> ms_level(1, 1);
     (mz_data_file.getOptions()).setMSLevels(ms_level);
-    mz_data_file.loadExperiment(in, ms_peakmap, {FileTypes::MZML}, log_type_);
+    mz_data_file.loadExperiment(in, ms_peakmap, {mz_data_file.getType(in)}, log_type_);
 
     if (ms_peakmap.empty())
     {

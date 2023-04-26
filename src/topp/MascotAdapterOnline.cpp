@@ -134,7 +134,7 @@ protected:
   void registerOptionsAndFlags_() override
   {
     registerInputFile_("in", "<file>", "", "input file in mzML format.\n");
-    setValidFormats_("in", ListUtils::create<String>("mzML"));
+    setValidFormats_("in", FileTypeList::typesWithProperties({FileTypes::READABLE,FileTypes::PROVIDES_MS2}).toValidFormats());;
     registerOutputFile_("out", "<file>", "", "output file in idXML format.\n");
     setValidFormats_("out", ListUtils::create<String>("idXML"));
 
@@ -267,7 +267,7 @@ protected:
     // keep only MS2 spectra
     FileHandler fh;
     fh.getOptions().setMSLevels({2});
-    fh.loadExperiment(in, exp, {FileTypes::Type::MZML}, log_type_, false, false);
+    fh.loadExperiment(in, exp, {fh.getType(in)}, log_type_, false, false);
     writeLogInfo_("Number of spectra loaded: " + String(exp.size()));
 
 

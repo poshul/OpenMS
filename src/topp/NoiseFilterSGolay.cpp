@@ -135,7 +135,7 @@ public:
   void registerOptionsAndFlags_() override
   {
     registerInputFile_("in", "<file>", "", "input raw data file ");
-    setValidFormats_("in", ListUtils::create<String>("mzML"));
+    setValidFormats_("in", FileTypeList::typesWithProperties({FileTypes::READABLE,FileTypes::PROVIDES_MS2}).toValidFormats());;
     registerOutputFile_("out", "<file>", "", "output raw data file ");
     setValidFormats_("out", ListUtils::create<String>("mzML"));
 
@@ -194,7 +194,7 @@ public:
     //-------------------------------------------------------------
     FileHandler mz_data_file;
     PeakMap exp;
-    mz_data_file.loadExperiment(in, exp, {FileTypes::MZML}, log_type_);
+    mz_data_file.loadExperiment(in, exp, {mz_data_file.getType(in)}, log_type_);
 
     if (exp.empty() && exp.getChromatograms().empty())
     {

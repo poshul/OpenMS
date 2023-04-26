@@ -129,7 +129,7 @@ protected:
   void registerOptionsAndFlags_() override
   {
     registerInputFile_("in", "<file>", "", "Input file");
-    setValidFormats_("in", ListUtils::create<String>("mzML"));
+    setValidFormats_("in", FileTypeList::typesWithProperties({FileTypes::READABLE,FileTypes::PROVIDES_MS2}).toValidFormats());;
 
     registerInputFile_("tr", "<file>", "", "transition file ('TraML' or 'csv')");
     setValidFormats_("tr", ListUtils::create<String>("csv,traML"));
@@ -276,7 +276,7 @@ protected:
     bool force = getFlag_("force");
 
     boost::shared_ptr<PeakMap > exp ( new PeakMap );
-    FileHandler().loadExperiment(in, *exp, {FileTypes::MZML}, log_type_);
+    FileHandler().loadExperiment(in, *exp, {FileHandler().getType(in)}, log_type_);
 
     TargetedExpType transition_exp;
     FileHandler().loadTransitions(tr_file, transition_exp, {FileTypes::TRAML});

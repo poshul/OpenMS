@@ -133,7 +133,7 @@ protected:
   void registerOptionsAndFlags_() override
   {
     registerInputFile_("in", "<file>", "", "Input mzML file containing the ER spectra.");
-    setValidFormats_("in", ListUtils::create<String>("mzML"));
+    setValidFormats_("in", FileTypeList::typesWithProperties({FileTypes::READABLE,FileTypes::PROVIDES_MS2}).toValidFormats());;
 
     registerInputFile_("pair_in", "<file>", "", "Pair-file in the format: m/z-light m/z-heavy charge rt");
     setValidFormats_("pair_in", ListUtils::create<String>("txt"));
@@ -183,7 +183,7 @@ protected:
     //-------------------------------------------------------------
 
     PeakMap exp;
-    FileHandler().loadExperiment(in, exp, {FileTypes::MZML});
+    FileHandler().loadExperiment(in, exp, {FileHandler().getType(in)});
     exp.sortSpectra();
     exp.updateRanges();
 

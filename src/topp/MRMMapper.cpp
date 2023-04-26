@@ -120,7 +120,7 @@ protected:
   void registerOptionsAndFlags_() override
   {
     registerInputFile_("in", "<file>", "", "Input file containing chromatograms (converted mzXML file)");
-    setValidFormats_("in", ListUtils::create<String>("mzML"));
+    setValidFormats_("in", FileTypeList::typesWithProperties({FileTypes::READABLE,FileTypes::PROVIDES_MS2}).toValidFormats());;
 
     registerInputFile_("tr", "<file>", "", "transition file");
     setValidFormats_("tr", ListUtils::create<String>("traML"));
@@ -154,7 +154,7 @@ protected:
     OpenMS::PeakMap output;
 
     FileHandler().loadTransitions(tr_file, targeted_exp, {FileTypes::TRAML});
-    FileHandler().loadExperiment(in, chromatogram_map, {FileTypes::MZML});
+    FileHandler().loadExperiment(in, chromatogram_map, {FileHandler().getType(in)});
 
     Param param = getParam_().copy("algorithm:", true);
 

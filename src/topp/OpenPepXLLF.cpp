@@ -136,7 +136,7 @@ protected:
   {
     // input files
     registerInputFile_("in", "<file>", "", "Input file containing the spectra.", true, false);
-    setValidFormats_("in", ListUtils::create<String>("mzML"));
+    setValidFormats_("in", FileTypeList::typesWithProperties({FileTypes::READABLE,FileTypes::PROVIDES_MS2}).toValidFormats());;
 
     registerInputFile_("database", "<file>", "", "Input file containing the protein database.", true, false);
     setValidFormats_("database", ListUtils::create<String>("fasta"));
@@ -178,14 +178,14 @@ protected:
 
     // load MS2 map
     PeakMap unprocessed_spectra;
-    FileHandler f;
+    FileHandler fh;
 
     PeakFileOptions options;
     options.clearMSLevels();
     options.addMSLevel(2);
     options.addMSLevel(1);
-    f.getOptions() = options;
-    f.loadExperiment(in_mzml, unprocessed_spectra, {FileTypes::MZML}, log_type_);
+    fh.getOptions() = options;
+    fh.loadExperiment(in_mzml, unprocessed_spectra, {fh.getType(in_mzml)}, log_type_);
 
     // load linked features
     // @FIXME Orphaned code

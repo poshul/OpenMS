@@ -141,7 +141,7 @@ protected:
   {
     // input files
     registerInputFile_("in", "<file>", "", "Input file containing the spectra.", true, false);
-    setValidFormats_("in", ListUtils::create<String>("mzML"));
+    setValidFormats_("in", FileTypeList::typesWithProperties({FileTypes::READABLE,FileTypes::PROVIDES_MS2}).toValidFormats());;
 
     registerInputFile_("consensus", "<file>", "", "Input file containing the linked mass peaks.", true, false);
     setValidFormats_("consensus", ListUtils::create<String>("consensusXML"));
@@ -187,14 +187,14 @@ protected:
 
     // load MS2 map
     PeakMap unprocessed_spectra;
-    FileHandler f;
+    FileHandler fh;
 
     PeakFileOptions options;
     options.clearMSLevels();
     options.addMSLevel(1);
     options.addMSLevel(2);
-    f.getOptions() = options;
-    f.loadExperiment(in_mzml, unprocessed_spectra, {FileTypes::MZML}, log_type_);
+    fh.getOptions() = options;
+    fh.loadExperiment(in_mzml, unprocessed_spectra, {fh.getType(in_mzml)}, log_type_);
 
     // load linked features
     ConsensusMap cfeatures;

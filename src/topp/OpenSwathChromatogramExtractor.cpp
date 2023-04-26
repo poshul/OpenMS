@@ -152,7 +152,7 @@ protected:
   void registerOptionsAndFlags_() override
   {
     registerInputFileList_("in", "<files>", StringList(), "Input files separated by blank");
-    setValidFormats_("in", ListUtils::create<String>("mzML"));
+    setValidFormats_("in", FileTypeList::typesWithProperties({FileTypes::READABLE,FileTypes::PROVIDES_MS2}).toValidFormats());;
 
     registerInputFile_("tr", "<file>", "", "transition file ('TraML' or 'csv')");
     setValidFormats_("tr", ListUtils::create<String>("csv,traML"));
@@ -247,7 +247,7 @@ protected:
       // Find the transitions to extract and extract them
       MapType tmp_out;
       OpenMS::TargetedExperiment transition_exp_used;
-      FileHandler().loadExperiment(file_list[i], *exp, {FileTypes::MZML});
+      FileHandler().loadExperiment(file_list[i], *exp, {FileHandler().getType(file_list[i])});
       if (exp->empty())
       { 
         continue; // if empty, go on

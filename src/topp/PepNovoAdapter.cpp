@@ -122,7 +122,7 @@ class TOPPPepNovoAdapter :
     void registerOptionsAndFlags_() override
     {
       registerInputFile_("in", "<file>", "", "input file ");
-      setValidFormats_("in", ListUtils::create<String>("mzML"));
+      setValidFormats_("in", FileTypeList::typesWithProperties({FileTypes::READABLE,FileTypes::PROVIDES_MS2}).toValidFormats());;
 
       registerOutputFile_("out", "<file>", "", "output file ");
       setValidFormats_("out",ListUtils::create<String>("idXML"));
@@ -206,7 +206,7 @@ class TOPPPepNovoAdapter :
       // only load msLevel 2
       FileHandler mzml_infile;
       mzml_infile.getOptions().addMSLevel(2);
-      mzml_infile.loadExperiment(inputfile_name, exp, {FileTypes::MZML}, log_type_);
+      mzml_infile.loadExperiment(inputfile_name, exp, {mzml_infile.getType(inputfile_name)}, log_type_);
 
       // we map the native id to the MZ and RT to be able to
       // map the IDs back to the spectra (RT, and MZ Meta Information)

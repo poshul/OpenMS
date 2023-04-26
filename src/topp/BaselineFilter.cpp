@@ -103,7 +103,7 @@ protected:
   void registerOptionsAndFlags_() override
   {
     registerInputFile_("in", "<file>", "", "input raw data file ");
-    setValidFormats_("in", ListUtils::create<String>("mzML"));
+    setValidFormats_("in", FileTypeList::typesWithProperties({FileTypes::READABLE,FileTypes::PROVIDES_MS2}).toValidFormats());;
     registerOutputFile_("out", "<file>", "", "output raw data file ");
     setValidFormats_("out", ListUtils::create<String>("mzML"));
     registerDoubleOption_("struc_elem_length", "<size>", 3, "Length of the structuring element (should be wider than maximal peak width - see documentation).", false);
@@ -126,7 +126,7 @@ protected:
     //-------------------------------------------------------------
 
     PeakMap ms_exp;
-    FileHandler().loadExperiment(in, ms_exp, {FileTypes::MZML}, log_type_);
+    FileHandler().loadExperiment(in, ms_exp, {FileHandler().getType(in)}, log_type_);
 
     if (ms_exp.empty())
     {

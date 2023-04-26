@@ -130,7 +130,7 @@ protected:
       "The Sirius executable. Provide a full or relative path, or make sure it can be found in your PATH environment.", false, false, {"is_executable"});
 
     registerInputFile_("in", "<file>", "", "MzML Input file");
-    setValidFormats_("in", ListUtils::create<String>("mzML"));
+    setValidFormats_("in", FileTypeList::typesWithProperties({FileTypes::READABLE,FileTypes::PROVIDES_MS2}).toValidFormats());;
 
     registerInputFile_("in_featureinfo", "<file>", "", "FeatureXML input with feature and adduct information", false);
     setValidFormats_("in_featureinfo", ListUtils::create<String>("featureXML"));
@@ -194,7 +194,7 @@ protected:
     // Calculations
     //-------------------------------------------------------------
     MSExperiment spectra;
-    FileHandler().loadExperiment(in, spectra, {FileTypes::MZML}, log_type_);
+    FileHandler().loadExperiment(in, spectra, {FileHandler().getType(in)}, log_type_);
 
     // make temporary files
     SiriusAdapterAlgorithm::SiriusTemporaryFileSystemObjects sirius_tmp(debug_level_);

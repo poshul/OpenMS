@@ -129,7 +129,7 @@ protected:
     registerInputFile_("sirius_executable", "<executable>", "", "The Sirius executable. Provide a full or relative path, or make sure it can be found in your PATH environment.", false, false);
 
     registerInputFileList_("in", "<file(s)>", StringList(), "MzML input file(s) used for assay library generation");
-    setValidFormats_("in", ListUtils::create<String>("mzML"));
+    setValidFormats_("in", FileTypeList::typesWithProperties({FileTypes::READABLE,FileTypes::PROVIDES_MS2}).toValidFormats());;
 
     registerInputFileList_("in_id", "<file(s)>", StringList(), "FeatureXML input file(s) containing identification information (e.g. AccurateMassSearch)");
     setValidFormats_("in_id", ListUtils::create<String>("featureXML"));
@@ -354,7 +354,7 @@ protected:
     {
       // load mzML
       PeakMap spectra;
-      FileHandler().loadExperiment(in[file_counter], spectra, {FileTypes::MZML});
+      FileHandler().loadExperiment(in[file_counter], spectra, {FileHandler().getType(in[file_counter])});
 
       // load featurexml
       FeatureMap feature_map;

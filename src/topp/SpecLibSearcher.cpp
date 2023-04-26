@@ -103,7 +103,7 @@ protected:
   void registerOptionsAndFlags_() override
   {
     registerInputFileList_("in", "<files>", ListUtils::create<String>(""), "Input files");
-    setValidFormats_("in", ListUtils::create<String>("mzML"));
+    setValidFormats_("in", FileTypeList::typesWithProperties({FileTypes::READABLE,FileTypes::PROVIDES_MS2}).toValidFormats());;
     registerInputFile_("lib", "<file>", "", "searchable spectral library (MSP format)");
     setValidFormats_("lib", ListUtils::create<String>("msp"));
     registerOutputFileList_("out", "<files>", ListUtils::create<String>(""), "Output files. Have to be as many as input files");
@@ -365,7 +365,7 @@ protected:
     for (in  = in_spec.begin(), out_file  = out.begin(); in < in_spec.end(); ++in, ++out_file)
     {
       time_t start_time = time(nullptr);
-      FileHandler().loadExperiment(*in, query, {FileTypes::MZML}, log_type_);
+      FileHandler().loadExperiment(*in, query, {FileHandler().getType(*in)}, log_type_);
 
       // results
       vector<PeptideIdentification> peptide_ids;

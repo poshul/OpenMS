@@ -131,7 +131,7 @@ protected:
   void registerOptionsAndFlags_() override
   {
     registerInputFile_("in", "<file>", "", "input profile data file ");
-    setValidFormats_("in", ListUtils::create<String>("mzML"));
+    setValidFormats_("in", FileTypeList::typesWithProperties({FileTypes::READABLE,FileTypes::PROVIDES_MS2}).toValidFormats());;
     registerOutputFile_("out", "<file>", "", "output peak file ");
     setValidFormats_("out", ListUtils::create<String>("mzML"));
     registerFlag_("write_peak_meta_data", "Write additional information about the picked peaks (maximal intensity, left and right area...) into the mzML-file. Attention: this can blow up files, since seven arrays are stored per spectrum!", true);
@@ -158,7 +158,7 @@ protected:
     // loading input
     //-------------------------------------------------------------
     PeakMap ms_exp_raw;
-    FileHandler().loadExperiment(in, ms_exp_raw, {FileTypes::MZML}, log_type_);
+    FileHandler().loadExperiment(in, ms_exp_raw, {FileHandler().getType(in)}, log_type_);
 
     if (ms_exp_raw.empty())
     {

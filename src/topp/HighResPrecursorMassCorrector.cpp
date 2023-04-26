@@ -108,7 +108,7 @@ class TOPPHiResPrecursorMassCorrector :
     {
       // input files
       registerInputFile_("in", "<file>", "", "Input file (centroided data)");
-      setValidFormats_("in", ListUtils::create<String>("mzML"));
+      setValidFormats_("in", FileTypeList::typesWithProperties({FileTypes::READABLE,FileTypes::PROVIDES_MS2}).toValidFormats());;
 
       registerOutputFile_("out", "<file>", "", "Output file");
       setValidFormats_("out", ListUtils::create<String>("mzML"));
@@ -161,7 +161,7 @@ class TOPPHiResPrecursorMassCorrector :
       const bool highest_intensity_peak_ppm = getStringOption_("highest_intensity_peak:mz_tolerance_unit") == "ppm" ? true : false;
 
       PeakMap exp;
-      FileHandler().loadExperiment(in_mzml, exp, {FileTypes::MZML});
+      FileHandler().loadExperiment(in_mzml, exp, {FileHandler().getType(in_mzml)});
 
       cout << setprecision(12);
 

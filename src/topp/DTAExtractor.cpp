@@ -165,9 +165,9 @@ protected:
     //-------------------------------------------------------------
 
     PeakMap exp;
-    FileHandler f;
-    f.getOptions().setRTRange(DRange<1>(rt_l, rt_u));
-    f.loadExperiment(in, exp, {FileTypes::MZML}, log_type_);
+    FileHandler fh;
+    fh.getOptions().setRTRange(DRange<1>(rt_l, rt_u));
+    fh.loadExperiment(in, exp, {fh.getType(in)}, log_type_);
 
     FileHandler dta;
 

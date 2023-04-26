@@ -113,7 +113,7 @@ protected:
   void registerOptionsAndFlags_() override
   {
     registerInputFile_("in", "<file>", "", "input file");
-    setValidFormats_("in", ListUtils::create<String>("mzML"));
+    setValidFormats_("in", FileTypeList::typesWithProperties({FileTypes::READABLE,FileTypes::PROVIDES_MS2}).toValidFormats());;
     registerOutputFile_("out", "<file>", "", "output file");
     setValidFormats_("out", ListUtils::create<String>("featureXML"));
 
@@ -137,11 +137,11 @@ protected:
     options.setMSLevels(vector<Int>(1, 1));
 
     //reading input data
-    FileHandler f;
-    f.getOptions() = options;
+    FileHandler fh;
+    fh.getOptions() = options;
 
     PeakMap exp;
-    f.loadExperiment(in, exp, {FileTypes::MZML}, log_type_);
+    fh.loadExperiment(in, exp, {fh.getType(in)}, log_type_);
     exp.updateRanges();
 
     //no seeds supported

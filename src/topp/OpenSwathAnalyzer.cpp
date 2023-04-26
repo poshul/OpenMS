@@ -125,7 +125,7 @@ protected:
   {
     registerInputFile_("in", "<file>", "",
                        "input file containing the chromatograms." /* , false */);
-    setValidFormats_("in", ListUtils::create<String>("mzML"));
+    setValidFormats_("in", FileTypeList::typesWithProperties({FileTypes::READABLE,FileTypes::PROVIDES_MS2}).toValidFormats());;
 
     registerInputFile_("tr", "<file>", "", "transition file");
     setValidFormats_("tr", ListUtils::create<String>("traML"));
@@ -200,7 +200,7 @@ protected:
       FileHandler().loadTransitions(tr_file, transitions_exp_tmp, {FileTypes::TRAML});
       OpenSwathDataAccessHelper::convertTargetedExp(transitions_exp_tmp, transition_exp);
     }
-    FileHandler().loadExperiment(in, *exp.get(), {FileTypes::MZML}, log_type_);
+    FileHandler().loadExperiment(in, *exp.get(), {FileHandler().getType(in)}, log_type_);
 
     // If there are no SWATH files, it's just regular SRM/MRM Scoring
     if (file_list.empty())

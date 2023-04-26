@@ -109,7 +109,7 @@ protected:
   {
     // data
     registerInputFile_("in", "<file>", "", "Input peak file");
-    setValidFormats_("in", ListUtils::create<String>("mzML"));
+    setValidFormats_("in", FileTypeList::typesWithProperties({FileTypes::READABLE,FileTypes::PROVIDES_MS2}).toValidFormats());;
     registerOutputFile_("out", "<file>", "", "Output file ");
     setValidFormats_("out", ListUtils::create<String>("mzML"));
         
@@ -144,7 +144,7 @@ protected:
 
     // Raw data
     PeakMap exp;
-    FileHandler().loadExperiment(in, exp, {FileTypes::MZML}, log_type_);
+    FileHandler().loadExperiment(in, exp, {FileHandler().getType(in)}, log_type_);
 
     MZTrafoModel tm;
     tm.setCoefficients(offset, slope, power);
@@ -160,7 +160,7 @@ protected:
     //annotate output with data processing info
     addDataProcessing_(exp, getProcessingInfo_(DataProcessing::CALIBRATION));
 
-    FileHandler().storeExperiment(out, exp, {FileTypes::MZML}, log_type_);
+    FileHandler().storeExperiment(out, exp, {FileTypeList::typesWithProperties({FileTypes::READABLE,FileTypes::PROVIDES_MS2}).getTypes()}, log_type_);
 
     return EXECUTION_OK;
   }

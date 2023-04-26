@@ -87,7 +87,7 @@ protected:
   void registerOptionsAndFlags_() override
   {
     registerInputFile_("in", "<file>", "", "input file ");
-    setValidFormats_("in", ListUtils::create<String>("mzML"));
+    setValidFormats_("in", FileTypeList::typesWithProperties({FileTypes::READABLE,FileTypes::PROVIDES_MS2}).toValidFormats());;
     registerOutputFile_("out", "<file>", "", "output file ");
     setValidFormats_("out", ListUtils::create<String>("mzML"));
   }
@@ -107,8 +107,8 @@ protected:
     //-------------------------------------------------------------
 
     PeakMap exp;
-    FileHandler f;
-    f.loadExperiment(in, exp, {FileTypes::MZML});
+    FileHandler fh;
+    fh.loadExperiment(in, exp, {fh.getType(in)});
 
     //-------------------------------------------------------------
     // calculations
@@ -160,7 +160,7 @@ for (vector<MSChromatogram >::iterator it = chroms.begin(); it != chroms.end(); 
     //annotate output with data processing info
     addDataProcessing_(exp, getProcessingInfo_(DataProcessing::NORMALIZATION));
 
-    f.storeExperiment(out, exp, {FileTypes::MZML});
+    fh.storeExperiment(out, exp, {FileTypes::MZML});
 
     return EXECUTION_OK;
   }

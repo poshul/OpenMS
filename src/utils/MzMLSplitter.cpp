@@ -82,7 +82,7 @@ protected:
   void registerOptionsAndFlags_() override
   {
     registerInputFile_("in", "<file>", "", "Input file");
-    setValidFormats_("in", ListUtils::create<String>("mzML"));
+    setValidFormats_("in", FileTypeList::typesWithProperties({FileTypes::READABLE,FileTypes::PROVIDES_MS2}).toValidFormats());;
     registerOutputPrefix_("out", "<prefix>", "", "Prefix for output files ('_part1of2.mzML' etc. will be appended; default: same as 'in' without the file extension)", false);
     registerIntOption_("parts", "<num>", 1, "Number of parts to split into (takes precedence over 'size' if set)", false);
     setMinInt_("parts", 1);
@@ -138,7 +138,7 @@ protected:
     writeLogInfo_("Splitting file into " + String(parts) + " parts...");
 
     PeakMap experiment;
-    FileHandler().loadExperiment(in, experiment, {FileTypes::MZML});
+    FileHandler().loadExperiment(in, experiment, {FileHandler().getType(in)});
 
     vector<MSSpectrum> spectra;
     vector<MSChromatogram> chromatograms;

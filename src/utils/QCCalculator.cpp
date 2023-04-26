@@ -120,7 +120,7 @@ protected:
   void registerOptionsAndFlags_() override
   {
     registerInputFile_("in", "<file>", "", "raw data input file (this is relevant if you want to look at MS1, MS2 and precursor peak information)");
-    setValidFormats_("in", ListUtils::create<String>("mzML"));
+    setValidFormats_("in", FileTypeList::typesWithProperties({FileTypes::READABLE,FileTypes::PROVIDES_MS2}).toValidFormats());;
     registerOutputFile_("out", "<file>", "", "Your QC file.");
     setValidFormats_("out", {"mzQC", "qcML"});
     registerStringOption_("out_type", "<type>", "", "Output file type -- default: determined from file extension or content", false);
@@ -158,7 +158,7 @@ protected:
     // prepare input
     cout << "Reading mzML file..." << endl;
     MSExperiment exp;
-    FileHandler().loadExperiment(inputfile_name, exp, {FileTypes::MZML});
+    FileHandler().loadExperiment(inputfile_name, exp, {FileHandler().getType(inputfile_name)});
     exp.sortSpectra();
     exp.updateRanges();
 

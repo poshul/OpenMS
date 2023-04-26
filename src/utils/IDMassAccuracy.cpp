@@ -107,7 +107,7 @@ protected:
   void registerOptionsAndFlags_() override
   {
     registerInputFileList_("in", "<file list>", StringList(), "Input mzML file list, containing the spectra.");
-    setValidFormats_("in", ListUtils::create<String>("mzML"));
+    setValidFormats_("in", FileTypeList::typesWithProperties({FileTypes::READABLE,FileTypes::PROVIDES_MS2}).toValidFormats());;
     registerInputFileList_("id_in", "<file list>", StringList(), "Input idXML file list, containing the identifications.");
     setValidFormats_("id_in", ListUtils::create<String>("idXML"));
 
@@ -181,7 +181,7 @@ protected:
     FileHandler mzml_file;
     for (Size i = 0; i != in_raw.size(); ++i)
     {
-      mzml_file.loadExperiment(in_raw[i], maps_raw[i], {FileTypes::MZML});
+      mzml_file.loadExperiment(in_raw[i], maps_raw[i], {mzml_file.getType(in_raw[i])});
     }
 
     //-------------------------------------------------------------

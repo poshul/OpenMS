@@ -82,7 +82,7 @@ protected:
   void registerOptionsAndFlags_() override
   {
     registerInputFile_("in", "<file>", "", "Input file (mzML)");
-    setValidFormats_("in", ListUtils::create<String>("mzML"));
+    setValidFormats_("in", FileTypeList::typesWithProperties({FileTypes::READABLE,FileTypes::PROVIDES_MS2}).toValidFormats());;
 
     registerOutputFile_("out", "<file>", "", "Default output tsv file containing deconvolved features");
     setValidFormats_("out", ListUtils::create<String>("tsv"));
@@ -332,7 +332,7 @@ protected:
       opt.setIntensityRange(DRange<1> {min_intensity, 1e200});
     }
     mzml.setOptions(opt);
-    mzml.loadExperiment(in_file, map, {FileTypes::MZML}, log_type_);
+    mzml.loadExperiment(in_file, map, {mzml.getType(in_file)}, log_type_);
 
     uint current_max_ms_level = 0;
 

@@ -104,7 +104,7 @@ protected:
   void registerOptionsAndFlags_() override
   {
     registerInputFileList_("in", "<files>", StringList(), "Input files separated by blank");
-    setValidFormats_("in", ListUtils::create<String>("mzML"));
+    setValidFormats_("in", FileTypeList::typesWithProperties({FileTypes::READABLE,FileTypes::PROVIDES_MS2}).toValidFormats());;
 
     registerInputFile_("tr", "<file>", "", "transition file with the RT peptides ('TraML' or 'csv')");
     setValidFormats_("tr", ListUtils::create<String>("csv,traML"));
@@ -224,7 +224,7 @@ protected:
       boost::shared_ptr<MapType> xic_map (new MapType());
       FeatureMap featureFile;
       std::cout << "RT Normalization working on " << file_list[i] << std::endl;
-      FileHandler().loadExperiment(file_list[i], *xic_map.get(), {FileTypes::MZML}, log_type_);
+      FileHandler().loadExperiment(file_list[i], *xic_map.get(), {FileHandler().getType(file_list[i])}, log_type_);
 
       // Initialize the featureFile and set its parameters (disable for example
       // the RT score since here do not know the RT transformation) 

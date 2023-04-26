@@ -124,7 +124,7 @@ protected:
   void registerOptionsAndFlags_() override
   {
     registerInputFile_("in", "<file>", "", "input file ");
-    setValidFormats_("in", ListUtils::create<String>("mzML"));
+    setValidFormats_("in", FileTypeList::typesWithProperties({FileTypes::READABLE,FileTypes::PROVIDES_MS2}).toValidFormats());;
 
     registerInputFile_("database", "<file>", "", "input file ");
     setValidFormats_("database", ListUtils::create<String>("fasta"));
@@ -1712,13 +1712,13 @@ protected:
 
     // load MS2 map
     PeakMap spectra;
-    FileHandler f;
+    FileHandler fh;
 
     // load both MS1 and MS2 for precursor purity annotation
     map<String, PrecursorPurity::PurityScores> purities;
     {
       PeakMap tmp_spectra;
-      f.loadExperiment(in_mzml, tmp_spectra, {FileTypes::MZML}, log_type_);
+      fh.loadExperiment(in_mzml, tmp_spectra, {fh.getType(in_mzml)}, log_type_);
       int nMS1 = std::count_if(tmp_spectra.begin(), tmp_spectra.end(), [](MSSpectrum& s){return s.getMSLevel() == 1;});
       if (nMS1 != 0)
       {
@@ -1729,8 +1729,8 @@ protected:
     PeakFileOptions options;
     options.clearMSLevels();
     options.addMSLevel(2);
-    f.getOptions() = options;
-    f.loadExperiment(in_mzml, spectra, {FileTypes::MZML}, log_type_);
+    fh.getOptions() = options;
+    fh.loadExperiment(in_mzml, spectra, {FileHandler().getType(in_mzml)}, log_type_);
     spectra.sortSpectra(true);
 
     progresslogger.startProgress(0, 1, "Filtering spectra...");
@@ -2279,7 +2279,7 @@ protected:
 
     // reload spectra from disc with same settings as before (important to keep same spectrum indices)
     spectra.clear(true);
-    f.loadExperiment(in_mzml, spectra, {FileTypes::MZML}, log_type_);
+    fh.loadExperiment(in_mzml, spectra, {fh.getType(in_mzml)}, log_type_);
     spectra.sortSpectra(true);
 
     // for post scoring don't convert fragments to single charge. Annotate charge instead to every peak.

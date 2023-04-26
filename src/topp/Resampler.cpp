@@ -95,7 +95,7 @@ protected:
   void registerOptionsAndFlags_() override
   {
     registerInputFile_("in", "<file>", "", "input file ");
-    setValidFormats_("in", ListUtils::create<String>("mzML"));
+    setValidFormats_("in", FileTypeList::typesWithProperties({FileTypes::READABLE,FileTypes::PROVIDES_MS2}).toValidFormats());;
     registerOutputFile_("out", "<file>", "",
                         "output file in mzML format");
     setValidFormats_("out", ListUtils::create<String>("mzML"));
@@ -125,7 +125,7 @@ protected:
     bool ppm = getFlag_("ppm");
     PeakMap exp;
 
-    FileHandler().loadExperiment(in, exp, {FileTypes::MZML}, log_type_);
+    FileHandler().loadExperiment(in, exp, {FileHandler().getType(in)}, log_type_);
 
     Param resampler_param;
     resampler_param.setValue("spacing", sampling_rate);

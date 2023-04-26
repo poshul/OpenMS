@@ -245,7 +245,7 @@ protected:
   void registerOptionsAndFlags_() override
   {
     registerInputFile_("in", "<file>", "", "Input file with MS/MS spectra");
-    setValidFormats_("in", ListUtils::create<String>("mzML"));
+    setValidFormats_("in", FileTypeList::typesWithProperties({FileTypes::READABLE,FileTypes::PROVIDES_MS2}).toValidFormats());;
     registerInputFile_("id", "<file>", "", "Identification input file which contains a search against a concatenated sequence database");
     setValidFormats_("id", ListUtils::create<String>("idXML"));
     registerOutputFile_("out", "<file>", "", "Identification output annotated with phosphorylation scores");
@@ -298,13 +298,13 @@ protected:
     FileHandler().loadIdentifications(id, prot_ids, pep_ids, {FileTypes::IDXML});
 
     PeakMap exp;
-    FileHandler f;
+    FileHandler fh;
 
     PeakFileOptions options;
     options.clearMSLevels();
     options.addMSLevel(2);
-    f.getOptions() = options;
-    f.loadExperiment(in, exp, {FileTypes::MZML});
+    fh.getOptions() = options;
+    fh.loadExperiment(in, exp, {fh.getType(in)});
     exp.sortSpectra(true);
     
     SpectrumLookup lookup;
