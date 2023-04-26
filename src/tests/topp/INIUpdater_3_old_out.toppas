@@ -24,7 +24,7 @@
       <ITEM name="x_pos" value="-140.0" type="double" description="" required="false" advanced="false" />
       <ITEM name="y_pos" value="-40.0" type="double" description="" required="false" advanced="false" />
       <NODE name="parameters" description="Instance &apos;1&apos; section for &apos;FeatureFinderCentroided&apos;">
-        <ITEM name="in" value="" type="input-file" description="input file" required="true" advanced="false" supported_formats="*.mzML" />
+        <ITEM name="in" value="" type="input-file" description="input file" required="true" advanced="false" supported_formats="*.mzXML,*.mzML" />
         <ITEM name="out" value="" type="output-file" description="output file" required="true" advanced="false" supported_formats="*.featureXML" />
         <ITEM name="seeds" value="" type="input-file" description="User specified seed list" required="false" advanced="false" supported_formats="*.featureXML" />
         <ITEM name="out_mzq" value="" type="output-file" description="Optional output file of MzQuantML." required="false" advanced="true" supported_formats="*.mzq" />
@@ -125,7 +125,7 @@
           <ITEM name="annotate_ids_with_subelements" value="false" type="bool" description="Store the map index of the sub-feature in the peptide ID." required="false" advanced="true" />
         </NODE>
         <NODE name="spectra" description="Additional options for mzML input">
-          <ITEM name="in" value="" type="input-file" description="MS run used to annotated unidentified spectra to features or consensus features." required="false" advanced="false" supported_formats="*.mzML" />
+          <ITEM name="in" value="" type="input-file" description="MS run used to annotated unidentified spectra to features or consensus features." required="false" advanced="false" supported_formats="*.mzXML,*.mzML" />
         </NODE>
       </NODE>
     </NODE>
