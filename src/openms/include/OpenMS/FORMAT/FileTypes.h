@@ -191,6 +191,12 @@ namespace OpenMS
     **/
     FileTypes::Type fromFileDialogFilter(const String& filter, const FileTypes::Type fallback = FileTypes::Type::UNKNOWN) const;
 
+    /**
+      @brief Return a vector of the file extensions (for use with setValidFormats_)
+
+      @return a vector of strings for the extensions
+    **/
+    std::vector<String> toValidFormats() const;
 
     /**
       @brief Get a std::vector<FileTypes::Type> with all fileTypes that support a set of features.
@@ -199,7 +205,7 @@ namespace OpenMS
       @param features An unordered_set of features that fileTypes must support
       @return A std::vector<FileTypes::Type> with the files that support features
     **/
-    static std::vector<FileTypes::Type> typesWithProperties(const std::unordered_set<FileTypes::FileProperties> features);
+    static FileTypeList typesWithProperties(const std::unordered_set<FileTypes::FileProperties> features);
 
   private:
     /// hold filter items (for Qt dialogs) along with their OpenMS type

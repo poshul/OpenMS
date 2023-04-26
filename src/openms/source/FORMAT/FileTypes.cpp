@@ -164,7 +164,7 @@ namespace OpenMS
     return r == FileTypes::Type::UNKNOWN ? fallback : r;
   }
 
-  std::vector<FileTypes::Type> FileTypeList::typesWithProperties(std::unordered_set<FileTypes::FileProperties> haveFeatures)
+  FileTypeList FileTypeList::typesWithProperties(std::unordered_set<FileTypes::FileProperties> haveFeatures)
   {
     std::vector<FileTypes::Type> compatible;
     // Copy our type_with_annotation__s to a list
@@ -184,6 +184,15 @@ namespace OpenMS
     return compatible;
   }
 
+  std::vector<String> FileTypeList::toValidFormats() const
+  {
+    std::vector<String> typeExts;
+    for (auto i : type_list_)
+    {
+      typeExts.push_back(FileTypes::typeToName(i));
+    }
+    return typeExts;
+  }
   
   FileTypeList::FilterElements_ FileTypeList::asFilterElements_(const FilterLayout style, bool add_all_filter) const
   {
