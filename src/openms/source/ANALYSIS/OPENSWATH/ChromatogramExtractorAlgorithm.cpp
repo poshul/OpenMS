@@ -350,7 +350,7 @@ namespace OpenMS
           continue;
         }
 
-        const bool use_im = (extraction_coordinates[k].ion_mobility >= 0.0 && has_im);
+        const bool use_im = (extraction_coordinates[k].ion_mobility >= Constants::EPSILON && has_im);
         if (!use_im && used_filter == 1)
         {
           extract_value_tophat(mz_start, mz_it, mz_end, int_it,

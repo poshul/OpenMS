@@ -122,7 +122,7 @@ public:
         bounding_box_.moveBottom(canvas->height());
         bounding_box_.moveLeft(position_widget.x() + 5.0);
       }
-      else if (!flipped && bounding_box_.top() < 0.0)
+      else if (!flipped && bounding_box_.top() < -1 * Constants::EPSILON)
       {
         bounding_box_.moveTop(0.0);
         bounding_box_.moveLeft(position_widget.x() + 5.0);

@@ -118,9 +118,11 @@ namespace OpenMS
       std::vector<double> probs;
       for (const auto& iso : elem.first->getIsotopeDistribution())
       {
-        if (iso.getIntensity() <= 0.0) continue; // Note: there will be a segfault if one of the intensities is zero!
-        masses.push_back(iso.getMZ());
-        probs.push_back(iso.getIntensity());
+        if (iso.getIntensity() > 0.0) // Note: there will be a segfault if one of the intensities is <= zero!
+        {
+          masses.push_back(iso.getMZ());
+          probs.push_back(iso.getIntensity());
+        }
       }
 
       // For each element store how many isotopes it has and their masses/probabilities

@@ -423,7 +423,7 @@ namespace OpenMS
       mobilograms.push_back(res);
 
       // TODO what do to about those that have no signal ?
-      if (intensity <= 0.0) {continue;} // note: im is -1 then
+      if (intensity <= Constants::EPSILON) {continue;} // note: im is -1 then
 
       tr_used++;
 

@@ -1070,7 +1070,7 @@ namespace OpenMS
     peptide.rts = retention_times;
 
     // add ion mobility drift time
-    if (tr_it->drift_time >= 0.0)
+    if (tr_it->drift_time >= Constants::EPSILON)
     {
       peptide.setDriftTime(tr_it->drift_time);
     }
@@ -1179,7 +1179,7 @@ namespace OpenMS
     }
 
     // add ion mobility drift time
-    if (tr_it->drift_time >= 0.0)
+    if (tr_it->drift_time >= Constants::EPSILON)
     {
       compound.setDriftTime(tr_it->drift_time);
     }
@@ -1251,7 +1251,7 @@ namespace OpenMS
       mytransition.FullPeptideName = TargetedExperimentHelper::getAASequence(pep).toUniModString();
 
       mytransition.drift_time = -1;
-      if (pep.getDriftTime() >= 0.0)
+      if (pep.getDriftTime() >= Constants::EPSILON)
       {
         mytransition.drift_time = pep.getDriftTime();
       }
@@ -1285,7 +1285,7 @@ namespace OpenMS
       }
 
       mytransition.drift_time = -1;
-      if (compound.getDriftTime() >= 0.0)
+      if (compound.getDriftTime() >= Constants::EPSILON)
       {
         mytransition.drift_time = compound.getDriftTime();
       }

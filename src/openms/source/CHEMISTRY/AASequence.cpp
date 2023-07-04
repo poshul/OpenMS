@@ -1149,7 +1149,7 @@ namespace OpenMS
     else if (specificity == ResidueModification::ANYWHERE) // internal (not exclusively terminal) modification
     {
       residue = aas.peptide_.back();
-      if (delta_mass && (residue->getMonoWeight() <= 0.0)) // not allowed
+      if (delta_mass && (residue->getMonoWeight() <= Constants::EPSILON)) // not allowed
       {
         throw Exception::ParseError(__FILE__, __LINE__, OPENMS_PRETTY_FUNCTION, str,
             "Using a mass difference to specify a modification on a residue of unknown mass is not supported in '" + \

@@ -441,7 +441,7 @@ namespace OpenMS
           }
 
           // draw to buffer
-          if (max >= 0.0)
+          if (max >= Constants::EPSILON)
           {
             QPoint pos = canvas->dataToWidget_(mapper.mapToPoint(rt_start + 0.5 * rt_step_size, mz_start + 0.5 * mz_step_size));
             canvas->buffer_.setPixel(pos.x(), pos.y(), canvas->heightColor_(max, layer_->gradient, snap_factor).rgb());
