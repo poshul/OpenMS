@@ -32,6 +32,8 @@
 // $Authors: Stephan Aiche$
 // --------------------------------------------------------------------------
 
+#include <OpenMS/CONCEPT/Constants.h>
+
 #include <OpenMS/TRANSFORMATIONS/FEATUREFINDER/EGHTraceFitter.h>
 
 #include <unsupported/Eigen/NonLinearOptimization>
@@ -83,7 +85,7 @@ namespace OpenMS
 
         denominator = 2 * sigma * sigma + tau * t_diff; // -> 2\sigma_{g}^{2} + \tau \left(t - t_R\right)
 
-        if (denominator > 0.0)
+        if (denominator > Constants::EPSILON)
         {
           fegh =  m_data->traces_ptr->baseline + trace.theoretical_int * H * exp(-t_diff2 / denominator);
         }

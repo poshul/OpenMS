@@ -947,7 +947,7 @@ namespace OpenMS
     rm_trans.setProduct(p);
 
     // add collision energy
-    if (tr_it->CE > 0.0)
+    if (tr_it->CE > Constants::EPSILON)
     {
       CVTerm CE;
       CE.setCVIdentifierRef("MS");

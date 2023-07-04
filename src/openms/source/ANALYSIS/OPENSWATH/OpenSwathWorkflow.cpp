@@ -422,7 +422,7 @@ namespace OpenMS
                                            tmp_out[chrom_idx]->getIntensityArray()->data.end(),0.0);
               OPENMS_LOG_DEBUG << "Chromatogram "  << coordinates[chrom_idx].id << " with size "
                 << tmp_out[chrom_idx]->getIntensityArray()->data.size() << " and TIC " << tic  << std::endl;
-              if (tic > 0.0)
+              if (tic > Constants::EPSILON)
               {
                 // add the chromatogram to the output
                 chromatograms.push_back(tmp_chromatograms[chrom_idx]);

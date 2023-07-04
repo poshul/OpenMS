@@ -411,7 +411,7 @@ namespace OpenMS
             //TODO IDENT
           }
 
-          if (local_max > 0.0)
+          if (local_max > Constants::EPSILON)
           {
             snap_factors_[i] = overall_data_range_.getMaxIntensity() / local_max;
           }

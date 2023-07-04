@@ -374,7 +374,7 @@ namespace OpenMS
         continue;
       }
       const double value = weightScore_(feature.getMetaValue(metavalue_name), lambda_score);
-      if (value > 0.0 && !std::isnan(value) && !std::isinf(value))
+      if (value > Constants::EPSILON && !std::isnan(value) && !std::isinf(value))
       {
         score_1 *= value;
       }

@@ -46,6 +46,7 @@
 */
 
 #include <OpenMS/FILTERING/SMOOTHING/FastLowessSmoothing.h>
+#include <OpenMS/CONCEPT/Constants.h>
 
 #include <cmath>
 #include <algorithm>    // std::min, std::max
@@ -278,7 +279,7 @@ namespace c_lowess
     {
       ValueType range = x[n - 1] - x[0];
 
-      if (h > 0.0)
+      if (h > OpenMS::Constants::EPSILON)
       {
         // use linear fit
 

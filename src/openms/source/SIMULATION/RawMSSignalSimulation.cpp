@@ -1112,7 +1112,7 @@ namespace OpenMS
       for (Peak1D& peak : spectrum)
       {
         SimTypes::SimIntensityType intensity = peak.getIntensity() + ndist(rnd_gen_->getTechnicalRng());
-        if (intensity > 0.0)
+        if (intensity > Constants::EPSILON)
         {
           peak.setIntensity(intensity);
           new_spec.push_back(peak);
@@ -1151,7 +1151,7 @@ namespace OpenMS
         if (peak_it != spectrum.end() && *grid_it == peak_it->getMZ())
         {
           SimTypes::SimIntensityType intensity = peak_it->getIntensity() + ndist(rnd_gen_->getTechnicalRng());
-          if (intensity > 0.0)
+          if (intensity > Constants::EPSILON)
           {
             peak_it->setIntensity(intensity);
             new_spec.push_back(*peak_it);
@@ -1161,7 +1161,7 @@ namespace OpenMS
         else // we have no point here, generate one if noise is above 0
         {
           SimTypes::SimIntensityType intensity = ndist(rnd_gen_->getTechnicalRng());
-          if (intensity > 0.0)
+          if (intensity > Constants::EPSILON)
           {
             SimTypes::MSSimExperiment::SpectrumType::PeakType noise_peak;
             noise_peak.setMZ(*grid_it);

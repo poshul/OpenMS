@@ -412,7 +412,7 @@ namespace OpenMS
     const double previous_E
   ) const
   {
-    if (prev_diff_E_param * diff_E_param > 0.0)
+    if (prev_diff_E_param * diff_E_param > Constants::EPSILON)
     {
       // Using value 2000 as upper bound (iRprop+ paper recommends a value of 50)
       param_lr = std::min(param_lr * 1.2, 2000.0);
@@ -527,7 +527,7 @@ namespace OpenMS
     for (
       ; i < xs.size() - 1 &&
       i <= j &&
-      derivatives[i] > 0.0 &&
+      derivatives[i] > Constants::EPSILON &&
       (std::fabs(derivatives[i]) >= derivative_threshold ||
        derivatives[i] / derivatives[i - 1] >= 0.6);
       ++i

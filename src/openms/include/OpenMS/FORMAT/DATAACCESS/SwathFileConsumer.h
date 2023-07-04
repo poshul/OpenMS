@@ -276,7 +276,7 @@ public:
             consumeSwathSpectrum_(s, swath_map_boundaries_.size());
 
             // we found a new SWATH window
-            if (lower > 0.0 && upper > 0.0)
+            if (lower > Constants::EPSILON && upper > Constants::EPSILON)
             {correct_window_counter_++;}
 
             OpenSwath::SwathMap boundary;

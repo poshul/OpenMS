@@ -181,7 +181,7 @@ namespace OpenMS
     left_width_.reserve(picked_chrom.size());
     right_width_.reserve(picked_chrom.size());
 
-    if (signal_to_noise_ > 0.0)
+    if (signal_to_noise_ > Constants::EPSILON)
     {
       snt_.init(chromatogram);
     }
@@ -197,8 +197,8 @@ namespace OpenMS
       while ((min_i - k + 1) > 0
              //&& std::fabs(chromatogram[min_i-k].getMZ() - peak_raw_data.begin()->first) < spacing_difference*min_spacing
             && (chromatogram[min_i - k].getIntensity() < chromatogram[min_i - k + 1].getIntensity()
-               || (peak_width_ > 0.0 && std::fabs(chromatogram[min_i - k].getRT() - central_peak_rt) < peak_width_))
-            && (signal_to_noise_ <= 0.0 || snt_.getSignalToNoise(min_i - k) >= signal_to_noise_))
+               || (peak_width_ >Constants::EPSILON && std::fabs(chromatogram[min_i - k].getRT() - central_peak_rt) < peak_width_))
+            && (signal_to_noise_ <= -1 * Constants::EPSILON || snt_.getSignalToNoise(min_i - k) >= signal_to_noise_))
       {
         ++k;
       }
@@ -209,8 +209,8 @@ namespace OpenMS
       while ((min_i + k) < chromatogram.size()
              //&& std::fabs(chromatogram[min_i+k].getMZ() - peak_raw_data.rbegin()->first) < spacing_difference*min_spacing
             && (chromatogram[min_i + k].getIntensity() < chromatogram[min_i + k - 1].getIntensity()
-               || (peak_width_ > 0.0 && std::fabs(chromatogram[min_i + k].getRT() - central_peak_rt) < peak_width_))
-            && (signal_to_noise_ <= 0.0 || snt_.getSignalToNoise(min_i + k) >= signal_to_noise_) )
+               || (peak_width_ > Constants::EPSILON && std::fabs(chromatogram[min_i + k].getRT() - central_peak_rt) < peak_width_))
+            && (signal_to_noise_ <= -1 * Constants::EPSILON || snt_.getSignalToNoise(min_i + k) >= signal_to_noise_) )
       {
         ++k;
       }

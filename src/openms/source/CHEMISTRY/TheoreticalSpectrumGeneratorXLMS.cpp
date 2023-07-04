@@ -601,7 +601,7 @@ namespace OpenMS
     if (losses.has_H2O_loss)
     {
       double mass_with_loss = mono_weight - loss_H2O_;
-      if (mass_with_loss > 0.0)
+      if (mass_with_loss > Constants::EPSILON)
       {
         p.setMZ(mass_with_loss / static_cast<double>(charge));
         if (add_metainfo_)
@@ -620,7 +620,7 @@ namespace OpenMS
     if (losses.has_NH3_loss)
     {
       double mass_with_loss = mono_weight - loss_NH3_;
-      if (mass_with_loss > 0.0)
+      if (mass_with_loss > Constants::EPSILON)
       {
         p.setMZ(mass_with_loss / static_cast<double>(charge));
         if (add_metainfo_)
@@ -819,7 +819,7 @@ namespace OpenMS
     if (losses.has_H2O_loss)
     {
       double mass_with_loss = mono_weight - loss_H2O_;
-      if (mass_with_loss > 0.0)
+      if (mass_with_loss > Constants::EPSILON)
       {
         p.setMZ(mass_with_loss / static_cast<double>(charge));
         if (add_metainfo_)
@@ -838,7 +838,7 @@ namespace OpenMS
     if (losses.has_NH3_loss)
     {
       double mass_with_loss = mono_weight - loss_NH3_;
-      if (mass_with_loss > 0.0)
+      if (mass_with_loss > Constants::EPSILON)
       {
         p.setMZ(mass_with_loss / static_cast<double>(charge));
         if (add_metainfo_)

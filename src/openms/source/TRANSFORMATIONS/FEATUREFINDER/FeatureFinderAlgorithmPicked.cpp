@@ -502,7 +502,7 @@ namespace OpenMS
           double pattern_score = isotopeScore_(isotopes, pattern, true);
 
           //update pattern scores of all contained peaks (if necessary)
-          if (pattern_score > 0.0)
+          if (pattern_score > Constants::EPSILON)
           {
             for (Size i = 0; i < pattern.peak.size(); ++i)
             {

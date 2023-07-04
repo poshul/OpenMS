@@ -818,9 +818,9 @@ namespace OpenMS
 #endif
 
           double total_pair_score(0.0);
-          if (rt_score > 0.0 && mz_score > 0.0 && int_score > 0.0)
+          if (rt_score > Constants::EPSILON && mz_score > Constants::EPSILON && int_score >Constants::EPSILON)
           {
-            total_pair_score = std::exp(std::log(rt_score) + log(mz_score) + log(int_score));
+            total_pair_score = std::exp(std::log(rt_score) + std::log(mz_score) + std::log(int_score));
           }
           if (total_pair_score > best_so_far)
           {
@@ -831,7 +831,7 @@ namespace OpenMS
 
         // Store mass trace that best agrees with current hypothesis of charge
         // and isotopic position
-        if (best_so_far > 0.0)
+        if (best_so_far > Constants::EPSILON)
         {
           fh_tmp.addMassTrace(*candidates[best_idx]);
           double weighted_score(((candidates[best_idx]->getIntensity(use_smoothed_intensities_)) * best_so_far) / total_intensity);

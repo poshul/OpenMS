@@ -717,7 +717,7 @@ namespace OpenMS
     {
       const PeptideIdentification& pep_id = f.getPeptideIdentifications()[0];
       const AASequence& seq = pep_id.getHits()[0].getSequence();
-      if (f.getIntensity() > 0.0)
+      if (f.getIntensity() > Constants::EPSILON)
       {
         quantified_all.insert(seq);
         if (pep_id.getMetaValue("FFId_category") == "internal")

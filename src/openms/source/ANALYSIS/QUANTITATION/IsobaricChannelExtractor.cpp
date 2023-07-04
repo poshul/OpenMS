@@ -211,7 +211,7 @@ namespace OpenMS
 
   bool IsobaricChannelExtractor::isValidPrecursor_(const Precursor& precursor) const
   {
-    return (!(precursor.getIntensity() > 0.0) && keep_unannotated_precursor_) || !(precursor.getIntensity() < min_precursor_intensity_);
+    return (!(precursor.getIntensity() > Constants::EPSILON) && keep_unannotated_precursor_) || !(precursor.getIntensity() < min_precursor_intensity_);
   }
 
   bool IsobaricChannelExtractor::hasLowIntensityReporter_(const ConsensusFeature& cf) const
@@ -663,7 +663,7 @@ namespace OpenMS
         cf.setMetaValue("all_empty", String("true"));
       }
       // add purity information if we could compute it
-      if (precursor_purity > 0.0)
+      if (precursor_purity > Constants::EPSILON)
       {
         cf.setMetaValue("precursor_purity", precursor_purity);
       }

@@ -35,6 +35,8 @@
 
 #include <OpenMS/CHEMISTRY/Element.h>
 
+#include <OpenMS/CONCEPT/Constants.h>
+
 #include <ostream>
 
 using namespace std;
@@ -175,7 +177,7 @@ namespace OpenMS
 
     for (const auto& isotope : element.isotopes_)
     {
-      if (isotope.getIntensity() > 0.0f)
+      if (isotope.getIntensity() > Constants::EPSILON)
       {
         os << " " << isotope.getPosition() << "=" << isotope.getIntensity() * 100 << "%";
       }

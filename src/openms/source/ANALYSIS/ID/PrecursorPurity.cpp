@@ -114,7 +114,7 @@ namespace OpenMS
     }
 
     double rel_sig(0);
-    if (target_intensity > 0.0)
+    if (target_intensity > Constants::EPSILON)
     {
       rel_sig = target_intensity / total_intensity;
     }
@@ -133,7 +133,7 @@ namespace OpenMS
     PrecursorPurity::PurityScores score;
     score.total_intensity = score1.total_intensity + score2.total_intensity;
     score.target_intensity = score1.target_intensity + score2.target_intensity;
-    if (score.target_intensity > 0.0) // otherwise default value of 0 is used
+    if (score.target_intensity > Constants::EPSILON) // otherwise default value of 0 is used
     {
       score.signal_proportion = score.target_intensity / score.total_intensity;
     }

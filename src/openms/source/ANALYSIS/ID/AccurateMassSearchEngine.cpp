@@ -1487,7 +1487,7 @@ namespace OpenMS
 
     double denom(std::sqrt(x_squared_sum) * std::sqrt(y_squared_sum));
 
-    return (denom > 0.0) ? mixed_sum / denom : 0.0;
+    return (denom > Constants::EPSILON) ? mixed_sum / denom : 0.0;
   }
 
   double AccurateMassSearchEngine::computeIsotopePatternSimilarity_(const Feature& feat, const EmpiricalFormula& form) const

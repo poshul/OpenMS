@@ -238,7 +238,7 @@ protected:
           }
         }
 
-        if (rt_gap_ > 0.0) // concatenate in RT
+        if (rt_gap_ > Constants::EPSILON) // concatenate in RT
         {
           adjustRetentionTimes_(map, trafo_out[i], i == 0);
         }
@@ -287,7 +287,7 @@ protected:
               }  
             } 
 
-            if (rt_gap_ > 0.0) // concatenate in RT
+            if (rt_gap_ > Constants::EPSILON) // concatenate in RT
             {  
               adjustRetentionTimes_(map, trafo_out[i], i == 0);
             }
@@ -470,7 +470,7 @@ protected:
           in.getSourceFiles().clear(); // delete source file annotated from source file (it's in the spectrum anyways)
         }
 
-        if (rt_gap_ > 0.0) // concatenate in RT
+        if (rt_gap_ > Constants::EPSILON) // concatenate in RT
         {
           adjustRetentionTimes_(in, trafo_out[i], i == 0);
         }

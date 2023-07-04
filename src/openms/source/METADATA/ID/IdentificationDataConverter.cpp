@@ -500,7 +500,7 @@ namespace OpenMS
       hit.setAccession(parent.accession);
       hit.setSequence(parent.sequence);
       hit.setDescription(parent.description);
-      if (parent.coverage > 0.0)
+      if (parent.coverage > Constants::EPSILON)
       {
         hit.setCoverage(parent.coverage * 100.0); // convert to percents
       }

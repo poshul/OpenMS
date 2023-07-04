@@ -208,7 +208,7 @@ private:
                  || std::fabs(input[i - k].getMZ() - central_peak_mz) < est_peak_width)
                )
         {
-          if (signal_to_noise_ > 0.0)
+          if (signal_to_noise_ > Constants::EPSILON)
           {
             if (snt.getSignalToNoise(i - k) < signal_to_noise_)
             {
@@ -228,7 +228,7 @@ private:
                  || std::fabs(input[i + k].getMZ() - central_peak_mz) < est_peak_width)
                )
         {
-          if (signal_to_noise_ > 0.0)
+          if (signal_to_noise_ > Constants::EPSILON)
           {
             if (snt.getSignalToNoise(i + k) < signal_to_noise_)
             {
@@ -338,7 +338,7 @@ public:
 
       // signal-to-noise estimation
       SignalToNoiseEstimatorMedian<MSSpectrum > snt;
-      if (signal_to_noise_ > 0.0)
+      if (signal_to_noise_ > Constants::EPSILON)
       {
         Param snt_parameters = snt.getParameters();
         snt_parameters.setValue("win_len", sn_win_len_);

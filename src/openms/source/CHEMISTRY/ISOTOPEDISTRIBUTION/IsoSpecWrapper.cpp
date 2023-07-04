@@ -77,7 +77,7 @@ namespace OpenMS
 
     // Check that all probabilities are non-zero
     if (!std::all_of(std::begin(isotopeProbabilities), std::end(isotopeProbabilities), [](std::vector<double> prob){ 
-            return std::all_of(std::begin(prob), std::end(prob), [](double p){return p > 0.0;});
+            return std::all_of(std::begin(prob), std::end(prob), [](double p){return p > Constants::EPSILON;});
           })) 
     {
       throw Exception::IllegalArgument(__FILE__, __LINE__, OPENMS_PRETTY_FUNCTION,

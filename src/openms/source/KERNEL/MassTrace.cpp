@@ -90,7 +90,7 @@ namespace OpenMS
       double rt_before = trace_peaks_.begin()->getRT();
       for (Size i = 1; i < smoothed_intensities_.size(); ++i)
       {
-        if (smoothed_intensities_[i] > 0.0)
+        if (smoothed_intensities_[i] > Constants::EPSILON)
         {
           peak_area += (int_before + trace_peaks_[i].getIntensity())/2 * (trace_peaks_[i].getRT() - rt_before);
         }
@@ -451,7 +451,7 @@ namespace OpenMS
 
       for (Size i = 0; i < smoothed_intensities_.size(); ++i)
       {
-        if (smoothed_intensities_[i] > 0.0)
+        if (smoothed_intensities_[i] > Constants::EPSILON)
         {
           wmean_rt += smoothed_intensities_[i] * trace_peaks_[i].getRT();
           trace_area += smoothed_intensities_[i];

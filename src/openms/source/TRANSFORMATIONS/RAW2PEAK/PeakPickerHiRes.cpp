@@ -165,7 +165,7 @@ namespace OpenMS
     SignalToNoiseEstimatorMedian< ContainerType > snt;
     snt.setParameters(param_.copy("SignalToNoise:", true));
 
-    if (signal_to_noise_ > 0.0)
+    if (signal_to_noise_ > Constants::EPSILON)
     {
       snt.init(input);
     }
@@ -196,7 +196,7 @@ namespace OpenMS
       }
 
       double act_snt = 0.0, act_snt_l1 = 0.0, act_snt_r1 = 0.0;
-      if (signal_to_noise_ > 0.0)
+      if (signal_to_noise_ > Constants::EPSILON)
       {
         act_snt = snt.getSignalToNoise(i);
         act_snt_l1 = snt.getSignalToNoise(i - 1);
@@ -219,7 +219,7 @@ namespace OpenMS
 
         double act_snt_l2 = 0.0, act_snt_r2 = 0.0;
 
-        if (signal_to_noise_ > 0.0)
+        if (signal_to_noise_ > Constants::EPSILON)
         {
           act_snt_l2 = snt.getSignalToNoise(i - 2);
           act_snt_r2 = snt.getSignalToNoise(i + 2);
@@ -272,7 +272,7 @@ namespace OpenMS
         {
           double act_snt_lk = 0.0;
 
-          if (signal_to_noise_ > 0.0)
+          if (signal_to_noise_ > Constants::EPSILON)
           {
             act_snt_lk = snt.getSignalToNoise(i - k);
           }
@@ -315,7 +315,7 @@ namespace OpenMS
         {
           double act_snt_rk = 0.0;
 
-          if (signal_to_noise_ > 0.0)
+          if (signal_to_noise_ > Constants::EPSILON)
           {
             act_snt_rk = snt.getSignalToNoise(i + k);
           }

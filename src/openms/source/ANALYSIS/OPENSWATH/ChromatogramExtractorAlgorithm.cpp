@@ -37,6 +37,7 @@
 #include <OpenMS/DATASTRUCTURES/String.h>
 
 #include <OpenMS/CONCEPT/Exception.h>
+#include <OpenMS/CONCEPT/Constants.h>
 #include <iostream>
 
 namespace OpenMS
@@ -319,7 +320,7 @@ namespace OpenMS
       }
 
       // Look for ion mobility array
-      bool has_im = (im_extraction_window > 0.0);
+      bool has_im = (im_extraction_window > Constants::EPSILON);
       if (has_im)
       {
         OpenSwath::BinaryDataArrayPtr im_arr = sptr->getDriftTimeArray();

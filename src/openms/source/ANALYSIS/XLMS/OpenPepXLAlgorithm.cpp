@@ -773,7 +773,7 @@ using namespace OpenMS;
           }
 
           // normalize TIC_alpha and  _beta
-          if ((intsum_alpha + intsum_beta) > 0.0)
+          if ((intsum_alpha + intsum_beta) > Constants::EPSILON)
           {
             intsum_alpha = intsum_alpha * intsum / (intsum_alpha + intsum_beta);
             intsum_beta = intsum_beta *  intsum / (intsum_alpha + intsum_beta);

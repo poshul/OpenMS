@@ -114,7 +114,7 @@ namespace OpenMS
     double noise_level(computeMassTraceNoise(tr));
 
     double snr = 0;
-    if (noise_level > 0.0)
+    if (noise_level > Constants::EPSILON)
     {
       double smoothed_apex_int(tr.getMaxIntensity(true));
       snr = smoothed_apex_int / noise_level;
@@ -159,7 +159,7 @@ namespace OpenMS
       double ref_int = c_it->first;
       Size ref_idx = c_it->second;
 
-      if (!(used_idx[ref_idx]) && ref_int > 0.0) 
+      if (!(used_idx[ref_idx]) && ref_int > Constants::EPSILON) 
       { // only allow unused points as seeds (potential local maximum)
         bool real_max = true;
 

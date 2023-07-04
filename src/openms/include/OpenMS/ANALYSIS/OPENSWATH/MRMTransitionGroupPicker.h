@@ -274,7 +274,7 @@ public:
       // Check for minimal peak width -> return empty feature (Intensity zero)
       if (use_consensus_)
       {
-        if (min_peak_width_ > 0.0 && std::fabs(best_right - best_left) < min_peak_width_) 
+        if (min_peak_width_ > Constants::EPSILON && std::fabs(best_right - best_left) < min_peak_width_) 
         {
           return mrmFeature;
         }

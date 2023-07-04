@@ -485,7 +485,7 @@ namespace OpenMS
     {
       case AggregationMethod::PROD :
         return [](double old_score, double new_score){
-          if (new_score > 0.0) //TODO for 0 probability peptides we could also multiply a minimum value
+          if (new_score > Constants::EPSILON) //TODO for 0 probability peptides we could also multiply a minimum value
           {
             return old_score * new_score;
           }

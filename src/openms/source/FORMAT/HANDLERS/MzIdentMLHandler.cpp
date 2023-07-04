@@ -1273,7 +1273,7 @@ namespace OpenMS::Internal
                     double diffmass = mod->getDiffMonoMass();
                     p += "\" monoisotopicMassDelta=\"" + String(diffmass);
                   }
-                  else if (mod->getMonoMass() > 0.0)
+                  else if (mod->getMonoMass() > Constants::EPSILON)
                   {
                     double diffmass = mod->getMonoMass() - hit.getSequence()[i].getMonoWeight();
                     p += "\" monoisotopicMassDelta=\"" + String(diffmass);
@@ -1679,7 +1679,7 @@ namespace OpenMS::Internal
                   double diffmass = mod->getDiffMonoMass();
                   p += "\" monoisotopicMassDelta=\"" + String(diffmass);
                 }
-                else if (mod->getMonoMass() > 0.0)
+                else if (mod->getMonoMass() > Constants::EPSILON)
                 {
                   double diffmass = mod->getMonoMass() - peptide_sequence[i].getMonoWeight();
                   p += "\" monoisotopicMassDelta=\"" + String(diffmass);

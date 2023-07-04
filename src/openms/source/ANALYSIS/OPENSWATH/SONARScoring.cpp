@@ -36,6 +36,8 @@
 
 #include <OpenMS/ANALYSIS/OPENSWATH/DIAScoring.h>
 #include <OpenMS/ANALYSIS/OPENSWATH/DIAHelper.h>
+
+#include <OpenMS/CONCEPT/Constants.h>
 #include <OpenMS/OPENSWATHALGO/ALGO/StatsHelpers.h>
 
 #include <OpenMS/MATH/STATISTICS/LinearRegression.h>
@@ -275,7 +277,7 @@ namespace OpenMS
       {
         double int_end = sonar_profile_pos[sonar_profile_pos.size()-1] + sonar_profile_pos[sonar_profile_pos.size()-2];
         double int_start = sonar_profile_pos[0] + sonar_profile_pos[1];
-        if (int_end > 0.0)
+        if (int_end > Constants::EPSILON)
         {
           sonar_trend = int_start / int_end;
         }
@@ -314,11 +316,11 @@ namespace OpenMS
 
         // compute the relative difference between the medians (or if the
         // medians are zero, compute the difference to the max element)
-        if (neg_med > 0.0)
+        if (neg_med > Constants::EPSILON)
         {
           sonar_sn = pos_med / neg_med;
         }
-        else if (*std::max_element(sonar_profile_neg.begin(), sonar_profile_neg.end()) > 0.0)
+        else if (*std::max_element(sonar_profile_neg.begin(), sonar_profile_neg.end()) > Constants::EPSILON)
         {
           sonar_sn = pos_med / *std::max_element(sonar_profile_neg.begin(), sonar_profile_neg.end());
         }

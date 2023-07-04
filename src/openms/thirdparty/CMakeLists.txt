@@ -33,7 +33,7 @@
 # --------------------------------------------------------------------------
 
 project("OpenMS-3rd-party-libs")
-cmake_minimum_required(VERSION 3.24 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.22 FATAL_ERROR)
 
 # evergreen Bayesian inference library (0.9)
 add_subdirectory(evergreen/src)

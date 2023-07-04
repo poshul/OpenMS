@@ -32,6 +32,8 @@
 // $Authors: Hannes Roest, Erhan Kenar$
 // --------------------------------------------------------------------------
 
+#include <OpenMS/CONCEPT/Constants.h>
+
 #include <OpenMS/TRANSFORMATIONS/RAW2PEAK/PeakPickerMaxima.h>
 
 #include <OpenMS/FILTERING/NOISEESTIMATION/SignalToNoiseEstimatorMedianRapid.h>
@@ -65,7 +67,7 @@ namespace OpenMS
     }
     // signal-to-noise estimation
     SignalToNoiseEstimatorMedianRapid::NoiseEstimator noise_estimator(0, 0, 0);
-    if (signal_to_noise_ > 0.0)
+    if (signal_to_noise_ > Constants::EPSILON)
     {
       SignalToNoiseEstimatorMedianRapid rapid_sne(sn_window_length_);
       noise_estimator = rapid_sne.estimateNoise(mz_array, int_array);
@@ -93,7 +95,7 @@ namespace OpenMS
       double min_spacing = (left_to_central < central_to_right) ? left_to_central : central_to_right;
 
       double act_snt = 0.0, act_snt_l1 = 0.0, act_snt_r1 = 0.0;
-      if (signal_to_noise_ > 0.0)
+      if (signal_to_noise_ > Constants::EPSILON)
       {
         act_snt = central_peak_int / noise_estimator.get_noise_value(central_peak_mz);
         act_snt_l1 = left_neighbor_int / noise_estimator.get_noise_value(left_neighbor_mz);
@@ -120,7 +122,7 @@ namespace OpenMS
         candidate.mz_max = -1;
         candidate.int_max = -1;
 
-        if (signal_to_noise_ > 0.0)
+        if (signal_to_noise_ > Constants::EPSILON)
         {
           act_snt_l2 = int_array[i - 2] / noise_estimator.get_noise_value(mz_array[i - 2]);
           act_snt_r2 = int_array[i + 2] / noise_estimator.get_noise_value(mz_array[i + 2]);
@@ -164,7 +166,7 @@ namespace OpenMS
         {
           // Obtain S/N value (only if parameter is turned on)
           double act_snt_lk = 0.0;
-          if (signal_to_noise_ > 0.0)
+          if (signal_to_noise_ > Constants::EPSILON)
           {
             act_snt_lk = int_array[i - k] / noise_estimator.get_noise_value(mz_array[i - k]);
           }
@@ -203,7 +205,7 @@ namespace OpenMS
         {
           // Obtain S/N value (only if parameter is turned on)
           double act_snt_rk = 0.0;
-          if (signal_to_noise_ > 0.0)
+          if (signal_to_noise_ > Constants::EPSILON)
           {
             act_snt_rk = int_array[i + k] / noise_estimator.get_noise_value(mz_array[i + k]);
           }
