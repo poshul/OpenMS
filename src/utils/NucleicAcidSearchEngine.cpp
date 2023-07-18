@@ -259,6 +259,11 @@ protected:
     setMinFloat_("fdr:cutoff", 0.0);
     setMaxFloat_("fdr:cutoff", 1.0);
     registerFlag_("fdr:remove_decoys", "Do not score hits to decoy sequences and remove them when filtering");
+
+    registerTOPPSubsection_("scoring","Options for scoring");
+    registerStringOption_("scoring:score_type", "<choice>", "Hyperscore", "score using hyperscore", false, true);
+    setValidStrings_("scoring:score_type", ListUtils::create<String>("Hyperscore,Poissonscore"));
+
   }
 
   // relevant information about an MS2 precursor ion
@@ -994,6 +999,25 @@ protected:
       }
     }
 
+    String score_t_string = getStringOption_("scoring:score_type");
+    SpectralScoreType score_t;
+    if (score_t_string == "Hyperscore")
+    {
+      score_t = SpectralScoreType::HYPERSCORE;
+      OPENMS_LOG_DEBUG << "Using Hyperscore" << endl;
+    }
+    else if (score_t_string == "Poissonscore")
+    {
+      score_t = SpectralScoreType::POISSONSCORE;
+      OPENMS_LOG_DEBUG << "Using PoissonScore" << endl;
+    }
+    else
+    {
+      String error = "'scoring:score_type' does not specify a valid scoring system";
+      throw Exception::InvalidValue(__FILE__, __LINE__, OPENMS_PRETTY_FUNCTION,
+                                    error, score_t_string);
+    }
+
     // load MS2 map
     MSExperiment spectra;
     MzMLFile f;
@@ -1014,13 +1038,21 @@ protected:
     IdentificationData::InputFileRef file_ref =
       id_data.registerInputFile(input);
     // processing software meta data:
-    IdentificationData::ScoreType score("hyperscore", true);
+    IdentificationData::ScoreType score_type;
+    if (score_t == SpectralScoreType::HYPERSCORE)
+    {
+      score_type =  IdentificationData::ScoreType("hyperscore", true);
+    }
+    else if (score_t == SpectralScoreType::POISSONSCORE)
+    {
+      score_type = IdentificationData::ScoreType("poissonscore", true);
+    }
     IdentificationData::ScoreTypeRef hyperscore_ref =
-      id_data.registerScoreType(score);
+      id_data.registerScoreType(score_type);
     CVTerm qvalue("MS:1002354", "PSM-level q-value", "MS");
-    score = IdentificationData::ScoreType(qvalue, false);
+    score_type = IdentificationData::ScoreType(qvalue, false);
     IdentificationData::ScoreTypeRef qvalue_ref =
-      id_data.registerScoreType(score);
+      id_data.registerScoreType(score_type);
     IdentificationData::ProcessingSoftware software(toolName_(), version_);
     // in test mode just overwrite with a generic version:
     if (test_mode_) software.setVersion("test");
@@ -1303,10 +1335,21 @@ protected:
             Size scan_index = prec_it->second.scan_index;
             const MSSpectrum& exp_spectrum = spectra[scan_index];
             vector<PeptideHit::PeakAnnotation> annotations;
-            double score = MetaboliteSpectralMatching::computeHyperScore(
-              search_param.fragment_mass_tolerance,
-              search_param.fragment_tolerance_ppm, exp_spectrum, theo_spectrum,
-              annotations);
+            double score = -1.0;
+            if (score_t == SpectralScoreType::HYPERSCORE)
+            {
+              score = MetaboliteSpectralMatching::computeHyperScore(
+                search_param.fragment_mass_tolerance,
+                search_param.fragment_tolerance_ppm, exp_spectrum, theo_spectrum,
+                annotations);
+            }
+            else if (score_t == SpectralScoreType::POISSONSCORE)
+            {
+              score = MetaboliteSpectralMatching::computePoissonScore(
+                search_param.fragment_mass_tolerance,
+                search_param.fragment_tolerance_ppm, exp_spectrum, theo_spectrum,
+                annotations);
+            }
 
             if (!exp_ms2_out.empty())
             {

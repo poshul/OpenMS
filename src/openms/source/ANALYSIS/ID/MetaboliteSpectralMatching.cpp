@@ -38,9 +38,10 @@
 
 #include <OpenMS/FORMAT/MzMLFile.h>
 
-#include <numeric>
-#include <boost/math/special_functions/factorials.hpp>
+#include <random>
 
+#include <boost/math/special_functions/factorials.hpp>
+#include <boost/math/distributions/poisson.hpp>
 #include <boost/dynamic_bitset.hpp>
 
 #include <OpenMS/FILTERING/TRANSFORMERS/SpectraMerger.h>
@@ -314,9 +315,9 @@ namespace OpenMS
     const MSSpectrum& db_spectrum,
     double mz_lower_bound)
   {
-    return computeHyperScore_(fragment_mass_error,
+    return computeScore_(fragment_mass_error,
                               fragment_mass_tolerance_unit_ppm, exp_spectrum,
-                              db_spectrum, nullptr, mz_lower_bound);
+                              db_spectrum, nullptr, mz_lower_bound, SpectralScoreType::HYPERSCORE);
   }
 
 
@@ -328,19 +329,47 @@ namespace OpenMS
     vector<PeptideHit::PeakAnnotation>& annotations,
     double mz_lower_bound)
   {
-    return computeHyperScore_(fragment_mass_error,
+    return computeScore_(fragment_mass_error,
                               fragment_mass_tolerance_unit_ppm, exp_spectrum,
-                              db_spectrum, &annotations, mz_lower_bound);
+                              db_spectrum, &annotations, mz_lower_bound, SpectralScoreType::HYPERSCORE);
   }
 
 
-  double MetaboliteSpectralMatching::computeHyperScore_(
+    double MetaboliteSpectralMatching::computePoissonScore(
+    double fragment_mass_error,
+    bool fragment_mass_tolerance_unit_ppm,
+    const MSSpectrum& exp_spectrum,
+    const MSSpectrum& db_spectrum,
+    double mz_lower_bound)
+  {
+    return computeScore_(fragment_mass_error,
+                              fragment_mass_tolerance_unit_ppm, exp_spectrum,
+                              db_spectrum, nullptr, mz_lower_bound, SpectralScoreType::POISSONSCORE);
+  }
+
+
+  double MetaboliteSpectralMatching::computePoissonScore(
+    double fragment_mass_error,
+    bool fragment_mass_tolerance_unit_ppm,
+    const MSSpectrum& exp_spectrum,
+    const MSSpectrum& db_spectrum,
+    vector<PeptideHit::PeakAnnotation>& annotations,
+    double mz_lower_bound)
+  {
+    return computeScore_(fragment_mass_error,
+                              fragment_mass_tolerance_unit_ppm, exp_spectrum,
+                              db_spectrum, &annotations, mz_lower_bound, SpectralScoreType::POISSONSCORE);
+  }
+
+
+  double MetaboliteSpectralMatching::computeScore_(
     double fragment_mass_error,
     bool fragment_mass_tolerance_unit_ppm,
     const MSSpectrum& exp_spectrum,
     const MSSpectrum& db_spectrum,
     vector<PeptideHit::PeakAnnotation>* annotations,
-    double mz_lower_bound)
+    double mz_lower_bound,
+    SpectralScoreType scoreType)
   {
     if (exp_spectrum.empty()) return 0;
 
@@ -377,15 +406,68 @@ namespace OpenMS
       if (index >= 0) peak_matches[index].push_back(db_it);
     }
 
-    double dot_product = 0.0;
-    for (const auto& match : peak_matches)
+    double score = 0;
+
+    if (scoreType == SpectralScoreType::HYPERSCORE)
     {
-      double db_intensity = 0.0;
-      for (const auto& db_it : match.second)
+      double dot_product = 0.0;
+      for (const auto& match : peak_matches)
       {
-        db_intensity = max(db_intensity, double(db_it->getIntensity()));
+        double db_intensity = 0.0;
+        for (const auto& db_it : match.second)
+        {
+          db_intensity = max(db_intensity, double(db_it->getIntensity()));
+        }
+        dot_product += db_intensity * exp_spectrum[match.first].getIntensity();
       }
-      dot_product += db_intensity * exp_spectrum[match.first].getIntensity();
+
+      Size matched_ions_count = peak_matches.size(); // count obs. peaks only once
+      double matched_ions_term = 0.0;
+
+      // return score 0 if too few matched ions
+      if (matched_ions_count < 3)
+      {
+        return matched_ions_term;
+      }
+
+      if (matched_ions_count <= boost::math::max_factorial<double>::value)
+      {
+        matched_ions_term = log(boost::math::factorial<double>(matched_ions_count));
+      }
+      else
+      {
+        matched_ions_term = log(boost::math::factorial<double>(boost::math::max_factorial<double>::value));
+      }
+
+      score = log(dot_product) + matched_ions_term;
+      if (score < 0)
+        score = 0;
+    }
+    else if (scoreType == SpectralScoreType::POISSONSCORE)
+    {
+      int n_e = exp_spectrum.size();
+      int n_t = db_spectrum.size();
+      int n_matches = peak_matches.size();
+
+      double n_bins = floor(log( db_spectrum.back().getMZ() / db_spectrum[0].getMZ())/log(1 + 2 * mz_offset )); // relative mz-tolerance, db_spectrum is sorted. 
+      double mu = (n_t * n_e) / n_bins;
+
+      //score = (n_matches > 0) ? -(log(1 - boost::math::cdf(boost::math::poisson_distribution<double>(n_matches), mu))) : 0;
+      if (n_matches > 0)
+      {
+        double cdf = 0.0;
+        for (int i = 0; i<= n_matches; ++i)
+        {
+          cdf += std::exp(-mu);
+          --mu;
+        }
+        score = -1 * std::log(1.0 - cdf);
+      }
+
+    }
+    else
+    {
+      throw Exception::NotImplemented(__FILE__, __LINE__, OPENMS_PRETTY_FUNCTION);
     }
 
     // return annotations for matching peaks?
@@ -411,28 +493,7 @@ namespace OpenMS
       }
     }
 
-    Size matched_ions_count = peak_matches.size(); // count obs. peaks only once
-    double matched_ions_term = 0.0;
-
-    // return score 0 if too few matched ions
-    if (matched_ions_count < 3)
-    {
-      return matched_ions_term;
-    }
-
-    if (matched_ions_count <= boost::math::max_factorial<double>::value)
-    {
-      matched_ions_term = log(boost::math::factorial<double>(matched_ions_count));
-    }
-    else
-    {
-      matched_ions_term = log(boost::math::factorial<double>(boost::math::max_factorial<double>::value));
-    }
-
-    double hyperscore = log(dot_product) + matched_ions_term;
-    if (hyperscore < 0) hyperscore = 0;
-
-    return hyperscore;
+    return score;
   }
 
 

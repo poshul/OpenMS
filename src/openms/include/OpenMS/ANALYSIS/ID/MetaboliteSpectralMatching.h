@@ -149,6 +149,13 @@ namespace OpenMS
 
   } SpectralMatchScoreGreater;
 
+  enum SpectralScoreType
+  {
+    HYPERSCORE,
+    POISSONSCORE,
+    SIZE_OF_SCORETYPES
+  };
+
   class OPENMS_DLLAPI MetaboliteSpectralMatching :
   public DefaultParamHandler,
   public ProgressLogger
@@ -177,6 +184,24 @@ namespace OpenMS
       std::vector<PeptideHit::PeakAnnotation>& annotations,
       double mz_lower_bound = 0.0);
 
+    /// poissonscore computation
+    static double computePoissonScore(
+      double fragment_mass_error,
+      bool fragment_mass_tolerance_unit_ppm,
+      const MSSpectrum& exp_spectrum,
+      const MSSpectrum& db_spectrum,
+      double mz_lower_bound = 0.0);
+
+    /// Poisson computation (with output of peak annotations)
+    static double computePoissonScore(
+      double fragment_mass_error,
+      bool fragment_mass_tolerance_unit_ppm,
+      const MSSpectrum& exp_spectrum,
+      const MSSpectrum& db_spectrum,
+      std::vector<PeptideHit::PeakAnnotation>& annotations,
+      double mz_lower_bound = 0.0);
+
+
     /// main method of MetaboliteSpectralMatching
     void run(PeakMap &, PeakMap &, MzTab &, String &);
 
@@ -185,13 +210,17 @@ namespace OpenMS
 
     // we have to use a pointer for "annotations" because mutable
     // references can't have temporary default values:
-    static double computeHyperScore_(
+    // @exception throws Exception::NOTIMPLEMENTED if called with a SpectralScoreType that isn't implemented.
+    // db_spectrum and exp_spectrum must be already sorted
+    static double computeScore_(
       double fragment_mass_error,
       bool fragment_mass_tolerance_unit_ppm,
       const MSSpectrum& exp_spectrum,
       const MSSpectrum& db_spectrum,
       std::vector<PeptideHit::PeakAnnotation>* annotations = 0,
-      double mz_lower_bound = 0.0);
+      double mz_lower_bound = 0.0,
+      SpectralScoreType type = SpectralScoreType::HYPERSCORE);
+
 
   private:
     /// private member functions
